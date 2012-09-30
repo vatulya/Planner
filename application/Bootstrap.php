@@ -7,6 +7,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $session = new Zend_Session_Namespace();
         $session->authRole = Application_Model_Auth::getRole();
+//        $session->backUrl = $_SERVER['HTTP_REFERER'];
     }
 
     protected function _initAcl()
@@ -18,6 +19,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
 
         $router = Zend_Controller_Front::getInstance()->getRouter();
+//        $route = new Zend_Controller_Router_Route_Static(
+//            '/sitemap',
+//            array('module' => 'frontoffice', 'controller' => 'index', 'action' => 'sitemap')
+//        );
+//        $router->addRoute('sitemap', $route);
         $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/routes.ini', 'production');
         $router->addConfig($config, 'routes');
     }
@@ -26,13 +32,33 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $this->getApplication()->getAutoloader()->registerNamespace('Sch');
         $this->getApplication()->getAutoloader()->registerNamespace('My_');
+        $this->getApplication()->getAutoloader()->registerNamespace('Stemmer');
     }
 
-    protected function _initManagementAutoload()
+    protected function _initAdminAutoload()
     {
         $autoloader = new Zend_Application_Module_Autoloader(array(
-            'namespace' => 'Planner_',
-            'basePath'  => APPLICATION_PATH .'/modules/planner',
+            'namespace' => 'Admin_',
+            'basePath'  => APPLICATION_PATH .'/modules/admin',
+            'resourceTypes' => array (
+                'form' => array(
+                    'path' => 'forms',
+                    'namespace' => 'Form',
+                ),
+                'model' => array(
+                    'path' => 'models',
+                    'namespace' => 'Model',
+                ),
+            )
+        ));
+        return $autoloader;
+    }
+
+    protected function _initFrontofficeAutoload()
+    {
+        $autoloader = new Zend_Application_Module_Autoloader(array(
+            'namespace' => 'Frontoffice_',
+            'basePath'  => APPLICATION_PATH .'/modules/frontoffice',
             'resourceTypes' => array (
                 'form' => array(
                     'path' => 'forms',

@@ -25,10 +25,10 @@ production:
         db:
             adapter: pdo_mysql
             params:
-                host: localhost
-                username: teamtodo
-                password: teamtodo
-                dbname: teamtodo
+                host: kv.kirby.pp.ua
+                username: planner
+                password: planner
+                dbname: planner
         layout:
             layoutPath: APPLICATION_PATH/layouts/scripts/
 
