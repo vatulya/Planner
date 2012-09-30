@@ -1,6 +1,6 @@
 <?php
 
-class Planner_Form_Login extends Sch_Form
+class Management_Form_Login extends Sch_Form
 {
 
     public function init()

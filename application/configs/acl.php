@@ -17,7 +17,7 @@ $acl->addRole($admin);
 $acl->addRole($superAdmin);
 
 $acl->addResource(new Zend_Acl_Resource('planner'));
-$acl->addResource(new Zend_Acl_Resource('planner.login'));
+$acl->addResource(new Zend_Acl_Resource('planner.auth'));
 $acl->addResource(new Zend_Acl_Resource('planner.checking'));
 $acl->addResource(new Zend_Acl_Resource('planner.planning'));
 $acl->addResource(new Zend_Acl_Resource('planner.requests'));
@@ -32,7 +32,7 @@ $acl->addResource(new Zend_Acl_Resource('planner.alert'));
 $acl->deny(null, null, null);
 
 $acl->allow($guest, 'planner');
-$acl->allow($guest, 'planner.login');
+$acl->allow($guest, 'planner.auth');
 
 $acl->allow($user, 'planner.checking');
 $acl->allow($user, 'planner.planning');

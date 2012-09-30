@@ -10,11 +10,6 @@
 
     <?php $this->headScript()->prependFile('/js/global.js'); ?>
     <?php
-    if ( ! empty($this->me['role']) && $this->me['role'] === Application_Model_Auth::ROLE_ADMIN)
-       //TODO insert additional scripts for admin
-    ?>
-    <?php $this->headScript()->prependFile('/js/modules/planner/planner.js'); ?>
-    <?php
     $this->headScript()
         ->prependFile('/js/bootstrap/js/bootstrap.js')
         ->prependFile('/js/jquery/jquery/jquery.form.js')
@@ -29,22 +24,12 @@
 
             <a class="brand" href="<?php echo $this->url(array(), null, true) ?>">Futurumshop: Planner</a>
 
-            <?php if ( ! empty($this->me)): ?>
-            <ul class="nav pull-right">
-                <li>
-                    <?php $title = $this->me['role'] . ': ' . $this->me['first_name'] . ' ' . $this->me['last_name'] . ' (' . $this->me['email'] . ')'; ?>
-                    <a href="<?php echo $this->url(array('controller' => 'auth', 'action' => 'logout'), 'management_full', true); ?>" id='logout-link' title="<?php echo $title; ?>">Logout</a>
-                </li>
-            </ul>
-            <?php endif; ?>
-
             <!-- TOP PANEL -->
         </div>
     </div>
 </div>
-<div class="container" id="container" data-project-id="<?php echo @$this->projectId; ?>">
+<div class="container" id="container">
     <?php echo $this->layout()->content ?>
-
 </div>
 <?php echo $this->headScript(); ?>
 </body>
