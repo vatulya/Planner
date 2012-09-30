@@ -26,9 +26,9 @@ production:
             adapter: pdo_mysql
             params:
                 host: localhost
-                username: planner
-                password: planner
-                dbname: planner
+                username: teamtodo
+                password: teamtodo
+                dbname: teamtodo
         layout:
             layoutPath: APPLICATION_PATH/layouts/scripts/
 

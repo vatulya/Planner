@@ -34,7 +34,7 @@ class Planner_AuthController extends My_Controller_Action
         $request = $this->getRequest();
 
         $form = new Planner_Form_Login(array(
-            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'login'), 'management_full', true),
+            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'login'), 'planner_full', true),
             'class'  => 'well form-horizontal',
         ));
         if ($request->isPost()) {
@@ -42,7 +42,7 @@ class Planner_AuthController extends My_Controller_Action
                 $data = $request->getPost();
                 if ($this->_modelAuth->login($data['email'], $data['password'])) {
                     $params = $request->getParams();
-                    return $this->_helper->redirector->gotoRoute(array(), 'management', true);
+                    return $this->_helper->redirector->gotoRoute(array(), 'planner', true);
                 }
                 $form->addErrorMessage('Wrong login');
             }
@@ -53,7 +53,7 @@ class Planner_AuthController extends My_Controller_Action
     public function logoutAction()
     {
         $this->_modelAuth->logout();
-        return $this->_helper->redirector->gotoRoute(array(), 'management', true);
+        return $this->_helper->redirector->gotoRoute(array(), 'planner', true);
     }
 
     public function registerAction()
@@ -61,14 +61,14 @@ class Planner_AuthController extends My_Controller_Action
         /** @var $request Zend_Controller_Request_Http */
         $request = $this->getRequest();
         $form = new Planner_Form_Register(array(
-            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'register'), 'management_full', true),
+            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'register'), 'planner_full', true),
             'class'  => 'well form-horizontal',
         ));
         if ($request->isPost()) {
             if ($form->isValid($request->getPost())) {
                 $data = $request->getPost();
                 if ($this->_modelAuth->register($data)) {
-                    return $this->_helper->redirector->gotoRoute(array(), 'management', true);
+                    return $this->_helper->redirector->gotoRoute(array(), 'planner', true);
                 }
             }
         }
@@ -81,14 +81,14 @@ class Planner_AuthController extends My_Controller_Action
         /** @var $request Zend_Controller_Request_Http */
         $request = $this->getRequest();
         $form = new Planner_Form_EditUser(array(
-            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'edit-user-information'), 'management_full', true),
+            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'edit-user-information'), 'planner_full', true),
             'class'  => 'well form-horizontal',
         ));
         if ($request->isPost()) {
             if ($form->isValid($request->getPost())) {
                 $data = $request->getPost();
                 if ($this->_modelAuth->update($user['id'], $data)) {
-                    return $this->_helper->redirector->gotoRoute(array(), 'management', true);
+                    return $this->_helper->redirector->gotoRoute(array(), 'planner', true);
 //                    $this->view->message = array('User information updated.'); // TODO: User helper FlashMessenger
                 }
             }
@@ -106,7 +106,7 @@ class Planner_AuthController extends My_Controller_Action
         /** @var $request Zend_Controller_Request_Http */
         $request = $this->getRequest();
         $form = new Planner_Form_ChangePassword(array(
-            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'change-password'), 'Planner_full', true),
+            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'change-password'), 'planner_full', true),
             'class'  => 'well form-horizontal',
         ));
         if ($request->isPost()) {
