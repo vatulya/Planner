@@ -19,11 +19,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
 
         $router = Zend_Controller_Front::getInstance()->getRouter();
-//        $route = new Zend_Controller_Router_Route_Static(
-//            '/sitemap',
-//            array('module' => 'frontoffice', 'controller' => 'index', 'action' => 'sitemap')
-//        );
-//        $router->addRoute('sitemap', $route);
         $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/routes.ini', 'production');
         $router->addConfig($config, 'routes');
     }
@@ -35,30 +30,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $this->getApplication()->getAutoloader()->registerNamespace('Stemmer');
     }
 
-    protected function _initAdminAutoload()
+    protected function _initPlannerAutoload()
     {
         $autoloader = new Zend_Application_Module_Autoloader(array(
-            'namespace' => 'Admin_',
-            'basePath'  => APPLICATION_PATH .'/modules/admin',
-            'resourceTypes' => array (
-                'form' => array(
-                    'path' => 'forms',
-                    'namespace' => 'Form',
-                ),
-                'model' => array(
-                    'path' => 'models',
-                    'namespace' => 'Model',
-                ),
-            )
-        ));
-        return $autoloader;
-    }
-
-    protected function _initFrontofficeAutoload()
-    {
-        $autoloader = new Zend_Application_Module_Autoloader(array(
-            'namespace' => 'Frontoffice_',
-            'basePath'  => APPLICATION_PATH .'/modules/frontoffice',
+            'namespace' => 'Planner_',
+            'basePath'  => APPLICATION_PATH .'/modules/planner',
             'resourceTypes' => array (
                 'form' => array(
                     'path' => 'forms',

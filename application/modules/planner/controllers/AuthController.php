@@ -33,7 +33,7 @@ class Planner_AuthController extends My_Controller_Action
         /** @var $request Zend_Controller_Request_Http */
         $request = $this->getRequest();
         $form = new Planner_Form_Login(array(
-            'action' => $this->_helper->url->url(array('controller' => 'auth', 'action' => 'login'), 'management_full', true),
+            'action' => $this->_helper->url->url(array(), 'login', true),
             'class'  => 'well form-horizontal',
         ));
         if ($request->isPost()) {

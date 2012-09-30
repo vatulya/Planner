@@ -40,8 +40,8 @@ $acl->allow($user, 'planner.requests');
 
 $acl->allow($groupAdmin, 'planner.open-requests');
 
-$acl->allow($admin, 'planner.group-requests');
-$acl->allow($admin, 'planner.user-requests');
+$acl->allow($admin, 'planner.group-settings');
+$acl->allow($admin, 'planner.user-settings');
 $acl->allow($admin, 'planner.overview');
 $acl->allow($admin, 'planner.alert');
 

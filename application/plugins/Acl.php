@@ -10,7 +10,7 @@ class Application_Plugin_Acl extends Zend_Controller_Plugin_Abstract {
     protected $_aclRoute = '%s.%s';
 
     /**
-     * @var \Model
+     * @var Application_Model_Db_Users
      */
     protected $_user;
 
@@ -19,7 +19,7 @@ class Application_Plugin_Acl extends Zend_Controller_Plugin_Abstract {
      * @var array
      */
     protected $_noAuth = array(
-        'module'     => 'admin',
+        'module'     => 'planner',
         'controller' => 'auth',
         'action'     => 'login'
     );
@@ -29,7 +29,7 @@ class Application_Plugin_Acl extends Zend_Controller_Plugin_Abstract {
      * @var array
      */
     protected $_noAcl = array(
-        'module'     => 'frontoffice',
+        'module'     => 'planner',
         'controller' => 'index',
         'action'     => 'index'
     );
@@ -64,9 +64,9 @@ class Application_Plugin_Acl extends Zend_Controller_Plugin_Abstract {
 
     public function routeShutdown(Zend_Controller_Request_Abstract $request) {
         $this->_acl = $this->_getAcl();
+        $module     = $request->getModuleName();
         $controller = $request->getControllerName();
         $action     = $request->getActionName();
-        $module     = $request->getModuleName();
 
         $resource = sprintf($this->_aclRoute, $module, $controller);
         if ( ! $this->_acl->has($resource)) {
@@ -76,7 +76,6 @@ class Application_Plugin_Acl extends Zend_Controller_Plugin_Abstract {
             $resource = null;
         }
         if ($this->isAllowed($resource, $action)) {
-            $user = $this->getUser();
             return;
         }
 
