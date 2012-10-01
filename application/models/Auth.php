@@ -3,11 +3,11 @@
 class Application_Model_Auth extends Application_Model_Abstract
 {
 
-    const ROLE_GUEST       = "GUEST";
-    const ROLE_USER        = "USER";
-    const ROLE_GROUP_ADMIN = "GROUP_ADMIN";
-    const ROLE_ADMIN       = "ADMIN";
-    const ROLE_SUPER_ADMIN = "SUPER_ADMIN";
+    const ROLE_GUEST       = 0;
+    const ROLE_USER        = 20;
+    const ROLE_GROUP_ADMIN = 50;
+    const ROLE_ADMIN       = 80;
+    const ROLE_SUPER_ADMIN = 100;
 
     public function __construct()
     {

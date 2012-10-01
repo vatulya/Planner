@@ -41,7 +41,7 @@ class Planner_AuthController extends My_Controller_Action
                 $data = $request->getPost();
                 if ($this->_modelAuth->login($data['email'], $data['password'])) {
                     $params = $request->getParams();
-                    return $this->_helper->redirector->gotoRoute(array(), 'management', true);
+                    return $this->_helper->redirector->gotoRoute(array(), null, true);
                 }
                 $form->addErrorMessage('Wrong login');
             }

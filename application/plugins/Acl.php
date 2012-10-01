@@ -14,6 +14,14 @@ class Application_Plugin_Acl extends Zend_Controller_Plugin_Abstract {
      */
     protected $_user;
 
+    protected $_roleAliases = array(
+        Application_Model_Auth::ROLE_GUEST       => 'GUEST',
+        Application_Model_Auth::ROLE_USER        => 'USER',
+        Application_Model_Auth::ROLE_GROUP_ADMIN => 'GROUP_ADMIN',
+        Application_Model_Auth::ROLE_ADMIN       => 'ADMIN',
+        Application_Model_Auth::ROLE_SUPER_ADMIN => 'SUPER_ADMIN',
+    );
+
     /**
      * Location to go to if the user isn't authenticated
      * @var array
@@ -50,7 +58,11 @@ class Application_Plugin_Acl extends Zend_Controller_Plugin_Abstract {
     }
 
     public function getRole() {
-        return Application_Model_Auth::getRole();
+        $role = Application_Model_Auth::getRole();
+        if (isset($this->_roleAliases[$role])) {
+            $role = $this->_roleAliases[$role];
+        }
+        return $role;
     }
 
     public function isAllowed($resource = null, $privelege = null) {
