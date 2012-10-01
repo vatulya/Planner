@@ -15,7 +15,7 @@ class Planner_IndexController extends My_Controller_Action
 
     public function checkingAction()
     {
-        $a = 1;
+        $this->view->activeMenu = 'checking';
     }
 
 }

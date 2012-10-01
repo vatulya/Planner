@@ -5,6 +5,7 @@ class My_Controller_Action extends  Zend_Controller_Action
     public function init()
     {
         $this->_helper->getHelper('AjaxContext')->initContext();
+        $this->activeMenu = '';
     }
 
     protected function _response($status = 0, $message = '', $data = array())
