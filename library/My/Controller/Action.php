@@ -6,9 +6,12 @@ class My_Controller_Action extends  Zend_Controller_Action
         'checking', 'planning', 'requests', 'open-requests', 'group-settings', 'user-settings', 'overview', 'alert',
     );
 
+    protected $_me = null;
+
     public function init()
     {
         $this->_helper->getHelper('AjaxContext')->initContext();
+        $this->view->me = $this->_helper->CurrentUser();
         $this->view->activeMenu = '';
         $activeMenu = $this->_getParam('action', '');
         if (in_array($activeMenu, $this->_navMenu)) {

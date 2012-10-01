@@ -1,0 +1,42 @@
+<?php if (empty($this->users)): ?>
+    Error! No users.
+<?php else: ?>
+
+    <div class="span8">
+        <table class="table table-bordered checking-table">
+            <thead>
+            <tr>
+                <th>Naam</th>
+                <th>Check IN/OUT</th>
+                <th>Datum</th>
+                <th>Check IN time</th>
+                <th>Check OUT time</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach($this->users as $user): ?>
+                <tr <?php if ( ! empty($user['check_in'])):?>style="checked-in success"<?php endif; ?>>
+                    <td>
+                        <?=$user['full_name']?>
+                    </td>
+                    <td style="text-align: center;">
+                        <?php if ($this->me['id'] == $user['id']): ?>
+                        <button class="check-in btn btn-mini btn-success">check IN</button>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?=$this->today?>
+                    </td>
+                    <td>
+                        <?=@$user['check_in']?>
+                    </td>
+                    <td>
+                        <?=@$user['check_out']?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+<?php endif; ?>

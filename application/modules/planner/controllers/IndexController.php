@@ -15,8 +15,10 @@ class Planner_IndexController extends My_Controller_Action
 
     public function checkingAction()
     {
-        $a = 1;
-//        $this->view->activeMenu = 'checking';
+        $modelUser = new Application_Model_User();
+        $users = $modelUser->getAllUsers();
+        $this->view->users = $users;
+        $this->view->today = date('d.m.Y');
     }
 
 }

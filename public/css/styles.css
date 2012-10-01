@@ -1,3 +1,4 @@
+/*** Ee-write Twitter Bootstrap styles ***/
 .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container, .container {
     width: 1260px;
 }
@@ -10,7 +11,10 @@ input[type="checkbox"] {
 .popover-inner {
     width: auto;
 }
-/***********************/
+.checking-table th, .checking-table td {
+    padding: 3px;
+}
+/*** Personal styles ***/
 #container {
     margin-top: 60px;
 }

@@ -23,4 +23,13 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function getAllUsers()
+    {
+        $select = $this->_db->select()
+            ->from(array('u' => self::TABLE_NAME))
+            ->order(array('full_name ASC'));
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
 }

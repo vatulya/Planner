@@ -40,4 +40,14 @@ class Application_Model_User extends Application_Model_Abstract
         return $user;
     }
 
+    public function getAllUsers()
+    {
+        $users = $this->_modelDb->getAllUsers();
+        foreach ($users as $key => $user) {
+            $user = $this->_filterHiddenFields($user);
+            $users[$key] = $user;
+        }
+        return $users;
+    }
+
 }

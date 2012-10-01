@@ -26,8 +26,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     protected function _initAutoload()
     {
         $this->getApplication()->getAutoloader()->registerNamespace('Sch');
-        $this->getApplication()->getAutoloader()->registerNamespace('My_');
-        $this->getApplication()->getAutoloader()->registerNamespace('Stemmer');
+        $this->getApplication()->getAutoloader()->registerNamespace('My');
     }
 
     protected function _initPlannerAutoload()
