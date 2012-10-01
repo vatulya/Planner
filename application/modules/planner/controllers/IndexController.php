@@ -10,12 +10,13 @@ class Planner_IndexController extends My_Controller_Action
 
     public function indexAction()
     {
-        $this->_forward('checking');
+        $this->_forward('checking', null, null, array('action' => 'checking'));
     }
 
     public function checkingAction()
     {
-        $this->view->activeMenu = 'checking';
+        $a = 1;
+//        $this->view->activeMenu = 'checking';
     }
 
 }
