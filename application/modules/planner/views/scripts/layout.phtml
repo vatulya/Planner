@@ -10,10 +10,10 @@
 
     <?php
     $this->headScript()
-        ->appendFile('/js/jquery-1.8.2.min.js')
-        ->appendFile('/js/jquery.form.js')
-        ->appendFile('/js/bootstrap.js')
-        ->appendFile('/js/global.js')
+        ->prependFile('/js/global.js')
+        ->prependFile('/js/bootstrap.js')
+        ->prependFile('/js/jquery.form.js')
+        ->prependFile('/js/jquery-1.8.2.min.js')
 ?>
 </head>
 <body>

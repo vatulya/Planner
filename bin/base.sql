@@ -71,3 +71,17 @@ INSERT IGNORE INTO user_groups (user_id, group_id, is_admin) VALUES
 (6, 1, 1)
 ;
 
+CREATE TABLE IF NOT EXISTS user_checks (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  check_date DATE DEFAULT NULL,
+  check_in TIME DEFAULT NULL,
+  check_out TIME DEFAULT NULL,
+  PRIMARY KEY (id),
+  INDEX(user_id),
+  INDEX(check_date),
+  INDEX(check_in),
+  INDEX(check_out)
+)
+;
+

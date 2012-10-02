@@ -18,3 +18,12 @@ input[type="checkbox"] {
 #container {
     margin-top: 60px;
 }
+.user-row.checked-in .btn-user-check-in, .user-row .btn-user-check-out {
+    display: none;
+}
+.user-row.checked-in .btn-user-check-out {
+    display: inline-block;
+}
+.user-row.checked-out .btn-user-check-in, .user-row.checked-out .btn-user-check-out {
+    display: none;
+}

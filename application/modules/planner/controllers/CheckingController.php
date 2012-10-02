@@ -1,10 +1,11 @@
 <?php
 
-class Planner_IndexController extends My_Controller_Action
+class Planner_CheckingController extends My_Controller_Action
 {
 
     public $ajaxable = array(
-        'index' => array('html'),
+        'index'      => array('html'),
+        'user-check' => array('json'),
     );
 
     protected $_modelUser;
@@ -27,7 +28,20 @@ class Planner_IndexController extends My_Controller_Action
 
     public function indexAction()
     {
-        $this->_forward('index', 'checking', null);
+        $date = new DateTime();
+        $users = $this->_modelUser->getAllUsers($date);
+        $this->view->users = $users;
+        $this->view->date = $date->format('d.m.Y');
+    }
+
+    public function userCheckAction()
+    {
+        $user = $this->_modelUser->userCheck($this->_getParam('user'), $check = $this->_getParam('check'));
+        if ($user) {
+            $this->_response(1, '', $user);
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
     }
 
 }

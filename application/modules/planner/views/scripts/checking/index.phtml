@@ -1,0 +1,52 @@
+<?php if (empty($this->users)): ?>
+Error! No users.
+<?php else: ?>
+<?php $this->headScript()->appendFile('/js/checking.js'); ?>
+
+<div class="span8">
+    <table class="table table-bordered checking-table">
+        <thead>
+        <tr>
+            <th>Naam</th>
+            <th>Check IN/OUT</th>
+            <th>Datum</th>
+            <th>Check IN time</th>
+            <th>Check OUT time</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php foreach($this->users as $user): ?>
+            <?php
+            $additionalClass = '';
+            if (! empty($user['check_out'])) {
+                $additionalClass = 'checked-out success';
+            } elseif (! empty($user['check_in'])) {
+                $additionalClass = 'checked-in success';
+            }
+            ?>
+        <tr class="user-row user-id-<?=$user['id']?> <?=$additionalClass?>">
+            <td>
+                <?=$user['full_name']?>
+            </td>
+            <td style="text-align: center;">
+                <?php if ($this->me['id'] == $user['id']): ?>
+                <button class="btn btn-mini btn-success btn-user-check-in" data-user-id="<?=$user['id']?>">check IN</button>
+                <button class="btn btn-mini btn-success btn-user-check-out" data-user-id="<?=$user['id']?>">check OUT</button>
+                <?php endif; ?>
+            </td>
+            <td>
+                <?=$this->date?>
+            </td>
+            <td class="user-check-in">
+                <?=@$user['check_in']?>
+            </td>
+            <td class="user-check-out">
+                <?=@$user['check_out']?>
+            </td>
+        </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<?php endif; ?>
