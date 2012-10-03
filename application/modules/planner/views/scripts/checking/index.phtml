@@ -29,7 +29,7 @@ Error! No users.
                 <?php echo $user['full_name']?>
             </td>
             <td style="text-align: center;">
-                <?php if ($this->me['id'] == $user['id']): ?>
+                <?php if ($this->me['id'] == $user['id'] || $this->me['role'] >= Application_Model_Auth::ROLE_ADMIN): ?>
                 <button class="btn btn-mini btn-success btn-user-check-in" data-user-id="<?php echo $user['id']?>">check IN</button>
                 <button class="btn btn-mini btn-success btn-user-check-out" data-user-id="<?php echo $user['id']?>">check OUT</button>
                 <?php endif; ?>
