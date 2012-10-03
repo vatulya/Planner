@@ -31,7 +31,7 @@ $acl->addResource(new Zend_Acl_Resource('planner.alert'));
 
 $acl->deny(null, null, null);
 
-$acl->allow($guest, 'planner');
+//$acl->allow($guest, 'planner');
 $acl->allow($guest, 'planner.auth');
 
 $acl->allow($user, 'planner.checking');
