@@ -1,10 +1,11 @@
-<?php if (empty($this->users)): ?>
-<h2>No planning users</h2>
+<?php if (empty($this->groups)): ?>
+<h2>No groups and users</h2>
 <?php else: ?>
 
-<?php foreach ($this->users as $user): ?>
-    <?php $this->user = $user; ?>
-    <?php echo $this->render('_blocks/user_row.phtml'); ?>
+
+<?php foreach ($this->groups as $group): ?>
+    <?php $this->group = $group; ?>
+    <?php echo $this->render('_blocks/group_row.phtml'); ?>
     <?php endforeach; ?>
 
 <?php endif; ?>

@@ -1,0 +1,41 @@
+<?php if ( ! empty($this->user)): ?>
+<?php $user = $this->user; ?>
+<?php
+   /* $userRowClasses = '';
+    $userRowClasses .= 'user-year-' . $user['year']    . ' ';
+    $userRowClasses .= 'user-week-' . $user['week']    . ' ';
+    $userRowClasses .= 'user-row-'  . $user['user_id'] . ' ';  */
+    ?>
+<tr class="user-row add-user-row <?php echo $userRowClasses; ?> <?php if ($user['hidden']): ?>user-row-hidden<?php endif; ?>" data-user-id="<?php echo $user['user_id']; ?>">
+    <td class="user-title" title="<?php echo $user['user']; ?>">
+        <?php echo $user['full_name']; ?>
+    </td>
+    <td class="week-user-day" data-day='monday'>
+        <?php $this->checkbox = $user['week_plan']['monday']; ?>
+        <?php echo $this->render('_blocks/user_status_field.phtml'); ?>
+    </td>
+    <td class="week-user-day" data-day='tuesday'>
+        <?php $this->checkbox = $user['week_plan']['tuesday']; ?>
+        <?php echo $this->render('_blocks/user_status_field.phtml'); ?>
+    </td>
+    <td class="week-user-day" data-day='wednesday'>
+        <?php $this->checkbox = $user['week_plan']['wednesday']; ?>
+        <?php echo $this->render('_blocks/user_status_field.phtml'); ?>
+    </td>
+    <td class="week-user-day" data-day='thursday'>
+        <?php $this->checkbox = $user['week_plan']['thursday']; ?>
+        <?php echo $this->render('_blocks/user_status_field.phtml'); ?>
+    </td>
+    <td class="week-user-day" data-day='friday'>
+        <?php $this->checkbox = $user['week_plan']['friday']; ?>
+        <?php echo $this->render('_blocks/user_status_field.phtml'); ?>
+    </td>
+</tr>
+<?php else: ?>
+<?php /*** this is error! ***/ ?>
+<tr>
+    <td colspan="7" class="user-not-found">
+        Task not found
+    </td>
+</tr>
+<?php endif; ?>

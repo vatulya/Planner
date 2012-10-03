@@ -13,4 +13,13 @@ class Application_Model_Db_User_Groups extends Application_Model_Db_Abstract
         $result = $this->_db->fetchCol($select);
         return $result;
     }
+
+    public function getAllUsersId($groupId)
+    {
+        $select = $this->_db->select(array('ug.user_id'))
+            ->from(array('ug' => self::TABLE_NAME))
+            ->where('ug.group_id = ?', $groupId);
+        $users = $this->_db->fetchCol($select);
+        return $users;
+    }
 }

@@ -4,15 +4,18 @@ class Application_Model_Group extends Application_Model_Abstract
 {
 
     protected $_modelDb;
+    protected $_modelDbUserGroups;
 
     public function __construct()
     {
         $this->_modelDb = new Application_Model_Db_Groups();
+        $this->_modelDbUserGroups = new Application_Model_Db_User_Groups();
     }
 
-    public function getAllGroups()
+    public static function getAllGroups()
     {
-        $groups = $this->_modelDb->getAllGroups();
+        $modelDb = new Application_Model_Db_Groups();
+        $groups = $modelDb->getAllGroups();
         return $groups;
     }
 
@@ -29,4 +32,13 @@ class Application_Model_Group extends Application_Model_Abstract
         return $admin;
     }
 
+    public function getAllUsers($groupId)
+    {
+        $users = $this->_modelDbUserGroups->getAllUsersId($groupId);
+        foreach($users as $key=>$userId) {
+            $user = new Application_Model_User();
+            $users[$key] = $user->getUserById($userId);
+        }
+        return $users;
+    }
 }
