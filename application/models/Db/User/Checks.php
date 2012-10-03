@@ -20,7 +20,7 @@ class Application_Model_Db_User_Checks extends Application_Model_Db_Abstract
             ->where('uc.check_date = ?', $date->format('Y-m-d'));
         $id = $this->_db->fetchOne($select);
         if ($id) {
-            $this->_db->update(self::TABLE_NAME, $fields, array('id' => $id));
+            $this->_db->update(self::TABLE_NAME, $fields, array('id = ?' => $id));
         } else {
             $this->_db->insert(self::TABLE_NAME, $fields);
         }

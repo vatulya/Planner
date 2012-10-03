@@ -24,24 +24,24 @@ Error! No users.
                 $additionalClass = 'checked-in success';
             }
             ?>
-        <tr class="user-row user-id-<?=$user['id']?> <?=$additionalClass?>">
+        <tr class="user-row user-id-<?php echo $user['id']?> <?php echo $additionalClass?>">
             <td>
-                <?=$user['full_name']?>
+                <?php echo $user['full_name']?>
             </td>
             <td style="text-align: center;">
                 <?php if ($this->me['id'] == $user['id']): ?>
-                <button class="btn btn-mini btn-success btn-user-check-in" data-user-id="<?=$user['id']?>">check IN</button>
-                <button class="btn btn-mini btn-success btn-user-check-out" data-user-id="<?=$user['id']?>">check OUT</button>
+                <button class="btn btn-mini btn-success btn-user-check-in" data-user-id="<?php echo $user['id']?>">check IN</button>
+                <button class="btn btn-mini btn-success btn-user-check-out" data-user-id="<?php echo $user['id']?>">check OUT</button>
                 <?php endif; ?>
             </td>
             <td>
-                <?=$this->date?>
+                <?php echo $this->date?>
             </td>
             <td class="user-check-in">
-                <?=@$user['check_in']?>
+                <?php echo @$user['check_in']?>
             </td>
             <td class="user-check-out">
-                <?=@$user['check_out']?>
+                <?php echo @$user['check_out']?>
             </td>
         </tr>
             <?php endforeach; ?>
