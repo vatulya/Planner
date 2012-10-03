@@ -21,7 +21,7 @@ class Planner_PlanningController extends My_Controller_Action
     public function init()
     {
         parent::init();
-        $this->_modelUser    = new Application_Model_User();
+        $this->_modelGroup    = new Application_Model_Group();
     //    $this->_me           = $this->_helper->CurrentUser();
     //    $this->view->me      = $this->_helper->CurrentUser();
     //    $this->_setParam('userId', $this->_me['id']);
@@ -41,10 +41,10 @@ class Planner_PlanningController extends My_Controller_Action
        // $users = array($this->_me);
         $year = date('Y');
         $week = date('W');
-        $users = $this->_modelUser->getAllUsers();
-        //   var_dump($users);
+        $groups = $this->_modelGroup->getAllGroups();
 
-        foreach ($users as $key => $user) {
+        foreach ($groups as $key => $group) {
+            $users = $this->_modelUser->getAllUsersByGroup();
             $user = $this->_getUserData($user, $year, $week);
             $users[$key] = $user;
         }
