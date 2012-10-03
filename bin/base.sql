@@ -34,11 +34,11 @@ INSERT IGNORE INTO users SET
 
 -- THIS IS TEMPORARY DEV DATA
 INSERT IGNORE INTO users (id, email, password, role, created, full_name) VALUES
-(2, 'test1@gmail.com', SHA1('test1'), 20, NOW(), 'Test User 1'),
-(3, 'test2@gmail.com', SHA1('test2'), 20, NOW(), 'Test User 2'),
-(4, 'test3@gmail.com', SHA1('test3'), 20, NOW(), 'Test User 3'),
-(5, 'test4@gmail.com', SHA1('test4'), 20, NOW(), 'Test User 4'),
-(6, 'test5@gmail.com', SHA1('test5'), 50, NOW(), 'Test User 5')
+(2, 'test_1@gmail.com', SHA1('test_1'), 20, NOW(), 'Test User 1'),
+(3, 'test_2@gmail.com', SHA1('test_2'), 20, NOW(), 'Test User 2'),
+(4, 'test_3@gmail.com', SHA1('test_3'), 20, NOW(), 'Test User 3'),
+(5, 'test_4@gmail.com', SHA1('test_4'), 20, NOW(), 'Test User 4'),
+(6, 'test_5@gmail.com', SHA1('test_5'), 50, NOW(), 'Test User 5')
 ;
 
 CREATE TABLE IF NOT EXISTS groups (

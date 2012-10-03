@@ -5,16 +5,16 @@ $acl = new Zend_Acl();
 // Roles
 
 $guest      = new Zend_Acl_Role('GUEST');
-$user       = new Zend_Acl_Role('USER', $guest);
-$groupAdmin = new Zend_Acl_Role('GROUP_ADMIN', $user);
-$admin      = new Zend_Acl_Role('ADMIN', $groupAdmin);
-$superAdmin = new Zend_Acl_Role('SUPER_ADMIN', $admin);
+$user       = new Zend_Acl_Role('USER');
+$groupAdmin = new Zend_Acl_Role('GROUP_ADMIN');
+$admin      = new Zend_Acl_Role('ADMIN');
+$superAdmin = new Zend_Acl_Role('SUPER_ADMIN');
 
 $acl->addRole($guest);
-$acl->addRole($user);
-$acl->addRole($groupAdmin);
-$acl->addRole($admin);
-$acl->addRole($superAdmin);
+$acl->addRole($user, $guest);
+$acl->addRole($groupAdmin, $user);
+$acl->addRole($admin, $groupAdmin);
+$acl->addRole($superAdmin, $admin);
 
 $acl->addResource(new Zend_Acl_Resource('planner'));
 $acl->addResource(new Zend_Acl_Resource('planner.auth'));

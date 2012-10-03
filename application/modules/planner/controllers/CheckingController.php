@@ -12,6 +12,7 @@ class Planner_CheckingController extends My_Controller_Action
 
     public function init()
     {
+        $this->view->me = $this->_me = $this->_helper->CurrentUser();
         $this->_modelUser = new Application_Model_User();
         $group = $this->_getParam('group');
         $allowed = false;
