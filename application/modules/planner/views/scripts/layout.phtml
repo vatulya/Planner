@@ -25,42 +25,42 @@
             <a class="brand" href="<?php echo $this->url(array(), null, true) ?>">Futurumshop: Planner</a>
             <ul class="nav">
                 <li <?php if ($this->activeMenu == 'checking'): ?>class="active"<?php endif; ?>>
-                    <a href="<?php echo $this->url(array('action' => 'checking'), null, true) ?>">
+                    <a href="<?php echo $this->url(array('controller' => 'checking'), null, true) ?>">
                         Check IN/OUT
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'planning'): ?>class="active"<?php endif; ?>>
-                    <a href="<?php echo $this->url(array('action' => 'planning'), 'planner', true) ?>">
+                    <a href="<?php echo $this->url(array('controller' => 'planning'), 'planner', true) ?>">
                         Planning
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'requests'): ?>class="active"<?php endif; ?>>
-                    <a href="<?php echo $this->url(array('action' => 'requests'), 'planner', true) ?>">
+                    <a href="<?php echo $this->url(array('controller' => 'requests'), 'planner', true) ?>">
                         Vrij aanvraag
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'open-requests'): ?>class="active"<?php endif; ?>>
-                    <a href="<?php echo $this->url(array('action' => 'open-requests'), 'planner', true) ?>">
+                    <a href="<?php echo $this->url(array('controller' => 'open-requests'), 'planner', true) ?>">
                         Accordering
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'group-settings'): ?>class="active"<?php endif; ?>>
-                    <a href="<?php echo $this->url(array('action' => 'group-settings'), 'planner', true) ?>">
+                    <a href="<?php echo $this->url(array('controller' => 'group-settings'), 'planner', true) ?>">
                         Settings groepen
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'user-settings'): ?>class="active"<?php endif; ?>>
-                    <a href="<?php echo $this->url(array('action' => 'user-settings'), 'planner', true) ?>">
+                    <a href="<?php echo $this->url(array('controller' => 'user-settings'), 'planner', true) ?>">
                         Settings users
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'overview'): ?>class="active"<?php endif; ?>>
-                    <a href="<?php echo $this->url(array('action' => 'overview'), 'planner', true) ?>">
+                    <a href="<?php echo $this->url(array('controller' => 'overview'), 'planner', true) ?>">
                         Overzicht
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'alert'): ?>class="active"<?php endif; ?>>
-                    <a href="<?php echo $this->url(array('action' => 'alert'), 'planner', true) ?>">
+                    <a href="<?php echo $this->url(array('controller' => 'alert'), 'planner', true) ?>">
                         Alerts
                     </a>
                 </li>
