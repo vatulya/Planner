@@ -65,7 +65,11 @@
                     </a>
                 </li>
                 <li>
-                    <a href="<?php echo $this->url(array(), 'logout', true) ?>">
+                    <?php
+                    $title = Application_Model_Auth::getRole(true) . ': ' . $this->me['full_name'] . '
+                    (' . $this->me['email'] . ')';
+                    ?>
+                    <a id="logout-link" href="<?php echo $this->url(array(), 'logout', true) ?>" title="<?php echo $title; ?>">
                         Login/logout
                     </a>
                 </li>

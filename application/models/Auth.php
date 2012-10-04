@@ -41,14 +41,25 @@ class Application_Model_Auth extends Application_Model_Abstract
         return null;
     }
 
-    static public function getRole()
+    static public function getRole($asString = false)
     {
+        $stringAliases = array(
+            self::ROLE_GUEST       => 'GUEST',
+            self::ROLE_USER        => 'USER',
+            self::ROLE_GROUP_ADMIN => 'GROUP_ADMIN',
+            self::ROLE_ADMIN       => 'ADMIN',
+            self::ROLE_SUPER_ADMIN => 'SUPER_ADMIN',
+        );
         $auth = Zend_Auth::getInstance();
+        $role = self::ROLE_GUEST;
         if ($auth->hasIdentity()) {
             $user = $auth->getIdentity();
-            return $user['role'];
+            $role = $user['role'];
         }
-        return self::ROLE_GUEST;
+        if ($asString) {
+            $role = $stringAliases[$role];
+        }
+        return $role;
     }
 
 }

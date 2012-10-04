@@ -11,9 +11,9 @@ $admin      = new Zend_Acl_Role('ADMIN');
 $superAdmin = new Zend_Acl_Role('SUPER_ADMIN');
 
 $acl->addRole($guest);
-$acl->addRole($user, $guest);
+$acl->addRole($user      , $guest);
 $acl->addRole($groupAdmin, $user);
-$acl->addRole($admin, $groupAdmin);
+$acl->addRole($admin     , $groupAdmin);
 $acl->addRole($superAdmin, $admin);
 
 $acl->addResource(new Zend_Acl_Resource('planner'));
