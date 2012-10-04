@@ -32,6 +32,7 @@
                 data: {
                     format: 'json',
                     user: el.data('user-id'),
+                    group: el.data('group-id'),
                     check: check
                 },
                 success: function(data) {

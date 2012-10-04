@@ -8,12 +8,21 @@ class Planner_CheckingController extends My_Controller_Action
         'user-check' => array('json'),
     );
 
+    /**
+     * @var Application_Model_User
+     */
     protected $_modelUser;
+
+    /**
+     * @var Application_Model_Group
+     */
+    protected $_modelGroup;
 
     public function init()
     {
         $this->view->me = $this->_me = $this->_helper->CurrentUser();
-        $this->_modelUser = new Application_Model_User();
+        $this->_modelUser  = new Application_Model_User();
+        $this->_modelGroup = new Application_Model_Group();
         $group = $this->_getParam('group');
         $allowed = false;
         if ($this->_me['role'] >= Application_Model_Auth::ROLE_ADMIN) {
@@ -31,7 +40,13 @@ class Planner_CheckingController extends My_Controller_Action
     {
         $date = new DateTime();
         $users = $this->_modelUser->getAllUsers($date);
+        $groups = $this->_modelGroup->getAllGroups();
+        foreach ($groups as $key => $group) {
+            $groupUsers = $this->_modelUser->getAllUsersByGroup($group['id'], $date);
+            $groups[$key]['users'] = $groupUsers;
+        }
         $this->view->users = $users;
+        $this->view->groups = $groups;
         $this->view->date = $date->format('d.m.Y');
     }
 

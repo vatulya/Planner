@@ -3,50 +3,54 @@ Error! No users.
 <?php else: ?>
 <?php $this->headScript()->appendFile('/js/checking.js'); ?>
 
-<div class="span8">
-    <table class="table table-bordered checking-table">
+<div class="span11">
+    <table class="table table-bordered table-striped checking-table">
         <thead>
         <tr>
-            <th>Naam</th>
-            <th>Check IN/OUT</th>
-            <th>Datum</th>
-            <th>Check IN time</th>
-            <th>Check OUT time</th>
+            <th class="span3">Naam</th>
+            <th class="span2">Check IN/OUT</th>
+            <th class="span2">Datum</th>
+            <th class="span2">Check IN time</th>
+            <th class="span2">Check OUT time</th>
         </tr>
         </thead>
         <tbody>
+            <?php if ( ! empty($group['users'])): ?>
             <?php foreach($this->users as $user): ?>
-            <?php
-            $additionalClass = '';
-            if (! empty($user['check_out'])) {
-                $additionalClass = 'checked-out success';
-            } elseif (! empty($user['check_in'])) {
-                $additionalClass = 'checked-in success';
-            }
-            ?>
-        <tr class="user-row user-id-<?php echo $user['id']?> <?php echo $additionalClass?>">
-            <td>
-                <?php echo $user['full_name']?>
-            </td>
-            <td style="text-align: center;">
-                <?php if ($this->me['id'] == $user['id'] || $this->me['role'] >= Application_Model_Auth::ROLE_ADMIN): ?>
-                <button class="btn btn-mini btn-success btn-user-check-in" data-user-id="<?php echo $user['id']?>">check IN</button>
-                <button class="btn btn-mini btn-success btn-user-check-out" data-user-id="<?php echo $user['id']?>">check OUT</button>
-                <?php endif; ?>
-            </td>
-            <td>
-                <?php echo $this->date?>
-            </td>
-            <td class="user-check-in">
-                <?php echo @$user['check_in']?>
-            </td>
-            <td class="user-check-out">
-                <?php echo @$user['check_out']?>
-            </td>
-        </tr>
+            <?php $this->user = $user; ?>
+            <?php echo $this->render('checking/_blocks/user_row.phtml'); ?>
             <?php endforeach; ?>
+            <?php else: ?>
+            <td colspan="5">No users in this group</td>
+            <?php endif; ?>
         </tbody>
     </table>
+
+    <?php foreach($this->groups as $group): ?>
+    <table class="table table-bordered table-striped checking-table">
+        <thead>
+        <tr>
+            <th class="span3"><?php echo $group['group_name']; ?></th>
+            <th class="span2">Check IN/OUT</th>
+            <th class="span2">Datum</th>
+            <th class="span2">Check IN time</th>
+            <th class="span2">Check OUT time</th>
+        </tr>
+        </thead>
+        <tbody>
+            <?php if ( ! empty($group['users'])): ?>
+            <?php foreach($group['users'] as $user): ?>
+            <?php $this->user  = $user; ?>
+            <?php $this->group = $group; ?>
+            <?php echo $this->render('checking/_blocks/user_row.phtml'); ?>
+            <?php endforeach; ?>
+            <?php else: ?>
+            <td colspan="5">No users in this group</td>
+            <?php endif; ?>
+        </tbody>
+    </table>
+    <?php endforeach; ?>
+
 </div>
 
 <?php endif; ?>

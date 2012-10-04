@@ -6,20 +6,11 @@ class Application_Model_Db_User_Groups extends Application_Model_Db_Abstract
 
     public function getUserGroupsAdmin($userId)
     {
-        $select = $this->_db->select(array('ug.group_id'))
-            ->from(array('ug' => self::TABLE_NAME))
+        $select = $this->_db->select()
+            ->from(array('ug' => self::TABLE_NAME), 'ug.group_id')
             ->where('ug.user_id = ?', $userId)
             ->where('ug.is_admin = ?', 1);
         $result = $this->_db->fetchCol($select);
         return $result;
-    }
-
-    public function getAllUsersId($groupId)
-    {
-        $select = $this->_db->select(array('ug.user_id'))
-            ->from(array('ug' => self::TABLE_NAME))
-            ->where('ug.group_id = ?', $groupId);
-        $users = $this->_db->fetchCol($select);
-        return $users;
     }
 }

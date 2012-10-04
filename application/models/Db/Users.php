@@ -29,7 +29,19 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
     {
         $select = $this->_db->select()
             ->from(array('u' => self::TABLE_NAME))
-            ->order(array('full_name ASC'));
+            ->order(array('u.full_name ASC'));
+        $select = $this->_addCheckinByDate($select, $checkingDate);
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
+    public function getAllUsersByGroup($groupId, DateTime $checkingDate = null)
+    {
+        $select = $this->_db->select(array())
+            ->from(array('ug' => Application_Model_Db_User_Groups::TABLE_NAME))
+            ->join(array('u' => self::TABLE_NAME), 'ug.user_id = u.id', array('*'))
+            ->where('ug.group_id = ?', $groupId)
+            ->order(array('u.full_name ASC'));
         $select = $this->_addCheckinByDate($select, $checkingDate);
         $result = $this->_db->fetchAll($select);
         return $result;

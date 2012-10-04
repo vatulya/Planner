@@ -23,6 +23,7 @@
             <!-- TOP PANEL -->
 
             <a class="brand" href="<?php echo $this->url(array(), null, true) ?>">Futurumshop: Planner</a>
+            <?php if ($this->me['role'] >= Application_Model_Auth::ROLE_USER): ?>
             <ul class="nav">
                 <li <?php if ($this->activeMenu == 'checking'): ?>class="active"<?php endif; ?>>
                     <a href="<?php echo $this->url(array('controller' => 'checking'), null, true) ?>">
@@ -39,11 +40,14 @@
                         Vrij aanvraag
                     </a>
                 </li>
+                <?php if ($this->me['role'] >= Application_Model_Auth::ROLE_GROUP_ADMIN): ?>
                 <li <?php if ($this->activeMenu == 'open-requests'): ?>class="active"<?php endif; ?>>
                     <a href="<?php echo $this->url(array('controller' => 'open-requests'), 'planner', true) ?>">
                         Accordering
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if ($this->me['role'] >= Application_Model_Auth::ROLE_ADMIN): ?>
                 <li <?php if ($this->activeMenu == 'group-settings'): ?>class="active"<?php endif; ?>>
                     <a href="<?php echo $this->url(array('controller' => 'group-settings'), 'planner', true) ?>">
                         Settings groepen
@@ -64,16 +68,19 @@
                         Alerts
                     </a>
                 </li>
+                <?php endif; ?>
+                <li class="divider-vertical"></li>
                 <li>
                     <?php
                     $title = Application_Model_Auth::getRole(true) . ': ' . $this->me['full_name'] . '
                     (' . $this->me['email'] . ')';
                     ?>
                     <a id="logout-link" href="<?php echo $this->url(array(), 'logout', true) ?>" title="<?php echo $title; ?>">
-                        Login/logout
+                        Logout
                     </a>
                 </li>
             </ul>
+            <?php endif; ?>
 
             <!-- TOP PANEL -->
         </div>

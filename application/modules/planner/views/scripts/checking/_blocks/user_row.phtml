@@ -1,0 +1,48 @@
+<?php
+/**
+ * REQUIRED FOR USE THIS TEMPLATE:
+ * $this->user array $user data
+ * $this->me   array $me   data
+ *
+ * Optional:
+ * $this->group array $group data
+ */
+$user = $this->user;
+?>
+
+
+<?php
+$additionalClass = '';
+if (! empty($user['check_out'])) {
+    $additionalClass = 'checked-out success';
+} elseif (! empty($user['check_in'])) {
+    $additionalClass = 'checked-in success';
+}
+$groupId = ( ! empty($this->group['id']) ? $this->group['id'] : '');
+?>
+<tr class="user-row user-id-<?php echo $user['id']?> <?php echo $additionalClass?>">
+    <td>
+        <?php echo $user['full_name']?>
+    </td>
+    <td style="text-align: center;">
+        <?php
+            if (
+                $this->me['id'] == $user['id'] // this is me
+                || $this->me['role'] >= Application_Model_Auth::ROLE_ADMIN // i am admin
+                || ( ! empty($groupId) && in_array($groupId, $this->me['admin_groups'])) // i am group admin
+            ):
+        ?>
+        <button class="btn btn-mini btn-success btn-user-check-in" data-user-id="<?php echo $user['id']?>" data-group-id="<?php echo $groupId; ?>">check IN</button>
+        <button class="btn btn-mini btn-success btn-user-check-out" data-user-id="<?php echo $user['id']?>" data-group-id="<?php echo $groupId; ?>">check OUT</button>
+        <?php endif; ?>
+    </td>
+    <td>
+        <?php echo $this->date?>
+    </td>
+    <td class="user-check-in">
+        <?php echo @$user['check_in']?>
+    </td>
+    <td class="user-check-out">
+        <?php echo @$user['check_out']?>
+    </td>
+</tr>

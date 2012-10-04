@@ -53,6 +53,16 @@ class Application_Model_User extends Application_Model_Abstract
         return $users;
     }
 
+    public function getAllUsersByGroup($groupId, DateTime $checkingDate = null)
+    {
+        $users = $this->_modelDb->getAllUsersByGroup($groupId, $checkingDate);
+        foreach ($users as $key => $user) {
+            $user = $this->_filterHiddenFields($user);
+            $users[$key] = $user;
+        }
+        return $users;
+    }
+
     public function userCheck($userId, $check)
     {
         $now = new DateTime();
