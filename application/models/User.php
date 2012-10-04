@@ -37,7 +37,7 @@ class Application_Model_User extends Application_Model_Abstract
     public function getUserById($id, $filterFields = true)
     {
         $user = $this->_modelDb->getUserById($id);
-        if ($filterFields) {
+        if ($filterFields && is_array($user)) {
             $user = $this->_filterHiddenFields($user);
         }
         return $user;
@@ -79,6 +79,12 @@ class Application_Model_User extends Application_Model_Abstract
         }
         return $user;
     }
+
+    public function getUserWeekPlanByGroup($user, $groupId,  $year, $week)
+    {
+
+    }
+
 
 
 

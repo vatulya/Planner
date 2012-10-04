@@ -13,11 +13,13 @@ class Planner_PlanningController extends My_Controller_Action
     );
 
     protected $_modelGroup;
+    protected $_modelUser;
 
     public function init()
     {
         parent::init();
-   //     $this->_modelGroup    = new Application_Model_Group();
+        $this->_modelGroup    = new Application_Model_Group();
+        $this->_modelUser     = new Application_Model_User();
     //    $this->_me           = $this->_helper->CurrentUser();
     //    $this->view->me      = $this->_helper->CurrentUser();
     //    $this->_setParam('userId', $this->_me['id']);
@@ -37,16 +39,15 @@ class Planner_PlanningController extends My_Controller_Action
        // $users = array($this->_me);
         $year = date('Y');
         $week = date('W');
-        $groups = Application_Model_Group::getAllGroups();
+        $groups = $this->_modelGroup->getAllGroups();
 
         foreach ($groups as $key => $group) {
             $groupId = $group['id'];
             $groups[$key] = $group;
-            $group = new Application_Model_Group();
-            $groups[$key]['users'] = $group->getAllUsers($groupId);
+            $groups[$key]['users'] = $this->_modelUser->getAllUsersByGroup($groupId);
             if (!empty($groups[$key]['users'])) {
                 foreach ($groups[$key]['users'] as $keyUser => $user) {
-                    $user = $this->_getUserData($user, $year, $week);
+                    $user = $this->_getUserData($user, $groupId, $year, $week);
                     $groups[$key]['users'][$keyUser] = $user;
                 }
             }
@@ -56,8 +57,10 @@ class Planner_PlanningController extends My_Controller_Action
         $this->view->groups = $groups;
     }
 
-    protected function _getUserData($user, $year, $week)
+    protected function _getUserData($user, $groupId, $year, $week)
     {
+        //$user['history'] = $this->_modelUser->_getHistory($user, $groupId,$year, $week);
+        $user['week_plan'] = $this->_modelUser->getUserWeekPlanByGroup($user, $groupId,  $year, $week);
         $user['week_plan']['monday'] = "info";
         $user['week_plan']['tuesday'] = "info";
         $user['week_plan']['wednesday'] = "info";

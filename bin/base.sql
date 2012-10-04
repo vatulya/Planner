@@ -85,3 +85,17 @@ CREATE TABLE IF NOT EXISTS user_checks (
 )
 ;
 
+CREATE TABLE user_day_work_plan (
+  id int(10) NOT NULL AUTO_INCREMENT,
+  user_id int(4) NOT NULL,
+  date date NOT NULL,
+  status1 int(2) NOT NULL  DEFAULT 0,
+  status2 int(2) DEFAULT NULL,
+  time_start time NOT NULL,
+  time_end time NOT NULL,
+  time_exclude time DEFAULT NULL,
+  group_id int(4) DEFAULT NULL,
+   PRIMARY KEY (id),
+   UNIQUE KEY (user_id, group_id, date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+;

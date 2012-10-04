@@ -1,0 +1,60 @@
+<div
+        class="row user_row width-full"
+        id="<?php echo $this->group['id']; ?>"
+        data-user-id="<?php echo $this->group['id']; ?>"
+        >
+    <div class="user_row_container">
+        <span class="span4 block-history">
+            <a href="<?php echo $this->url(array('action' => 'get-more-history'), 'planner', true); ?>" class="no-action show-more-history">History</a>
+                <div class="history-container-scrollable">
+                    <div class="history-container">
+                        <?php //echo $this->render('_blocks/history.phtml'); ?>
+                    </div>
+                </div>
+        </span>
+
+        <?php $this->users = $this->group['users']; ?>
+        <span
+                    class="span10 block-week-details week-details main-data-container user-id-<?php echo $this->group['id']; ?> year-<?php echo $this->weekTasks['year']; ?> week-<?php echo $this->weekTasks['week']; ?>"
+                    data-year="<?php echo $this->weekTasks['year']; ?>"
+                    data-week="<?php echo $this->weekTasks['week']; ?>"
+                    data-userId="<?php echo $this->group['id']; ?>"
+                    >
+        <br />
+
+        <div class="week-details-container">
+            <table class="table table-bordered table-condensed table-striped week-table">
+
+                <thead>
+
+                <?php echo $this->render('planning/_blocks/week_users_header.phtml'); ?>
+
+                <tr class="week-table-header">
+                    <th class="week-table-header-task">Taak/Dag</th>
+                    <th class="week-table-header-monday week-table-header-day">Maandag</th>
+                    <th class="week-table-header-tuesday week-table-header-day">Dinsdag</th>
+                    <th class="week-table-header-wednesday week-table-header-day">Woensdag</th>
+                    <th class="week-table-header-thursday week-table-header-day">Donderdag</th>
+                    <th class="week-table-header-friday week-table-header-day">Vrijdag</th>
+                    <th class="week-table-header-saturday week-table-header-day">Zaterdag</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($this->users)): ?>
+                <td colspan="7" class="user-not-found">
+                    No users in this group
+                </td>
+                    <?php else: ?>
+                    <?php foreach ($this->users as $user): ?>
+                        <?php $this->user = $user; ?>
+                        <?php $this->task   = null; ?>
+                        <?php echo $this->render('planning/_blocks/week_user_plan.phtml'); ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+    </span>
+    </div>
+</div>
