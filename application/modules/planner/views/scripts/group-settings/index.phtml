@@ -1,0 +1,110 @@
+<div class="span12">
+
+    <table class="table table-bordered group-settings-table">
+        <thead>
+        <tr>
+            <th class="span3">
+                Settings general
+            </th>
+            <th class="span2">
+                Holydaynumbers
+            </th>
+            <th class="span3">
+                Exception period/numbers
+            </th>
+            <th class="span4">
+                Alert when more then maximum
+                <a href="#" class="show-tooltip no-action" data-original-title="by illness or manual overrule"><i class="icon-info-sign"></i></a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                <div class="input-append">
+                    <form method="POST" class="form-mini">
+                        <input type="text" class="span1 rule-int btn-mini" value="5">
+                        <button class="btn btn-success btn-no-text" type="button"><i class="icon-ok icon-white"></i></button>
+                    </form>
+                </div>
+            </td>
+            <td>
+                <button class="btn btn-mini btn-success create-group-exception"><i class="icon-plus-sign icon-white"></i></button>
+                <?php if ( ! empty($this->generalSettings['exceptions'])): ?>
+                <?php foreach ($this->generalSettings['exceptions'] as $exception): ?>
+
+                <?php endforeach; ?>
+                <?php else: ?>
+                no exceptions
+                <?php endif; ?>
+            </td>
+            <td>
+                <div class="input-append">
+                    <form method="POST" class="form-mini">
+                        <input type="text" class="span1 rule-int btn-mini" value="5">
+                        <button class="btn btn-success btn-no-text" type="button"><i class="icon-ok icon-white"></i></button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<div class="span8">
+
+    <table class="table table-bordered group-settings-table">
+        <thead>
+        <tr>
+            <th class="span3">
+                <button class="btn btn-mini btn-success create-group"><i class="icon-plus-sign icon-white"></i></button>
+                Group
+            </th>
+            <th class="span2">
+                Holydaynumbers
+            </th>
+            <th class="span3">
+                Exception period/numbers
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if ( ! empty($this->groups)): ?>
+            <?php foreach ($this->groups as $group): ?>
+                <tr>
+                    <td style="background-color: #<?php echo $group['color']; ?>">
+                        <?php echo $group['group_name']; ?>
+                    </td>
+                    <td>
+                        <div class="input-append">
+                            <form method="POST" class="form-mini">
+                                <input type="text" class="span1 rule-int btn-mini" value="5">
+                                <button class="btn btn-success btn-no-text" type="button"><i class="icon-ok icon-white"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-mini btn-success create-group-exception"><i class="icon-plus-sign icon-white"></i></button>
+                        <?php if ( ! empty($group['exceptions'])): ?>
+                            <?php foreach ($group['exceptions'] as $exception): ?>
+
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                        no exceptions
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+        <tr>
+            <td colspan="3">No groups</td>
+        </tr>
+        <?php endif; ?>
+        </tbody>
+    </table>
+
+</div>

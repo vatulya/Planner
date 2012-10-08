@@ -69,6 +69,7 @@
 
         $('#container').on('init', function(e) {
             $('#logout-link').tooltip({placement: 'bottom'});
+            $('.show-tooltip').tooltip({placement: 'bottom'});
             $('.no-action')
                 .on('click', document.body, function(e) {e.stopPropagation();})
                 .on('submit', document.body, function(e) {e.stopPropagation();})

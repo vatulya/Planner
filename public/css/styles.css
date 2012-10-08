@@ -11,9 +11,6 @@ input[type="checkbox"] {
 .popover-inner {
     width: auto;
 }
-.checking-table td {
-    padding: 3px;
-}
 /*** Personal styles ***/
 #container {
     margin-top: 60px;
@@ -26,4 +23,32 @@ input[type="checkbox"] {
 }
 .user-row.checked-out .btn-user-check-in, .user-row.checked-out .btn-user-check-out {
     display: none;
+}
+.small-tip {
+    font-size: 10px;
+    color: gray;
+}
+form.form-mini {
+    padding: 0px; margin: 0px;
+}
+.btn-no-text {
+    padding: 6px 14px 7px 14px;
+}
+.checking-table td {
+    padding: 3px;
+}
+.group-settings-table .input-append, .group-settings-table input {
+    margin-bottom: 0px;
+}
+.group-settings-table td {
+    vertical-align: middle;
+    padding: 3px;
+}
+.create-group {
+    position: absolute;
+    margin-left: -40px;
+}
+.create-group-exception {
+    position: absolute;
+    margin-left: 200px;
 }

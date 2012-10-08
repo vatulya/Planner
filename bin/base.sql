@@ -44,6 +44,7 @@ INSERT IGNORE INTO users (id, email, password, role, created, full_name) VALUES
 CREATE TABLE IF NOT EXISTS groups (
   id INT NOT NULL,
   group_name VARCHAR(255) NOT NULL,
+  color VARCHAR (10) NOT NULL DEFAULT 'FFF',
   PRIMARY KEY (id),
   INDEX(group_name)
 )
