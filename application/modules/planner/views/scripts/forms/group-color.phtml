@@ -1,0 +1,9 @@
+<?php
+    $colors = Application_Model_Group::getAllowedColors();
+?>
+<label class="control-label" for="color">Group color:</label>
+<div class="group-color-selector">
+    <?php foreach ($colors as $color): ?>
+        <div class="group-color-variation <?php if ($this->element->color->getValue() == $color): ?>active<?php endif; ?>" style="background-color: #<?php echo $color; ?>;" data-color="<?php echo $color; ?>">#<?php echo $color; ?></div>
+    <?php endforeach; ?>
+</div>

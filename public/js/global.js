@@ -71,8 +71,8 @@
             $('#logout-link').tooltip({placement: 'bottom'});
             $('.show-tooltip').tooltip({placement: 'bottom'});
             $('.no-action')
-                .on('click', document.body, function(e) {e.stopPropagation();})
-                .on('submit', document.body, function(e) {e.stopPropagation();})
+                .on('click', document.body, function(e) {e.preventDefault();})
+                .on('submit', document.body, function(e) {e.preventDefault();})
             ;
             $('.truncate').each(function(i, el) {
                 el = $(el);
@@ -93,6 +93,14 @@
         });
 
         $('#container').trigger('init');
+
+        $(document.body).on('click', '.button-submit', function() {
+            var target = $(this).data('form');
+            var form = $('#' + target);
+            if (target && form.length) {
+                form.submit();
+            }
+        });
 
     });
 

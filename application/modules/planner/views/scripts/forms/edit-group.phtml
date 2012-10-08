@@ -1,0 +1,9 @@
+<?php echo $this->element->id; ?>
+<?php echo $this->element->color; ?>
+<div class="control-group">
+    <label class="control-label" for="group_name">Group name:</label>
+    <div class="controls">
+        <?php echo $this->element->group_name->setAttrib('placeholder', 'Group name')->setAttrib('class', 'input-medium') ?>
+    </div>
+</div>
+<?php echo $this->render('forms/group-color.phtml'); ?>

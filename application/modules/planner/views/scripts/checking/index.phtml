@@ -4,39 +4,7 @@ Error! No users.
 <?php $this->headScript()->appendFile('/js/checking.js'); ?>
 
     <?php
-    $colors = array(
-        'FF C0 CB',
-        'FF FA CD',
-        'FF FF E0',
-        'FA FA D2',
-        'FF EF D5',
-        'E6 E6 FA',
-        'D8 BF D8',
-        '98 FB 98',
-        '90 EE 90',
-        '9A CD 32',
-        'E0 FF FF',
-        'AF EE EE',
-        'B0 C4 DE',
-        'B0 E0 E6',
-        'AD D8 E6',
-        'FF F8 DC',
-        'FF EB CD',
-        'FF E4 C4',
-        'FF DE AD',
-        'F5 DE B3',
-        'F0 FF F0',
-        'F0 FF FF',
-        'F0 F8 FF',
-        'F5 F5 DC',
-        'FA EB D7',
-        'FF E4 E1',
-        'DC DC DC',
-        'D3 D3 D3',
-        'C0 C0 C0',
-        '77 88 99',
-        '70 80 90',
-    );
+    $colors = Application_Model_Group::getAllowedColors();
     ?>
 
 <div class="span11">
