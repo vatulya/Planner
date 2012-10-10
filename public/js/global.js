@@ -15,7 +15,7 @@
         }
 
     };
-    window.Text = Text;
+    document.Text = Text;
 
     var Popup = {
 
@@ -63,7 +63,51 @@
         }
 
     };
-    window.Popup = Popup;
+    document.Popup = Popup;
+
+    var Form = {
+
+        hideAllNotifications: function(formEl) {
+            formEl.find('.control-group').removeClass('error');
+            formEl.find('.control-group').removeClass('success');
+            formEl.find('.help-inline').html('');
+            formEl.find('.alert').hide();
+        },
+
+        showErrors: function(formEl, errorsHash) {
+            Form.hideAllNotifications(formEl);
+
+            // TODO: need finish show error messages logic
+            if (errorsHash != undefined && errorsHash.length > 0) {
+                for (var k in errorsHash) {
+                    for (var kk in errorsHash[k]) {
+                        var errorDomain = errorsHash[k][kk];
+                        var inputEl = $('#' + k);
+                        if (inputEl != null) {
+                            var rowDiv = inputEl.parents('.control-group, .form-actions');
+                            if (rowDiv != null) {
+                                rowDiv.addClass('error');
+                                var errorTag = rowDiv.find('.help-inline');
+                                if ( errorTag != null) {
+                                    errorTag.html(errorDomain);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                formEl.find('.alert-error').html('Error!').show();
+            }
+        },
+
+        showSuccess: function(formEl) {
+            Form.hideAllNotifications(formEl);
+
+            formEl.find('.alert-success').html('Success!').show();
+        }
+
+    };
+    document.Form = Form;
 
     $(function() {
 

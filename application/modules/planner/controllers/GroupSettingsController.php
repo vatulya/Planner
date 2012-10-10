@@ -4,9 +4,9 @@ class Planner_GroupSettingsController extends My_Controller_Action
 {
 
     public $ajaxable = array(
-        'index'               => 'html',
-        'get-edit-group-form' => 'html',
-        'save-group-form'     => 'json',
+        'index'               => array('html'),
+        'get-edit-group-form' => array('html'),
+        'save-group-form'     => array('json'),
     );
 
     protected $_modelGroup;
@@ -50,18 +50,20 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $editForm = new Planner_Form_EditGroup();
         /** @var $request Zend_Controller_Request_Http */
         $request = $this->getRequest();
-        $result = false;
+        $data = array();
+        $status = false;
         if ($request->isPost()) {
             if ($editForm->isValid($request->getPost())) {
-                $result = $this->_modelGroup->saveGroup($editForm->getValues());
+                $data = $this->_modelGroup->saveGroup($editForm->getValues());
+                $status = true;
             } else {
-                $result = $editForm->getErrorMessages();
+                $data = $editForm->getErrors();
             }
         }
-        if ($result) {
-            $this->_response(1, '', $result);
+        if ($status) {
+            $this->_response(1, '', $data);
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, 'Error!', $data);
         }
     }
 
