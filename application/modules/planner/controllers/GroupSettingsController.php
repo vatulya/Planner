@@ -6,6 +6,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
     public $ajaxable = array(
         'index'               => array('html'),
         'get-edit-group-form' => array('html'),
+        'get-group-planning'  => array('html'),
         'save-group-form'     => array('json'),
         'delete-group'        => array('json'),
     );
@@ -76,6 +77,21 @@ class Planner_GroupSettingsController extends My_Controller_Action
         } else {
             $this->_response(0, 'Error!', array());
         }
+    }
+
+    public function getGroupPlanningAction()
+    {
+        $groupId = $this->_getParam('group');
+        if ($groupId && ($group = $this->_modelGroup->getGroupById($groupId))) {
+//            $planning = $this->_modelGroup->getGroupPlanning($groupId);
+            $planning = array(
+                'odd' => array(),
+                'even' => array(),
+            );
+            $this->view->group = $group;
+            $this->view->groupPlanning = $planning;
+        }
+        $this->_helper->layout->disableLayout();
     }
 
 }

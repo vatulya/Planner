@@ -7,6 +7,10 @@
         modalDeleteGroup = modal.find('.button-delete-group'),
         modalBody = modal.find('.modal-body');
 
+    var groupPlanning = $('.group-work-days-planning'),
+        groupPlanningSelect = $('#group-planning'),
+        groupPlanningBody = groupPlanning.find('.planning-body');
+
     var GroupSettings = {
 
         editGroup: function(el) {
@@ -104,6 +108,31 @@
             if (color) {
                 color.val(el.data('color'));
             }
+        },
+
+        selectGroupPlanning: function() {
+            groupPlanningSelect.css('background-color', '#FFFFFF');
+            groupPlanningBody.html('');
+            var option = $('option:selected', groupPlanningSelect);
+            if (option.val() < 1) {
+                return false;
+            }
+            groupPlanningSelect.css('background-color', '#' + option.data('group-color'));
+            groupPlanningBody.html('Loading...');
+            $.ajax({
+                url: '/group-settings/get-group-planning',
+                data: {
+                    group: option.val()
+                },
+                success: function(response) {
+                    groupPlanningBody.html(response);
+                    groupPlanningSelect.blur();
+                    GroupSettings.initGroupPlanningForm();
+                },
+                error: function(response) {
+                    groupPlanningBody.html('<span class="alert alert-error">Error! Something wrong.</span>');
+                }
+            });
         }
 
     };
@@ -121,7 +150,10 @@
         });
         $(document.body).on('click', '.button-delete-group', function(e) {
             GroupSettings.deleteGroup(e.currentTarget);
-        })
+        });
+        $(document.body).on('change', '#group-planning', function(e) {
+            GroupSettings.selectGroupPlanning();
+        });
 
     });
 
