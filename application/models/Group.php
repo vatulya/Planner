@@ -55,6 +55,14 @@ class Application_Model_Group extends Application_Model_Abstract
         return $result;
     }
 
+    public function deleteGroup($groupId)
+    {
+        if (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
+            $this->_modelDb->deleteGroup($groupId);
+        }
+        return true;
+    }
+
     static public function getAllowedColors()
     {
         $colors = array(

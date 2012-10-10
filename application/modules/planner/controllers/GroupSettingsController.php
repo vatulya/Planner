@@ -7,6 +7,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'index'               => array('html'),
         'get-edit-group-form' => array('html'),
         'save-group-form'     => array('json'),
+        'delete-group'        => array('json'),
     );
 
     protected $_modelGroup;
@@ -39,9 +40,9 @@ class Planner_GroupSettingsController extends My_Controller_Action
             } else {
                 return false;
             }
+            $this->view->group = $group;
         }
         $this->_helper->layout->disableLayout();
-        $this->view->group = $group;
         $this->view->editForm = $editForm->prepareDecorators();
     }
 
@@ -64,6 +65,16 @@ class Planner_GroupSettingsController extends My_Controller_Action
             $this->_response(1, '', $data);
         } else {
             $this->_response(0, 'Error!', $data);
+        }
+    }
+
+    public function deleteGroupAction()
+    {
+        $status = $this->_modelGroup->deleteGroup($this->_getParam('group'));
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
         }
     }
 

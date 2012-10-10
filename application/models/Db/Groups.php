@@ -22,7 +22,8 @@ class Application_Model_Db_Groups extends Application_Model_Db_Abstract
         return $result;
     }
 
-    public function insertGroup(array $group) {
+    public function insertGroup(array $group)
+    {
         $data = array(
             'group_name' => $group['group_name'],
             'color'      => $group['color'],
@@ -31,13 +32,19 @@ class Application_Model_Db_Groups extends Application_Model_Db_Abstract
         return $result;
     }
 
-    public function updateGroup($groupId, array $group) {
+    public function updateGroup($groupId, array $group)
+    {
         $data = array(
             'group_name' => $group['group_name'],
             'color'      => $group['color'],
         );
         $result = $this->_db->update(self::TABLE_NAME, $data, array('id = ?' => $groupId));
         return $result;
+    }
+
+    public function deleteGroup($groupId)
+    {
+        $this->_db->delete(self::TABLE_NAME, array('id = ?' => $groupId));
     }
 
 }

@@ -1,10 +1,10 @@
 (function (window, document, $) {
 
     var modal = $('.modal-edit-group'),
-        modalCreateH3 = modal.find('.create-group'),
-        modalEditH3 = modal.find('.edit-group'),
+        modalCreateH3 = modal.find('.header-create-group'),
+        modalEditH3 = modal.find('.header-edit-group'),
         modalTmplGroupName = modal.find('.tmpl-group-name'),
-        modalBody = modal.find('.modal-body');
+        modalDeleteGroup = modal.find('.button-delete-group'),
         modalBody = modal.find('.modal-body');
 
     var GroupSettings = {
@@ -13,6 +13,7 @@
             el = $(el);
             modalCreateH3.hide();
             modalEditH3.show();
+            modalDeleteGroup.show().data('group-id', (el.data('group-id'))).data('group-name', el.html());
             modalTmplGroupName.html(el.html());
             modalBody.html('Loading...');
             modal.modal();
@@ -29,6 +30,51 @@
                     modalBody.html('Error! Something wrong.');
                 }
             });
+        },
+
+        createGroup: function(el) {
+            el = $(el);
+            modalCreateH3.show();
+            modalEditH3.hide();
+            modalDeleteGroup.hide();
+            modalBody.html('Loading...');
+            modal.modal();
+            $.ajax({
+                url: el.attr('href'),
+                success: function(response) {
+                    modalBody.html(response);
+                    GroupSettings.initEditAjaxForm();
+                },
+                error: function(response) {
+                    modalBody.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        deleteGroup: function(el) {
+            el = $(el);
+            var groupName = el.data('group-name');
+            var groupId = el.data('group-id');
+            if (groupId && groupName && confirm('Delete group "' + groupName + '"? Are you sure?')) {
+                $.ajax({
+                    url: el.attr('href'),
+                    data: {
+                        format: 'json',
+                        group: groupId
+                    },
+                    success: function(response) {
+                        response = response.response;
+                        if (response.status) {
+                            window.location.reload();
+                        } else {
+                            alert('Error! Something wrong.');
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error! Something wrong.');
+                    }
+                });
+            }
         },
 
         initEditAjaxForm: function() {
@@ -67,9 +113,15 @@
         $(document.body).on('click', '.edit-group', function(e) {
             GroupSettings.editGroup(e.currentTarget);
         });
-        $(document.body).on('click', '.group-color-variation', function(e) {
-            GroupSettings.changeSelectedColor(e.target);
+        $(document.body).on('click', '.create-group', function(e) {
+            GroupSettings.createGroup(e.currentTarget);
         });
+        $(document.body).on('click', '.group-color-variation', function(e) {
+            GroupSettings.changeSelectedColor(e.currentTarget);
+        });
+        $(document.body).on('click', '.button-delete-group', function(e) {
+            GroupSettings.deleteGroup(e.currentTarget);
+        })
 
     });
 
