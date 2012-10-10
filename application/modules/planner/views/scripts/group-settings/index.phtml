@@ -80,7 +80,10 @@
             <?php foreach ($this->groups as $group): ?>
                 <tr>
                     <td style="background-color: #<?php echo $group['color']; ?>">
-                        <a href="<?php echo $this->url(array('controller' => 'group-settings', 'action' => 'get-edit-group-form'), 'planner', true); ?>" class="no-action edit-group" data-group-id="<?php echo $group['id']; ?>"><?php echo $group['group_name']; ?></a>
+                        <a href="<?php echo $this->url(array('controller' => 'group-settings', 'action' => 'get-edit-group-form'), 'planner', true); ?>" class="no-action edit-group btn btn-mini" data-group-id="<?php echo $group['id']; ?>" data-group-name="<?php echo $group['group_name']; ?>">
+                            <i class="icon-cog"></i>
+                        </a>
+                        <?php echo $group['group_name']; ?>
                     </td>
                     <td>
                         <div class="input-append">

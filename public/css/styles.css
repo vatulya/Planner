@@ -48,6 +48,10 @@ form.form-mini {
     position: absolute;
     margin-left: -40px;
 }
+.edit-group {
+    position: absolute;
+    margin-left: -35px;
+}
 .create-group-exception {
     position: absolute;
     margin-left: 200px;

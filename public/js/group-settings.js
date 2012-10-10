@@ -17,8 +17,8 @@
             el = $(el);
             modalCreateH3.hide();
             modalEditH3.show();
-            modalDeleteGroup.show().data('group-id', (el.data('group-id'))).data('group-name', el.html());
-            modalTmplGroupName.html(el.html());
+            modalDeleteGroup.show().data('group-id', (el.data('group-id'))).data('group-name', el.data('group-name'));
+            modalTmplGroupName.html(el.data('group-name'));
             modalBody.html('Loading...');
             modal.modal();
             $.ajax({
