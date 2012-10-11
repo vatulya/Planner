@@ -1,61 +1,43 @@
 <?php
     /*** PREPARE DATA ***/
     $headerWeeks         = '';
-    $headerFulfilled     = '';
     $historyRows         = array();
     $emptyRow            = '';
-    $overallFulfilledRow = '';
-    foreach ($this->user['history'] as $week => $row) {
-        $date = date('Y-m-d', strtotime($row['year'] . 'W' . $row['week']));
-        $tasks = $row['tasks'];
+    foreach ($this->historyDateWeekYear as $week => $year) {
+        $date = date('Y-m-d', strtotime($year . 'W' . $week));
 
         $headerWeeks         .= '<th>
-            <a href="' . $this->url(array('action' => 'get-week-details'), 'management', true). '" class="no-action get-week-details" data-year="' . $row['year'] . '" data-week="' . $row['week'] . '" title="' . $date . '">
+            <a href="' . $this->url(array('action' => 'get-week-details'), 'planner', true). '" class="no-action get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $date . '">
                 Week ' . $week . '
             </a>
         </th>';
-        $headerFulfilled     .= '<th>Fulfilled</th>';
+
         $emptyRow            .= '<td>&nbsp;</td>';
-
-        if ($row['fulfilled'] === null) {
-            $overallFulfilledRow .= '<td>&nbsp;</td>';
-        } else {
-            $overallFulfilledRow .= '<td><span class="overall fulfilled">' . ($row['fulfilled'] * 100) . '%</span></td>';
-        }
-
-        $historyTasksFulfilled = array();
-        foreach ($this->user['tasksIds'] as $taskId) {
-            $historyTasksFulfilled[$taskId] = '&nbsp;';
-            if (isset($tasks[$taskId]) && ! $tasks[$taskId]['hidden'] && $tasks[$taskId]['fulfilled'] !== null) {
-                $historyTasksFulfilled[$taskId] = '<span class="fulfilled">' . ($tasks[$taskId]['fulfilled'] * 100) . '%</span>';
-            }
-        }
-        $historyRows[$week] = $historyTasksFulfilled;
     }
 ?>
 
-<table class="history table table-bordered table-condensed table-striped" style="width: 300px; margin-left: 20px; float: left;">
+<table class="history table table-bordered table-condensed table-striped" style="width: 300px; margin-right: 20px; float: left;">
     <thead>
     <tr class="week-table-header">
         <?php echo $headerWeeks; ?>
     </tr>
-    <tr class="week-table-header">
-        <?php echo $headerFulfilled; ?>
+    <tr  style="background-color: #<?php echo $this->group['color'];?>" class="week-table-header">
+        <?php echo $emptyRow; ?>
     </tr>
     </thead>
     <tbody>
-    <?php foreach($this->user['tasksIds'] as $taskId): ?>
+    <?php if (empty($this->users)): ?>
+    <td colspan="4" class="user-not-found">
+        No users history
+    </td>
+    <?php else: ?>
+    <?php foreach($this->users as $week => $row): ?>
     <tr>
-        <?php foreach($historyRows as $weekRow): ?>
-        <td><?php echo $weekRow[$taskId]; ?></td>
+        <?php foreach($row['history'] as $week => $workTime): ?>
+        <td><?php echo $workTime; ?></td>
         <?php endforeach; ?>
     </tr>
     <?php endforeach; ?>
-    <tr>
-        <?php echo $emptyRow; ?>
-    </tr>
-    <tr>
-        <?php echo $overallFulfilledRow; ?>
-    </tr>
+    <?php endif; ?>
     </tbody>
 </table>

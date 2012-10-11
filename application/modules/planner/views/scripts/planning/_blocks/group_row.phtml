@@ -3,17 +3,18 @@
         id="<?php echo $this->group['id']; ?>"
         data-user-id="<?php echo $this->group['id']; ?>"
         >
+    <?php $this->users = $this->group['users']; ?>
     <div class="user_row_container">
         <span class="span4 block-history">
             <a href="<?php echo $this->url(array('action' => 'get-more-history'), 'planner', true); ?>" class="no-action show-more-history">History</a>
                 <div class="history-container-scrollable">
                     <div class="history-container">
-                        <?php //echo $this->render('_blocks/history.phtml'); ?>
+                        <?php echo $this->render('_blocks/history.phtml'); ?>
                     </div>
                 </div>
         </span>
 
-        <?php $this->users = $this->group['users']; ?>
+
         <span
                     class="span10 block-week-details week-details main-data-container user-id-<?php echo $this->group['id']; ?> year-<?php echo $this->weekTasks['year']; ?> week-<?php echo $this->weekTasks['week']; ?>"
                     data-year="<?php echo $this->weekTasks['year']; ?>"
@@ -26,11 +27,22 @@
             <table class="table table-bordered table-condensed table-striped week-table">
 
                 <thead>
+                <tr  >
+                    <th  colspan="5"  ></th>
+                    <th  style="background-color: #<?php echo $this->group['color'];?>" >
+                        <a href="#" class="bootstrab-tooltip no-action get-week-details" >
+                            Week <?php echo $this->week; ?>
+                        </a>
+                    </th>
+                    <th  style="background-color: #<?php echo $this->group['color'];?>" >
+                        <a href="<?php echo $this->url(array('action' => 'get-week-details'), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip no-action get-week-details" data-original-title="Look next week" data-year="<?php echo $this->nextWeekYear; ?>" data-week="<?php echo $this->nextWeek; ?>" title="<?php echo $date; ?>">
+                           Next Week <?php //echo $week; ?>
+                        </a>
+                    </th>
+                </tr>
 
-                <?php echo $this->render('planning/_blocks/week_users_header.phtml'); ?>
-
-                <tr class="week-table-header">
-                    <th class="week-table-header-task">Taak/Dag</th>
+                <tr class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
+                    <th class="week-table-header-task" ><?php echo $this->group['group_name']; ?></th>
                     <th class="week-table-header-monday week-table-header-day">Maandag</th>
                     <th class="week-table-header-tuesday week-table-header-day">Dinsdag</th>
                     <th class="week-table-header-wednesday week-table-header-day">Woensdag</th>
@@ -47,9 +59,8 @@
                     <?php else: ?>
                     <?php foreach ($this->users as $user): ?>
                         <?php $this->user = $user; ?>
-                        <?php $this->task   = null; ?>
                         <?php echo $this->render('planning/_blocks/week_user_plan.phtml'); ?>
-                        <?php endforeach; ?>
+                    <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>

@@ -1,1 +1,5 @@
-8-00 - 17-00
+<?php if ( ! empty($this->userDayData)): ?>
+<?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?>
+<?php else: ?>
+    No data
+<?php endif; ?>
