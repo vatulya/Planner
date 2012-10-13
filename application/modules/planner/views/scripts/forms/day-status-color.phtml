@@ -1,0 +1,13 @@
+<?php
+$colors = Application_Model_User::getAllStatusColors();
+$selectedColor = $this->element->color->getValue();
+if ( ! $selectedColor) {
+    $selectedColor = 'FFFFFF';
+}
+?>
+<label class="control-label" for="color">Day color:</label>
+<div class="group-color-selector">
+    <?php foreach ($colors as $color): ?>
+    <div class="day-status-color <?php if ($selectedColor == $color): ?>active<?php endif; ?>" style="background-color: #<?php echo $color; ?>;" data-color="<?php echo $color; ?>">#<?php echo $color; ?></div>
+    <?php endforeach; ?>
+</div>

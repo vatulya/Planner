@@ -1,5 +1,15 @@
 <?php if ( ! empty($this->userDayData)): ?>
-<?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?>
+<a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'get-edit-day-form'), 'planner', true); ?>" class="no-action edit-day" data-day-id="<?php echo $this->userDayData['id']; ?>">
+   <?php if ( empty($this->userDayData['status_color2'])): ?>
+    <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?>
+    <?php else: ?>
+    <div style=" width: 0;
+            height: 0;
+            border-bottom: 28px solid #<?php echo $this->userDayData['status_color2']; ?>;
+            border-left: 91px solid transparent;"
+            ></div>
+    <?php endif; ?>
+</a>
 <?php else: ?>
     No data
 <?php endif; ?>

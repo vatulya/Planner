@@ -106,6 +106,19 @@ class Application_Model_User extends Application_Model_Abstract
         return $workTime;
     }
 
+    public function getUserDayById($dayId)
+    {
+        $userDay = new Application_Model_Db_User_Planning();
+        $userDay = $userDay->getDayById($dayId);
+        return $userDay;
+    }
+
+    public static function getAllStatusColors()
+    {
+        $statusColors = array(0 => '32CD32', 1 => 'FFFFFF', 2 => 'FFFF00', 3 => 'E9967A', 4 => '00FFFF', 5 => '0000FF');
+        return $statusColors;
+    }
+
 
 
 

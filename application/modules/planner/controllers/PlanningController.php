@@ -5,6 +5,7 @@ class Planner_PlanningController extends My_Controller_Action
     const HISTORY_WEEK_NUM = 4;
     public $ajaxable = array(
         'get-week-details' => array('json'),
+        'get-edit-day-form' => array('html'),
         'get-more-history' => array('json'),
     );
 
@@ -13,6 +14,7 @@ class Planner_PlanningController extends My_Controller_Action
 
     public function init()
     {
+        $this->view->me = $this->_me = $this->_helper->CurrentUser();
         parent::init();
         $this->_modelGroup    = new Application_Model_Group();
         $this->_modelUser     = new Application_Model_User();
@@ -53,7 +55,7 @@ class Planner_PlanningController extends My_Controller_Action
             $groups[$key]['users'] = $this->_modelUser->getAllUsersByGroup($groupId);
             if (!empty($groups[$key]['users'])) {
                 foreach ($groups[$key]['users'] as $keyUser => $user) {
-                    $user = $this->_getUserWeekPlan($user, $groupId, $year, $week);
+                    $user = $this->_getUserData($user, $groupId, $year, $week);
                     $groups[$key]['users'][$keyUser] = $user;
                 }
             }
@@ -67,7 +69,7 @@ class Planner_PlanningController extends My_Controller_Action
         $this->view->groups              = $groups;
     }
 
-    protected function _getUserWeekPlan($user, $groupId, $year, $week)
+    protected function _getUserData($user, $groupId, $year, $week)
     {
 
         $user['history'] = $this->_getHistory($user['user_id'], $groupId, $year, $week);
@@ -76,6 +78,49 @@ class Planner_PlanningController extends My_Controller_Action
 
         $user['weekPlan'] = $this->_modelUser->getUserWeekPlanByGroup($user['user_id'], $groupId,  $year, $week);
         return $user;
+    }
+
+    public function getEditDayFormAction()
+    {
+        $dayId = $this->_getParam('dayId');
+        $editForm = new Planner_Form_EditDay(array(
+            'class' => 'edit-day-form',
+            'action' => $this->_helper->url->url(array('controller' => 'planning', 'action' => 'save-day-form'), 'planner', true),
+            'id' => 'form-edit-day',
+        ));
+        if ($dayId) {
+            $day = $this->_modelUser->getUserDayById($dayId);
+            if ($day) {
+                $editForm->populate($day);
+            } else {
+                return false;
+            }
+            $this->view->day = $day;
+        }
+        $this->_helper->layout->disableLayout();
+        $this->view->editForm = $editForm->prepareDecorators();
+    }
+
+    public function saveDayFormAction()
+    {
+        $editForm = new Planner_Form_EditGroup();
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        $data = array();
+        $status = false;
+        if ($request->isPost()) {
+            if ($editForm->isValid($request->getPost())) {
+                $data = $this->_modelGroup->saveGroup($editForm->getValues());
+                $status = true;
+            } else {
+                $data = $editForm->getErrors();
+            }
+        }
+        if ($status) {
+            $this->_response(1, '', $data);
+        } else {
+            $this->_response(0, 'Error!', $data);
+        }
     }
 
     public function getMoreHistoryAction()

@@ -4,7 +4,13 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
 {
     const TABLE_NAME = 'user_planning';
 
-    private $_status = array(0 => '009900', 1 => 'FFFFFF', 2 => 'FFFF00', 3 => 'FF0000', 4 => '00FFFF', 5 => '0000FF');
+    private $_status = array();
+
+    public function __construct()
+    {
+        $this->_status =  Application_Model_User::getAllStatusColors();
+        parent::__construct();
+    }
 
     public function getUserWeekPlanByGroup($userId, $groupId, $date)
     {
@@ -21,8 +27,10 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             $date = date_create($result['time_end']);
             $result['time_end'] = date_format($date, 'H:i');
             $result['status_color1'] = $this->_status[$result['status1']];
-            if (!empty($result['status_color2'])) {
+            if (!empty($result['status2'])) {
                 $result['status_color2'] = $this->_status[$result['status2']];
+            }  else {
+                $result['status_color2'] = "";
             }
         }
         return $result;
@@ -44,6 +52,15 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         if (empty($result)) {
             $result = 0;
         }
+        return $result;
+    }
+
+    public function getDayById($dayId)
+    {
+        $select = $this->_db->select()
+            ->from(array('up' => self::TABLE_NAME))
+            ->where('up.id = ?', $dayId);
+        $result = $this->_db->fetchRow($select);
         return $result;
     }
 }

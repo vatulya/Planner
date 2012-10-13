@@ -1,0 +1,12 @@
+<div class="alert alert-error" style="display: none;"></div>
+<div class="alert alert-success" style="display: none;"></div>
+<?php echo $this->element->id; ?>
+<?php echo $this->element->color; ?>
+<div class="control-group">
+    <label class="control-label" for="group_name">Group name:</label>
+    <div class="controls">
+        <?php echo $this->element->group_name->setAttrib('placeholder', 'Group name')->setAttrib('class', 'input-medium') ?>
+        <span class="help-inline"></span>
+    </div>
+</div>
+<?php echo $this->render('forms/day-status-color.phtml'); ?>

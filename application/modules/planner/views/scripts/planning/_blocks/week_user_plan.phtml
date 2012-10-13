@@ -1,15 +1,18 @@
 <?php if ( ! empty($this->user)): ?>
 <?php $user = $this->user; ?>
-<tr class="user-row add-user-row <?php echo $userRowClasses; ?> <?php if ($user['hidden']): ?>user-row-hidden<?php endif; ?>" data-user-id="<?php echo $user['user_id']; ?>">
-    <td class="user-title" title="<?php echo $user['user']; ?>">
+<tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
+    <td class="user-title" >
         <?php echo $user['full_name']; ?>
     </td>
 
     <?php foreach ($this->weekDays as $weekDay): ?>
 
-    <td style="background-color: #<?php echo $user['weekPlan'][$weekDay]['status_color1'];?>" class="week-user-day" data-day='<?php echo $weekDay ?>'>
+    <td style="padding: 0px; width: 90px; background-color: #<?php echo $user['weekPlan'][$weekDay]['status_color1'];?>"data-day='<?php echo $weekDay ?>'>
         <?php $this->userDayData = $user['weekPlan'][$weekDay]; ?>
+
+
         <?php echo $this->render('planning/_blocks/user_status_field.phtml'); ?>
+
     </td>
 
     <?php endforeach; ?>

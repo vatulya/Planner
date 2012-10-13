@@ -1,3 +1,4 @@
+<?php $this->headScript()->appendFile('/js/planning.js'); ?>
 <?php if (empty($this->groups)): ?>
 <h2>No groups and users</h2>
 <?php else: ?>
@@ -9,3 +10,16 @@
     <?php endforeach; ?>
 
 <?php endif; ?>
+
+<div class="modal hide fade modal-edit-day">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3 class="header-edit-day">Edit day : <span class="tmpl-group-name"></span></h3>
+    </div>
+    <div class="modal-body">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary button-submit" data-form="form-edit-group">Save</button>
+    </div>
+</div>
