@@ -1,13 +1,13 @@
 <?php
-$colors = Application_Model_User::getAllStatusColors();
-$selectedColor = $this->element->color->getValue();
-if ( ! $selectedColor) {
-    $selectedColor = 'FFFFFF';
-}
+$status = new Application_Model_Status();
+$statuses = $status->getAllStatus();
+
+$selectedStatus1 = $this->element->status1->getValue();
+$selectedStatus2 = $this->element->status2->getValue();
 ?>
 <label class="control-label" for="color">Day color:</label>
-<div class="group-color-selector">
-    <?php foreach ($colors as $color): ?>
-    <div class="day-status-color <?php if ($selectedColor == $color): ?>active<?php endif; ?>" style="background-color: #<?php echo $color; ?>;" data-color="<?php echo $color; ?>">#<?php echo $color; ?></div>
+<div class="day-color-selector">
+    <?php foreach ($statuses as $status): ?>
+    <div class="day-status-color <?php if ($selectedStatus1 == $status['id'] || $selectedStatus2 == $status['id']): ?> active<?php endif; ?>" style="background-color: #<?php echo $status['color_hex']; ?>;" data-color="<?php echo $status['color']; ?>"><?php echo $status['color']; ?></div>
     <?php endforeach; ?>
 </div>

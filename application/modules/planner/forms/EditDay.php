@@ -5,14 +5,17 @@ class Planner_Form_EditDay extends Sch_Form
 
     public function init()
     {
-        $id = new Zend_Form_Element_Hidden('id');
-
-        $groupName = new Zend_Form_Element_Text('group_name');
-        $groupName->setRequired(true);
+        $id         = new Zend_Form_Element_Hidden('id');
+        $groupName  = new Zend_Form_Element_Text('time_exclude');
+        $status1    = new Zend_Form_Element_Hidden('status1');
+        $status2    = new Zend_Form_Element_Hidden('status2');
+        $useStatus2 = new Zend_Form_Element_Checkbox('use_status2');
+        $timeStart  = new Zend_Form_Element_Text('time_start');
+        $timeEnd    = new Zend_Form_Element_Text('time_end');
 
         $color = new Zend_Form_Element_Hidden('color');
 
-        $this->addElements(array($id, $groupName, $color));
+        $this->addElements(array($id, $groupName, $color, $status1, $status2, $useStatus2, $timeStart, $timeEnd));
     }
 
     public function prepareDecorators()

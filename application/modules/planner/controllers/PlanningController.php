@@ -42,6 +42,7 @@ class Planner_PlanningController extends My_Controller_Action
         $weekYear = $date->getWeekYear();
         $year = $weekYear['year'];
         $week = $weekYear['week'];
+        //$week = 41;
         $historyDateWeekYear = $this->_getNumHistoryWeeks($year, $week);
         $date->modify('+1 week');
         $nextDateWeekYear = $date->getWeekYear($date->getTimestamp());
@@ -82,12 +83,13 @@ class Planner_PlanningController extends My_Controller_Action
 
     public function getEditDayFormAction()
     {
-        $dayId = $this->_getParam('dayId');
+        $dayId = $this->_getParam('day');
         $editForm = new Planner_Form_EditDay(array(
             'class' => 'edit-day-form',
             'action' => $this->_helper->url->url(array('controller' => 'planning', 'action' => 'save-day-form'), 'planner', true),
             'id' => 'form-edit-day',
         ));
+
         if ($dayId) {
             $day = $this->_modelUser->getUserDayById($dayId);
             if ($day) {

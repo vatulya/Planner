@@ -4,15 +4,12 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
 {
     const TABLE_NAME = 'user_planning';
 
-    private $_status = array();
-
     public function __construct()
     {
-        $this->_status =  Application_Model_User::getAllStatusColors();
         parent::__construct();
     }
 
-    public function getUserWeekPlanByGroup($userId, $groupId, $date)
+    public function getUserDayPlanByGroup($userId, $groupId, $date)
     {
         $select = $this->_db->select()
             ->from(array('up' => self::TABLE_NAME))
@@ -22,13 +19,14 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             //->where('up.date <= ADDDATE( ?, INTERVAL 6 DAY)', $date)
         $result = $this->_db->fetchRow($select);
         if(!empty($result)) {
+            $status = new Application_Model_Status();
             $date = date_create($result['time_start']);
             $result['time_start'] = date_format($date, 'H:i');
             $date = date_create($result['time_end']);
             $result['time_end'] = date_format($date, 'H:i');
-            $result['status_color1'] = $this->_status[$result['status1']];
+            $result['status1'] = $status->getDataById($result['status1']);
             if (!empty($result['status2'])) {
-                $result['status_color2'] = $this->_status[$result['status2']];
+                $result['status2'] = $status->getDataById($result['status2']);
             }  else {
                 $result['status_color2'] = "";
             }

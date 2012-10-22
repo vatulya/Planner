@@ -2,11 +2,37 @@
 <div class="alert alert-success" style="display: none;"></div>
 <?php echo $this->element->id; ?>
 <?php echo $this->element->color; ?>
-<div class="control-group">
-    <label class="control-label" for="group_name">Group name:</label>
-    <div class="controls">
-        <?php echo $this->element->group_name->setAttrib('placeholder', 'Group name')->setAttrib('class', 'input-medium') ?>
-        <span class="help-inline"></span>
-    </div>
-</div>
+<table>
+    <tr>
+        <td>
+            <label class="control-label" for="time_start">Time start</label>
+            <div class="input-append bootstrap-timepicker-component">
+            <?php echo $this->element->time_start->setAttrib('class', 'timepicker-start input-mini') ?>
+                <span class="add-on">
+                    <i class="icon-time"></i>
+                </span>
+            </div>
+        </td>
+        <td colspan="2">
+            <label class="control-label" for="time_end">Time end</label>
+            <div class="input-append bootstrap-timepicker-component">
+                <?php echo $this->element->time_end->setAttrib('class', 'timepicker-end input-mini') ?>
+                <span class="add-on">
+                    <i class="icon-time"></i>
+                </span>
+            </div>
+        </td>
+        <td>
+            <label class="control-label" for="time_exclude">Time exclude</label>
+            <div class="input-append bootstrap-timepicker-component">
+                <?php echo $this->element->time_exclude->setAttrib('class', 'timepicker-exclude input-mini') ?>
+                <span class="add-on">
+                    <i class="icon-time"></i>
+                </span>
+            </div>
+        </td>
+    <tr>
+</table>
+<span class="help-inline"><label class="control-label" for="use_status2">Change second status</label> </span>
+<?php echo $this->element->use_status2; ?>
 <?php echo $this->render('forms/day-status-color.phtml'); ?>

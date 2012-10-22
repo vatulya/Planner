@@ -10,13 +10,12 @@
         editDay: function(el) {
             el = $(el);
             modalEditH3.show();
-            modalTmplGroupName.html(el.data('group-name'));
             modalBody.html('Loading...');
             modal.modal();
             $.ajax({
                 url: el.attr('href'),
                 data: {
-                    group: el.data('group-id')
+                    day: el.data('day-id')
                 },
                 success: function(response) {
                     modalBody.html(response);
@@ -45,14 +44,46 @@
                     document.Form.showErrors(formEl);
                 }
             });
+            $('.timepicker-start').timepicker({
+                minuteStep: 10,
+                template: 'modal',
+                showSeconds: false,
+                showMeridian: false,
+                defaultTime: 'value'
+            });
+            $('.timepicker-end').timepicker({
+                minuteStep: 10,
+                template: 'modal',
+                showSeconds: false,
+                showMeridian: false,
+                defaultTime: 'value'
+            });
+            $('.timepicker-exclude').timepicker({
+                minuteStep: 60,
+                template: 'modal',
+                showSeconds: false,
+                showMeridian: false,
+                defaultTime: 'value'
+            });
+        },
+
+        changeSelectedColor: function(el) {
+            el = $(el);
+            $('.day-status-color').removeClass('active');
+            el.addClass('active');
+            var color = $('#form-edit-day').find('#color');
+            if (color) {
+                color.val(el.data('color'));
+            }
         }
-
-
     };
 
     $(function() {
         $(document.body).on('click', '.edit-day', function(e) {
             DaySettings.editDay(e.currentTarget);
+        });
+        $(document.body).on('click', '.day-status-color', function(e) {
+            DaySettings.changeSelectedColor(e.currentTarget);
         });
     });
 

@@ -91,7 +91,7 @@ class Application_Model_User extends Application_Model_Abstract
             $date = clone $dateWeekStart;
             $date->modify('+' . $numDay . 'day');
             $date = $date->format('Y-m-d');
-            $weekPlan[$nameDay] = $weekUserPlan->getUserWeekPlanByGroup($userId, $groupId, $date);
+            $weekPlan[$nameDay] = $weekUserPlan->getUserDayPlanByGroup($userId, $groupId, $date);
         }
         return $weekPlan;
     }
@@ -112,14 +112,5 @@ class Application_Model_User extends Application_Model_Abstract
         $userDay = $userDay->getDayById($dayId);
         return $userDay;
     }
-
-    public static function getAllStatusColors()
-    {
-        $statusColors = array(0 => '32CD32', 1 => 'FFFFFF', 2 => 'FFFF00', 3 => 'E9967A', 4 => '00FFFF', 5 => '0000FF');
-        return $statusColors;
-    }
-
-
-
 
 }

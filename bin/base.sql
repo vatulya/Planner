@@ -100,3 +100,21 @@ CREATE TABLE user_day_work_plan (
    UNIQUE KEY (user_id, group_id, date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ;
+
+CREATE TABLE `status` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) DEFAULT NULL,
+  `color` varchar(20) DEFAULT NULL,
+  `color_hex` varchar(10) NOT NULL,
+  `editable` int(1) DEFAULT NULL,
+  `edit_type` int(2) DEFAULT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+;
+
+INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '0','White','White','FFFFFF',NULL,NULL);
+INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '2','Werk','Green','32CD32','0',NULL);
+INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '3','Vrij','Yellow','FFFF00','0',NULL);
+INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '4','Ziekte','Red','E9967A','1','1');
+INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '5','Dokter/overige',NULL,'00FFFF','1','0');
+INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '6','Buitengewoon verlof','blue','0000FF','1','0');
