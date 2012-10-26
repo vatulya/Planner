@@ -12,7 +12,7 @@ class My_Controller_Action extends  Zend_Controller_Action
     {
         $this->_helper->getHelper('AjaxContext')->initContext();
         $this->view->activeMenu = '';
-        $activeMenu = $this->_getParam('action', '');
+        $activeMenu = $this->_getParam('controller', '');
         if (in_array($activeMenu, $this->_navMenu)) {
             $this->view->activeMenu = $activeMenu;
         }

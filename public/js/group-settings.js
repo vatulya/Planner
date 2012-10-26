@@ -133,6 +133,57 @@
                     groupPlanningBody.html('<span class="alert alert-error">Error! Something wrong.</span>');
                 }
             });
+        },
+
+        saveGroupPlanning: function() {
+//            GroupSettings.blockFormGroupPlanning();
+            var option = $('option:selected', groupPlanningSelect);
+            if (option.val() < 1) {
+                return false;
+            }
+            var data = {
+                format: 'json',
+                group: option.val(),
+                group_planning: GroupSettings.getGroupPlanning()
+            };
+            $.ajax({
+                url: '/group-settings/save-group-planning',
+                data: data,
+                success: function(response) {
+//                    GroupSettings.unblockFormGroupPlanning();
+                    response = response.response;
+                    if (response.status) {
+                        GroupSettings.selectGroupPlanning();
+                    } else {
+                        alert('ERROR');
+                    }
+                },
+                error: function(response) {
+//                    GroupSettings.unblockFormGroupPlanning();
+                    alert('Error');
+                }
+            });
+        },
+
+        getGroupPlanning: function() {
+            var data = {};
+            $('.form-group-planning-day').each(function(i, el) {
+                el = $(el);
+                var day = {
+                    day_number: el.data('day-number'),
+                    week_type: el.data('week-type'),
+                    time_start: {
+                        hour: el.find('.start-hour').val(),
+                        min: el.find('.start-min').val()
+                    },
+                    time_end: {
+                        hour: el.find('.end-hour').val(),
+                        min: el.find('.end-min').val()
+                    }
+                }
+                data[day.week_type + '-' + day.day_number] = day;
+            });
+            return data;
         }
 
     };
@@ -153,6 +204,9 @@
         });
         $(document.body).on('change', '#group-planning', function(e) {
             GroupSettings.selectGroupPlanning();
+        });
+        $(document.body).on('click', '.group-planning-save', function(e) {
+            GroupSettings.saveGroupPlanning();
         });
 
     });

@@ -89,9 +89,11 @@ form.form-mini {
     margin: 1px 1px;
     border: 3px solid #cd5c5c;
 }
-.pause-hour {
-    width: 17px;
+.pause-time {
     font-weight: bold;
+}
+.set-time-hour, .set-time-min {
+    width: 16px;
 }
 .group-planning-weeks tbody form {
     margin: 0px;

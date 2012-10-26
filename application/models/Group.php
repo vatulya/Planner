@@ -63,6 +63,59 @@ class Application_Model_Group extends Application_Model_Abstract
         return true;
     }
 
+    public function getGroupPlanning($groupId, $weekType = null)
+    {
+        $groupPlannings = new Application_Model_Db_Group_Plannings();
+        $planning = $groupPlannings->getGroupPlanning($groupId, $weekType);
+        return $planning;
+    }
+
+    public function saveGroupPlanning($groupId, array $planning)
+    {
+        $result = false;
+        if (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
+            $group = $this->_modelDb->getGroupById($groupId);
+            if ($group) {
+                $planning = $this->_preparePlanning($planning);
+                $groupPlannings = new Application_Model_Db_Group_Plannings();
+                $result = $groupPlannings->saveGroupPlanning($groupId, $planning);
+            }
+        }
+        return $result;
+    }
+
+    protected function _preparePlanning(array $planning)
+    {
+        $prepared = array();
+        foreach ($planning as $key => $day) {
+            if (empty($day['time_start']['hour']) || empty($day['time_end']['hour'])) {
+                continue;
+            }
+            $timeStart = '';
+            $timeEnd = '';
+            try { $timeStart = new DateTime((int)$day['time_start']['hour'] . ':' . (int)$day['time_start']['min']); } catch (Exception $e) {}
+            try { $timeEnd = new DateTime((int)$day['time_end']['hour'] . ':' . (int)$day['time_end']['min']); } catch (Exception $e) {}
+            if ( ! $timeStart || ! $timeEnd || $timeStart >= $timeEnd) {
+                continue; // wrong time
+            }
+            $day['day_number'] = intval($day['day_number']);
+            if ($day['day_number'] < 1 || $day['day_number'] > 6 ) {
+                continue; // wrong day number
+            }
+            if ($day['week_type'] != Application_Model_Db_Group_Plannings::WEEK_TYPE_ODD && $day['week_type'] != Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN) {
+                continue; // wrong week type
+            }
+            $preparedDay = array(
+                'week_type'  => $day['week_type'],
+                'day_number' => $day['day_number'],
+                'time_start' => $timeStart->format('H:i:s'),
+                'time_end'   => $timeEnd->format('H:i:s'),
+            );
+            $prepared[$key] = $preparedDay;
+        }
+        return $prepared;
+    }
+
     static public function getAllowedColors()
     {
         $colors = array(

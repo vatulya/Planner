@@ -118,3 +118,16 @@ INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_typ
 INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '4','Ziekte','Red','E9967A','1','1');
 INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '5','Dokter/overige',NULL,'00FFFF','1','0');
 INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_type`) VALUES ( '6','Buitengewoon verlof','blue','0000FF','1','0');
+
+CREATE TABLE `group_plannings` (
+  id INT NOT NULL AUTO_INCREMENT,
+  group_id INT NOT NULL,
+  week_type ENUM('odd', 'even') NOT NULL,
+  day_number INT NOT NULL,
+  time_start TIME NOT NULL DEFAULT '00:00:00',
+  time_end TIME NOT NULL DEFAULT '00:00:00',
+  PRIMARY KEY (id),
+  UNIQUE (group_id, week_type, day_number),
+  INDEX (group_id)
+)
+;

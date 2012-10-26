@@ -1,0 +1,127 @@
+<?php if ( ! empty($this->group)): ?>
+    <div class="span12 group-planning">
+        <div class="span5">
+            <form class="form-inline">
+                <div class="pause-time">
+                    Pause time:
+                    <input type="text" value="13" class="pause-hour set-time-hour">:<input type="text" value="00" class="pause-min set-time-min">
+                    till
+                    <input type="text" value="14" class="pause-hour set-time-hour">:<input type="text" value="00" class="pause-min set-time-min">
+                </div>
+            </form>
+        </div>
+
+        <table class="table table-bordered group-planning-weeks">
+            <thead>
+            <tr>
+                <th class="span2">
+                    Monday
+                </th>
+                <th class="span2">
+                    Tuesday
+                </th>
+                <th class="span2">
+                    Wednesday
+                </th>
+                <th class="span2">
+                    Thursday
+                </th>
+                <th class="span2">
+                    Friday
+                </th>
+                <th class="span2">
+                    Saturday
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- START ODD WEEK -->
+            <tr>
+                <?php foreach ($this->weekDays['odd'] as $key => $day): ?>
+                <td>
+                    <?php if ($day['day_number'] == 1): ?>
+                    <span class="week-type label">Odd week</span>
+                    <?php endif; ?>
+                    <form class="form-inline form-group-planning-day" data-week-type="odd" data-day-number="<?php echo $day['day_number']; ?>">
+                        <?php
+                        if ( ! empty($this->groupPlanning[$key])) {
+                            $data = $this->groupPlanning[$key];
+                            $startTime = new DateTime($data['time_start']);
+                            $startHourValue = $startTime->format('H');
+                            $startMinValue  = $startTime->format('i');
+                            $endTime = new DateTime($data['time_end']);
+                            $endHourValue = $endTime->format('H');
+                            $endMinValue  = $endTime->format('i');
+                        } else {
+                            $startHourValue = '';
+                            $startMinValue  = '';
+                            $endHourValue = '';
+                            $endMinValue  = '';
+                        }
+                        ?>
+                        <div class="pull-left">
+                            <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
+                            ?>:<?php
+                            ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
+                        </div>
+                        -
+                        <div class="pull-right">
+                            <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
+                            ?>:<?php
+                            ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
+                        </div>
+                    </form>
+                </td>
+                <?php endforeach; ?>
+            </tr>
+            <!-- END ODD WEEK -->
+            <!-- STERT EVEN WEEK -->
+            <tr>
+                <?php foreach ($this->weekDays['even'] as $key => $day): ?>
+                <td>
+                    <?php if ($day['day_number'] == 1): ?>
+                    <span class="week-type label label-inverse">Even week</span>
+                    <?php endif; ?>
+                    <form class="form-inline form-group-planning-day" data-week-type="even" data-day-number="<?php echo $day['day_number']; ?>">
+                        <?php
+                        if ( ! empty($this->groupPlanning[$key])) {
+                            $data = $this->groupPlanning[$key];
+                            $startTime = new DateTime($data['time_start']);
+                            $startHourValue = $startTime->format('H');
+                            $startMinValue  = $startTime->format('i');
+                            $endTime = new DateTime($data['time_end']);
+                            $endHourValue = $endTime->format('H');
+                            $endMinValue  = $endTime->format('i');
+                        } else {
+                            $startHourValue = '';
+                            $startMinValue  = '';
+                            $endHourValue = '';
+                            $endMinValue  = '';
+                        }
+                        ?>
+                        <div class="pull-left">
+                            <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
+                            ?>:<?php
+                            ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
+                        </div>
+                        -
+                        <div class="pull-right">
+                            <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
+                            ?>:<?php
+                            ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
+                        </div>
+                    </form>
+                </td>
+                <?php endforeach; ?>
+            </tr>
+            <!-- END EVEN WEEK -->
+            </tbody>
+        </table>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success group-planning-save">Save</button>
+            <span class="alert alert-error">Error!</span>
+        </div>
+    </div>
+<?php else : ?>
+    <span class="alert alert-error">Error! Wrong group ID!</span>
+<?php endif; ?>
