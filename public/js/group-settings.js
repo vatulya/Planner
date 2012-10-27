@@ -13,6 +13,36 @@
 
     var GroupSettings = {
 
+        init: function() {
+            GroupSettings.initMiniAjaxForms();
+        },
+
+        initMiniAjaxForms: function() {
+            $('.mini-ajax-form').each(function(i, el) {
+                var formEl = $(el);
+                formEl.ajaxForm({
+                    data: {format: 'json'},
+                    beforeSubmit: function() {
+                        document.Form.hideAllNotificationsMini(formEl);
+                        document.Form.blockForm(formEl);
+                    },
+                    success: function(response) {
+                        document.Form.unblockForm(formEl);
+                        response = response.response;
+                        if (response.status) {
+                            document.Form.showSuccessMini(formEl, 2000);
+                        } else {
+                            document.Form.showErrorsMini(formEl);
+                        }
+                    },
+                    error: function() {
+                        document.Form.unblockForm(formEl);
+                        document.Form.showErrorsMini(formEl);
+                    }
+                });
+            });
+        },
+
         editGroup: function(el) {
             el = $(el);
             modalCreateH3.hide();
@@ -127,7 +157,7 @@
                 success: function(response) {
                     groupPlanningBody.html(response);
                     groupPlanningSelect.blur();
-                    GroupSettings.initGroupPlanningForm();
+//                    GroupSettings.initGroupPlanningForm(); ??? i don't know what is it :)
                 },
                 error: function(response) {
                     groupPlanningBody.html('<span class="alert alert-error">Error! Something wrong.</span>');
@@ -144,7 +174,8 @@
             var data = {
                 format: 'json',
                 group: option.val(),
-                group_planning: GroupSettings.getGroupPlanning()
+                group_planning: GroupSettings.getGroupPlanning(),
+                group_pause: GroupSettings.getGroupPause()
             };
             $.ajax({
                 url: '/group-settings/save-group-planning',
@@ -184,6 +215,24 @@
                 data[day.week_type + '-' + day.day_number] = day;
             });
             return data;
+        },
+
+        getGroupPause: function() {
+            var data = {};
+            var container = $('.pause-time');
+            if (container.length) {
+                data = {
+                    pause_start: {
+                        hour: container.find('.start-hour').val(),
+                        min: container.find('.start-min').val()
+                    },
+                    pause_end: {
+                        hour: container.find('.end-hour').val(),
+                        min: container.find('.end-min').val()
+                    }
+                };
+            }
+            return data;
         }
 
     };
@@ -208,6 +257,8 @@
         $(document.body).on('click', '.group-planning-save', function(e) {
             GroupSettings.saveGroupPlanning();
         });
+
+        GroupSettings.init();
 
     });
 

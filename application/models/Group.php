@@ -70,17 +70,40 @@ class Application_Model_Group extends Application_Model_Abstract
         return $planning;
     }
 
-    public function saveGroupPlanning($groupId, array $planning)
+    public function saveGroupPlanning($groupId, array $planning, array $pause)
     {
         $result = false;
         if (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
             $group = $this->_modelDb->getGroupById($groupId);
             if ($group) {
+                $pause = $this->_preparePause($pause);
                 $planning = $this->_preparePlanning($planning);
                 $groupPlannings = new Application_Model_Db_Group_Plannings();
                 $result = $groupPlannings->saveGroupPlanning($groupId, $planning);
+                if ($result) {
+                    $groupSettings = new Application_Model_Db_Group_Settings();
+                    if ( ! empty($pause['pause_start']) && ! empty($pause['pause_end'])) {
+                        $result = $groupSettings->saveGroupPause($groupId, $pause['pause_start'], $pause['pause_end']);
+                    } else {
+                        $result = $groupSettings->deleteGroupPause($groupId);
+                    }
+                }
             }
         }
+        return $result;
+    }
+
+    public function getGroupSettings($groupId)
+    {
+        $groupSettings = new Application_Model_Db_Group_Settings();
+        $settings = $groupSettings->getGroupSettings($groupId);
+        return $settings;
+    }
+
+    public function saveGroupSetting($groupId, $setting, $value)
+    {
+        $groupSettings = new Application_Model_Db_Group_Settings();
+        $result = $groupSettings->saveGroupSetting($groupId, $setting, $value);
         return $result;
     }
 
@@ -91,10 +114,8 @@ class Application_Model_Group extends Application_Model_Abstract
             if (empty($day['time_start']['hour']) || empty($day['time_end']['hour'])) {
                 continue;
             }
-            $timeStart = '';
-            $timeEnd = '';
-            try { $timeStart = new DateTime((int)$day['time_start']['hour'] . ':' . (int)$day['time_start']['min']); } catch (Exception $e) {}
-            try { $timeEnd = new DateTime((int)$day['time_end']['hour'] . ':' . (int)$day['time_end']['min']); } catch (Exception $e) {}
+            try { $timeStart = new DateTime((int)$day['time_start']['hour'] . ':' . (int)$day['time_start']['min']); } catch (Exception $e) { $timeStart = ''; }
+            try { $timeEnd = new DateTime((int)$day['time_end']['hour'] . ':' . (int)$day['time_end']['min']); } catch (Exception $e) { $timeEnd = ''; }
             if ( ! $timeStart || ! $timeEnd || $timeStart >= $timeEnd) {
                 continue; // wrong time
             }
@@ -112,6 +133,20 @@ class Application_Model_Group extends Application_Model_Abstract
                 'time_end'   => $timeEnd->format('H:i:s'),
             );
             $prepared[$key] = $preparedDay;
+        }
+        return $prepared;
+    }
+
+    protected function _preparePause(array $pause)
+    {
+        $prepared = array();
+        if ( ! empty($pause['pause_start']['hour']) && ! empty($pause['pause_end']['hour'])) {
+            try { $pauseStart = new DateTime((int)$pause['pause_start']['hour'] . ':' . (int)$pause['pause_start']['min']); } catch (Exception $e) { $pauseStart = ''; }
+            try { $pauseEnd = new DateTime((int)$pause['pause_end']['hour'] . ':' . (int)$pause['pause_end']['min']); } catch (Exception $e) { $pauseEnd = ''; }
+            if ($pauseStart && $pauseEnd && $pauseStart < $pauseEnd) {
+                $prepared['pause_start'] = $pauseStart->format('H:i:s');
+                $prepared['pause_end']   = $pauseEnd->format('H:i:s');
+            }
         }
         return $prepared;
     }

@@ -131,3 +131,12 @@ CREATE TABLE `group_plannings` (
   INDEX (group_id)
 )
 ;
+
+CREATE TABLE `group_settings` (
+  group_id INT NOT NULL,
+  pause_start TIME DEFAULT NULL,
+  pause_end TIME DEFAULT NULL,
+  max_free_people INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (group_id)
+)
+;

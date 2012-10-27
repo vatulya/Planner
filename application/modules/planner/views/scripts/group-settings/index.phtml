@@ -77,6 +77,9 @@
         </thead>
         <tbody>
         <?php if ( ! empty($this->groups)): ?>
+            <?php
+            $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'action' => 'save-group-setting-max-free-people'), 'planner', true);
+            ?>
             <?php foreach ($this->groups as $group): ?>
                 <tr>
                     <td style="background-color: #<?php echo $group['color']; ?>">
@@ -86,12 +89,19 @@
                         <?php echo $group['group_name']; ?>
                     </td>
                     <td>
-                        <div class="input-append">
-                            <form method="POST" class="form-mini">
-                                <input type="text" class="span1 rule-int btn-mini" value="5">
-                                <button class="btn btn-success btn-no-text" type="button"><i class="icon-ok icon-white"></i></button>
-                            </form>
-                        </div>
+                        <form method="POST" class="form-mini mini-ajax-form" id="group-<?php echo $group['id']; ?>-max-free-people" action="<?php echo $maxFreePeopleAction; ?>">
+                            <div class="input-append control-group">
+                                <input type="hidden" name="group" value="<?php echo $group['id']; ?>">
+                                <?php
+                                    $maxFreePeople = '';
+                                    if (isset($group['settings']['max_free_people'])) {
+                                        $maxFreePeople = (int)$group['settings']['max_free_people'];
+                                    }
+                                ?>
+                                <input type="text" name="max_free_people" class="span1 rule-int btn-mini" value="<?php echo $maxFreePeople; ?>">
+                                <button class="btn btn-success btn-no-text button-submit" type="button" data-form="group-<?php echo $group['id']; ?>-max-free-people"><i class="icon-ok icon-white"></i></button>
+                            </div>
+                        </form>
                     </td>
                     <td>
                         <button class="btn btn-mini btn-success create-group-exception"><i class="icon-plus-sign icon-white"></i></button>

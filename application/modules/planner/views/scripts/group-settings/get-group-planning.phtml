@@ -2,11 +2,32 @@
     <div class="span12 group-planning">
         <div class="span5">
             <form class="form-inline">
+                <?php
+                $start = $this->groupSettings['pause_start'];
+                $end   = $this->groupSettings['pause_end'];
+                if ( ! empty($start) && ! empty($end)) {
+                    $startTime = new DateTime($start);
+                    $startHourValue = $startTime->format('H');
+                    $startMinValue  = $startTime->format('i');
+                    $endTime = new DateTime($end);
+                    $endHourValue = $endTime->format('H');
+                    $endMinValue  = $endTime->format('i');
+                } else {
+                    $startHourValue = '';
+                    $startMinValue  = '';
+                    $endHourValue = '';
+                    $endMinValue  = '';
+                }
+                ?>
                 <div class="pause-time">
                     Pause time:
-                    <input type="text" value="13" class="pause-hour set-time-hour">:<input type="text" value="00" class="pause-min set-time-min">
+                    <input type="text" value="<?php echo $startHourValue; ?>" class="pause-hour set-time-hour start-hour"><?php
+                    ?>:<?php
+                    ?><input type="text" value="<?php echo $startMinValue; ?>" class="pause-min set-time-min start-min">
                     till
-                    <input type="text" value="14" class="pause-hour set-time-hour">:<input type="text" value="00" class="pause-min set-time-min">
+                    <input type="text" value="<?php echo $endHourValue; ?>" class="pause-hour set-time-hour end-hour"><?php
+                    ?>:<?php
+                    ?><input type="text" value="<?php echo $endMinValue; ?>" class="pause-min set-time-min end-min">
                 </div>
             </form>
         </div>

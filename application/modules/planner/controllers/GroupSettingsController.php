@@ -4,14 +4,18 @@ class Planner_GroupSettingsController extends My_Controller_Action
 {
 
     public $ajaxable = array(
-        'index'               => array('html'),
-        'get-edit-group-form' => array('html'),
-        'get-group-planning'  => array('html'),
-        'save-group-form'     => array('json'),
-        'delete-group'        => array('json'),
-        'save-group-planning' => array('json'),
+        'index'                              => array('html'),
+        'get-edit-group-form'                => array('html'),
+        'get-group-planning'                 => array('html'),
+        'save-group-form'                    => array('json'),
+        'delete-group'                       => array('json'),
+        'save-group-planning'                => array('json'),
+        'save-group-setting-max-free-people' => array('json'),
     );
 
+    /**
+     * @var Application_Model_Group
+     */
     protected $_modelGroup;
 
     public function init()
@@ -24,6 +28,11 @@ class Planner_GroupSettingsController extends My_Controller_Action
     public function indexAction()
     {
         $groups = $this->_modelGroup->getAllGroups();
+        foreach ($groups as $key => $group) {
+            $group['settings'] = $this->_modelGroup->getGroupSettings($group['id']);
+//            $group['exceptions'] = $this->_modelGroup->getGroupExceptions($group['id']);
+            $groups[$key] = $group;
+        }
         $this->view->groups = $groups;
     }
 
@@ -94,6 +103,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
             $this->view->weekDays = self::getWeekDays();
             $this->view->group = $group;
             $this->view->groupPlanning = $planning;
+            $this->view->groupSettings = $this->_modelGroup->getGroupSettings($groupId);
         }
         $this->_helper->layout->disableLayout();
     }
@@ -127,7 +137,17 @@ class Planner_GroupSettingsController extends My_Controller_Action
 
     public function saveGroupPlanningAction()
     {
-        $status = $this->_modelGroup->saveGroupPlanning($this->_getParam('group'), $this->_getParam('group_planning'));
+        $status = $this->_modelGroup->saveGroupPlanning($this->_getParam('group'), $this->_getParam('group_planning', array()), $this->_getParam('group_pause', array()));
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function saveGroupSettingMaxFreePeopleAction()
+    {
+        $status = $this->_modelGroup->saveGroupSetting($this->_getParam('group'), 'max_free_people', $this->_getParam('max_free_people', 0));
         if ($status) {
             $this->_response(1, '', array());
         } else {

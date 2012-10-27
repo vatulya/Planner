@@ -29,6 +29,11 @@ class Application_Model_Db_Groups extends Application_Model_Db_Abstract
             'color'      => $group['color'],
         );
         $result = $this->_db->insert(self::TABLE_NAME, $data);
+        if ($result) {
+            $groupId = $this->_db->query('SELECT LAST_INSERT_ID();')->fetchColumn();
+            $settings = new Application_Model_Db_Group_Settings();
+            $settings->setDefaultGroupSettings($groupId);
+        }
         return $result;
     }
 
@@ -45,6 +50,9 @@ class Application_Model_Db_Groups extends Application_Model_Db_Abstract
     public function deleteGroup($groupId)
     {
         $this->_db->delete(self::TABLE_NAME, array('id = ?' => $groupId));
+        $settings = new Application_Model_Db_Group_Settings();
+        $settings->deleteGroupSettings($groupId);
+        return true;
     }
 
 }

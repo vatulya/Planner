@@ -104,6 +104,38 @@
             Form.hideAllNotifications(formEl);
 
             formEl.find('.alert-success').html('Success!').show();
+        },
+
+        hideAllNotificationsMini: function(formEl) {
+            formEl.find('.control-group').removeClass('error');
+            formEl.find('.control-group').removeClass('success');
+        },
+
+        showSuccessMini: function(formEl, hideTimeout) {
+            Form.hideAllNotificationsMini(formEl);
+            formEl.find('.control-group').addClass('success');
+            if (hideTimeout > 0) {
+                setTimeout(function() {Form.hideAllNotificationsMini(formEl);}, hideTimeout);
+            }
+        },
+
+        showErrorsMini: function(formEl, errorsHash, hideTimeout) {
+            // TODO: errorsHash is not used now.
+            Form.hideAllNotificationsMini(formEl);
+            formEl.find('.control-group').addClass('error');
+            if (hideTimeout > 0) {
+                setTimeout(function() {Form.hideAllNotificationsMini(formEl);}, hideTimeout);
+            }
+        },
+
+        blockForm: function(formEl) {
+            formEl.find('input').attr('disabled', 'disabled');
+            formEl.find('button').attr('disabled', 'disabled');
+        },
+
+        unblockForm: function(formEl) {
+            formEl.find('input').removeAttr('disabled');
+            formEl.find('button').removeAttr('disabled');
         }
 
     };
