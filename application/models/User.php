@@ -113,4 +113,18 @@ class Application_Model_User extends Application_Model_Abstract
         return $userDay;
     }
 
+    public function getUserParameters($userId)
+    {
+        $modelUserParameters = new Application_Model_Db_User_Parameters();
+        $userParameters = $modelUserParameters->getUserParameters($userId);
+        $userParameters = $this->_calculateAdditionalParameters($userParameters);
+        return $userParameters;
+    }
+
+    protected function _calculateAdditionalParameters(array $userParameters)
+    {
+        $userParameters['allowed_free_hours'] = 100500; // TODO: calc 'based on settings how much they have minus what they used.'
+        return $userParameters;
+    }
+
 }

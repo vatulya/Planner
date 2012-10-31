@@ -1,0 +1,50 @@
+<?php
+/** @var $showDate DateTime */
+$showDate = $this->showDate;
+$showMonth = $showDate->format('m');
+
+$start = clone $showDate;
+$start->setDate($start->format('Y'), $start->format('m'), 1)->setTime(0, 0, 0); // set first day in month
+$dayOffset = $start->format('w'); // 0 - sunday
+if ( ! $dayOffset) {
+    $dayOffset = 7;
+}
+$start->modify('-' . --$dayOffset . ' days');
+
+$end = clone $showDate;
+$end->setDate($end->format('Y'), $end->format('m'), $end->format('t'))->setTime(0, 0, 0); // set last day in month
+$dayOffset = $end->format('w'); // 0 - sunday
+if ( ! $dayOffset) {
+    $dayOffset = 7;
+}
+$dayOffset = 7 - $dayOffset; // how much days left to the end of week
+$end->modify('+' . $dayOffset . ' days');
+
+$totalDays = $start->diff($end)->format('%a');
+$endDate = clone $end;
+$endDate->modify('+1 days');
+$endDate = $endDate->format('Y-m-d');
+?>
+
+<div class="calendar-container">
+    <?php if ($totalDays > 0) : ?>
+        <?php while($start->format('Y-m-d') != $endDate): ?>
+            <?php
+                $date = $start->format('Y-m-d');
+                $year = $start->format('Y');
+                $month = $start->format('m');
+                $day = $start->format('d');
+                $dayNumber = $start->format('w'); // 0 - sunday
+                if ( ! $dayNumber) { $dayNumber = 7; }
+                $isCurrentMonthClass = $month == $showMonth ? 'current-month' : '';
+                $isWeekendClass = $dayNumber > 5 ? 'weekend' : '';
+            ?>
+            <div class="calendar-day-cell <?php echo $isCurrentMonthClass . ' ' . $isWeekendClass; ?>" data-date="<?php echo $date; ?>" data-day="<?php echo $day; ?>">
+                <?php echo $day; ?>
+            </div>
+            <?php $start->modify('+1 days'); ?>
+        <?php endwhile; ?>
+    <?php else: ?>
+        Wrong data.
+    <?php endif; ?>
+</div>

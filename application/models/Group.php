@@ -5,6 +5,8 @@ class Application_Model_Group extends Application_Model_Abstract
 
     protected $_modelDb;
 
+    const GENERAL_GROUP_ID = 0;
+
     public function __construct()
     {
         $this->_modelDb = new Application_Model_Db_Groups();
@@ -105,6 +107,23 @@ class Application_Model_Group extends Application_Model_Abstract
         $groupSettings = new Application_Model_Db_Group_Settings();
         $result = $groupSettings->saveGroupSetting($groupId, $setting, $value);
         return $result;
+    }
+
+    public function getGeneralGroup()
+    {
+        $data = array(
+            'id'         => self::GENERAL_GROUP_ID,
+            'group_name' => 'General Group',
+            'color'      => 'FFFFFF',
+        );
+        return $data;
+    }
+
+    public function getGeneralGroupSettings()
+    {
+        $groupSettings = new Application_Model_Db_Group_Settings();
+        $settings = $groupSettings->getDefaultGroupSettings();
+        return $settings;
     }
 
     protected function _preparePlanning(array $planning)

@@ -1,0 +1,17 @@
+.calendar-container {
+    width: 420px;
+}
+.calendar-day-cell {
+    width: 54px;
+    float: left;
+    text-align: center;
+    color: gray;
+    border: 1px solid gray;
+    margin: 2px;
+}
+.calendar-day-cell.current-month {
+    color: #000000;
+}
+.calendar-day-cell.weekend {
+    border-color: #cd5c5c;
+}

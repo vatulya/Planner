@@ -1,4 +1,9 @@
 <?php $this->headScript()->appendFile('/js/group-settings.js'); ?>
+
+<?php
+$maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'action' => 'save-group-setting-max-free-people'), 'planner', true);
+?>
+
 <div class="span12">
 
     <table class="table table-bordered group-settings-table">
@@ -26,9 +31,18 @@
             </td>
             <td>
                 <div class="input-append">
-                    <form method="POST" class="form-mini">
-                        <input type="text" class="span1 rule-int btn-mini" value="5">
-                        <button class="btn btn-success btn-no-text" type="button"><i class="icon-ok icon-white"></i></button>
+                    <form method="POST" class="form-mini mini-ajax-form" id="group-<?php echo $this->generalGroup['id']; ?>-max-free-people" action="<?php echo $maxFreePeopleAction; ?>">
+                        <div class="input-append control-group">
+                            <input type="hidden" name="group" value="0">
+                            <?php
+                            $maxFreePeople = '';
+                            if (isset($this->generalGroup['settings']['max_free_people'])) {
+                                $maxFreePeople = (int)$this->generalGroup['settings']['max_free_people'];
+                            }
+                            ?>
+                            <input type="text" name="max_free_people" class="span1 rule-int btn-mini" value="<?php echo $maxFreePeople; ?>">
+                            <button class="btn btn-success btn-no-text button-submit" type="button" data-form="group-<?php echo $this->generalGroup['id']; ?>-max-free-people"><i class="icon-ok icon-white"></i></button>
+                        </div>
                     </form>
                 </div>
             </td>
@@ -77,9 +91,6 @@
         </thead>
         <tbody>
         <?php if ( ! empty($this->groups)): ?>
-            <?php
-            $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'action' => 'save-group-setting-max-free-people'), 'planner', true);
-            ?>
             <?php foreach ($this->groups as $group): ?>
                 <tr>
                     <td style="background-color: #<?php echo $group['color']; ?>">

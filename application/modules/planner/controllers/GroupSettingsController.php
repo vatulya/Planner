@@ -27,12 +27,15 @@ class Planner_GroupSettingsController extends My_Controller_Action
 
     public function indexAction()
     {
+        $generalGroup = $this->_modelGroup->getGeneralGroup();
+        $generalGroup['settings'] = $this->_modelGroup->getGeneralGroupSettings();
         $groups = $this->_modelGroup->getAllGroups();
         foreach ($groups as $key => $group) {
             $group['settings'] = $this->_modelGroup->getGroupSettings($group['id']);
 //            $group['exceptions'] = $this->_modelGroup->getGroupExceptions($group['id']);
             $groups[$key] = $group;
         }
+        $this->view->generalGroup = $generalGroup;
         $this->view->groups = $groups;
     }
 

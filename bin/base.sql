@@ -140,3 +140,10 @@ CREATE TABLE `group_settings` (
   PRIMARY KEY (group_id)
 )
 ;
+
+CREATE TABLE `user_parameters` (
+  user_id INT NOT NULL,
+  used_free_hours INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (user_id)
+)
+;

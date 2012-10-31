@@ -48,5 +48,24 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         return $autoloader;
     }
 
+    protected function _initCalendarAutoload()
+    {
+        $autoloader = new Zend_Application_Module_Autoloader(array(
+            'namespace' => 'Planner_',
+            'basePath'  => APPLICATION_PATH .'/modules/calendar',
+            'resourceTypes' => array (
+                'form' => array(
+                    'path' => 'forms',
+                    'namespace' => 'Form',
+                ),
+                'model' => array(
+                    'path' => 'models',
+                    'namespace' => 'Model',
+                ),
+            )
+        ));
+        return $autoloader;
+    }
+
 }
 
