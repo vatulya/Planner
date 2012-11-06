@@ -1,17 +1,38 @@
-.calendar-container {
+.module-calendar {
     width: 420px;
+}
+.calendar-navigation {
+    height: 50px;
+}
+.calendar-change-date {
+    cursor: pointer;
 }
 .calendar-day-cell {
     width: 54px;
     float: left;
     text-align: center;
-    color: gray;
-    border: 1px solid gray;
+    color: #e3e3e3;
+    border: 1px solid #d3d3d3;
     margin: 2px;
+    cursor: pointer;
 }
 .calendar-day-cell.current-month {
     color: #000000;
+    border-color: #333;
+}
+.calendar-day-cell.current-month.weekend {
+    border-color: #cd5c5c;
 }
 .calendar-day-cell.weekend {
-    border-color: #cd5c5c;
+    border-color: #ffe4e1;
+}
+.calendar-day-cell.old-selected {
+    background-color: #2878d3;
+}
+.calendar-day-cell.selected {
+    background-color: #7ab5d3;
+}
+.calendar-day-cell.today {
+    font-weight: bold;
+    text-decoration: underline;
 }

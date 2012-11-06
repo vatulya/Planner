@@ -1,7 +1,8 @@
 <?php
 /** @var $showDate DateTime */
-$showDate = $this->showDate;
+$showDate  = $this->showDate;
 $showMonth = $showDate->format('m');
+$showYear  = $showDate->format('Y');
 
 $start = clone $showDate;
 $start->setDate($start->format('Y'), $start->format('m'), 1)->setTime(0, 0, 0); // set first day in month
@@ -24,9 +25,53 @@ $totalDays = $start->diff($end)->format('%a');
 $endDate = clone $end;
 $endDate->modify('+1 days');
 $endDate = $endDate->format('Y-m-d');
+
+$today = new DateTime();
+$todayDate = $today->format('Y-m-d');
+
+$selectedDates = implode(',', $this->selectedDates);
+$oldSelectedDates = implode(',', $this->oldSelectedDates);
 ?>
 
-<div class="calendar-container">
+<div
+    class="module-calendar"
+    data-selected-dates="<?php echo $selectedDates; ?>"
+    data-old-selected-dates="<?php echo $oldSelectedDates; ?>"
+    data-show-date="<?php echo $showDate->format('Y-m-d'); ?>"
+    data-container-id="<?php echo $this->containerId; ?>"
+>
+    <div class="calendar-navigation">
+        <div class="navigation-month pull-left input-prepend input-append">
+            <div class="add-on calendar-change-date" data-change-type="month" data-change-direction="less">
+                <span class="icon-arrow-left"></span>
+            </div>
+            <select name="show-month" class="span2 calendar-change-date-select calendar-select-month">
+                <?php foreach ($this->months as $number => $name): ?>
+                    <?php $selected = $number == $showMonth ? 'selected="selected"' : ''; ?>
+                    <option value="<?php echo $number; ?>" <?php echo $selected; ?>><?php echo $name; ?></option>
+                <?php endforeach; ?>
+            </select>
+            <div class="add-on calendar-change-date" data-change-type="month" data-change-direction="more">
+                <span class="icon-arrow-right"></span>
+            </div>
+        </div>
+        <div class="navigation-year pull-right input-prepend input-append">
+            <div class="add-on calendar-change-date" data-change-type="year" data-change-direction="less">
+                <span class="icon-arrow-left"></span>
+            </div>
+            <select name="show-year" class="span2 calendar-change-date-select calendar-select-year">
+                <?php foreach ($this->years as $year): ?>
+                    <?php $selected = $year == $showYear ? 'selected="selected"' : ''; ?>
+                    <option value="<?php echo $year; ?>" <?php echo $selected; ?>><?php echo $year; ?></option>
+                <?php endforeach; ?>
+            </select>
+            <div class="add-on calendar-change-date" data-change-type="year" data-change-direction="more">
+                <span class="icon-arrow-right"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="days">
     <?php if ($totalDays > 0) : ?>
         <?php while($start->format('Y-m-d') != $endDate): ?>
             <?php
@@ -36,15 +81,30 @@ $endDate = $endDate->format('Y-m-d');
                 $day = $start->format('d');
                 $dayNumber = $start->format('w'); // 0 - sunday
                 if ( ! $dayNumber) { $dayNumber = 7; }
-                $isCurrentMonthClass = $month == $showMonth ? 'current-month' : '';
-                $isWeekendClass = $dayNumber > 5 ? 'weekend' : '';
+
+                $css = array(
+                    'isCurrentMonthClass' => $month == $showMonth ? 'current-month' : '',
+                    'isWeekendClass'      => $dayNumber > 5 ? 'weekend' : '',
+                    'isSelectedClass'     => in_array($date, (array)$this->selectedDates) ? 'selected' : '',
+                    'isOldSelectedClass'  => in_array($date, (array)$this->oldSelectedDates) ? 'old-selected' : '',
+                    'isToday'             => $date == $todayDate ? 'today' : '',
+                );
+                $css = implode(' ', array_filter($css));
             ?>
-            <div class="calendar-day-cell <?php echo $isCurrentMonthClass . ' ' . $isWeekendClass; ?>" data-date="<?php echo $date; ?>" data-day="<?php echo $day; ?>">
+
+            <div
+                class="calendar-day-cell <?php echo $css; ?>"
+                data-date="<?php echo $date; ?>"
+                data-day="<?php echo $day; ?>">
+
                 <?php echo $day; ?>
             </div>
+
             <?php $start->modify('+1 days'); ?>
         <?php endwhile; ?>
     <?php else: ?>
         Wrong data.
     <?php endif; ?>
+    </div>
+
 </div>

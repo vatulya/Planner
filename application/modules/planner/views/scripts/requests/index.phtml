@@ -7,12 +7,23 @@
     <?php echo $this->me['full_name']; ?>
 </div>
 <div class="span4">
-    Gebruikt saldo: <span class="use-free-hours"><?php echo $this->me['parameters']['used_free_hours']; ?></span>
+    <span class="param-name">Gebruikt saldo:</span> <span class="use-free-hours"><?php echo $this->me['parameters']['used_free_hours']; ?></span>
 </div>
 <div class="span4">
-    Openstaand saldo: <span class="allowed-free-hours"><?php echo $this->me['parameters']['allowed_free_hours']; ?></span>
+    <span class="param-name">Openstaand saldo:</span> <span class="allowed-free-hours"><?php echo $this->me['parameters']['allowed_free_hours']; ?></span>
 </div>
 
-<div class="span12">
-    <div class="span12" id="request-calendar"></div>
+<div class="span12" id="request-calendar-container">
+    <div class="span12">
+        <div
+            class="module-calendar"
+            data-old-selected-dates="01-11-2012,02-11-2012"
+            data-selected-dates="15-11-2012,16-11-2012,17-11-2012,18-11-2012"
+            data-container-id="request-calendar-container"
+        ></div>
+    </div>
+    <div class="span12">
+        <span class="param-name">Geselecteerd is:</span> <span class="request-calendar-selected-days"></span>
+    </div>
 </div>
+
