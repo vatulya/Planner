@@ -34,8 +34,10 @@ form.form-mini {
 .btn-no-text {
     padding: 6px 14px 7px 14px;
 }
-.checking-table td {
-    padding: 3px;
+.table-small-td td {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    vertical-align: middle;
 }
 .group-settings-table .input-append, .group-settings-table input {
     margin-bottom: 0px;
@@ -108,3 +110,69 @@ form.form-mini {
     margin-top: 3px;
     padding: 5px 7px;
 }
+.requests-table {
+    margin-top: 30px;
+}
+.open-request-group {
+    margin-top: 30px;
+}
+.open-request-user-action button {
+    width: 100%;
+}
+.user-settings-table {
+    top: 80px;
+    left: 20px;
+    position: absolute;
+    width: 1400px;
+}
+.user-settings-table th {
+    padding: 3px;
+}
+
+.user-settings-table.table-small-td td {
+    vertical-align: top;
+}
+.user-settings-table .col-user-name {width: 200px;}
+.user-settings-table .col-user-address {width: 100px;}
+.user-settings-table .col-user-phone {width: 100px;}
+.user-settings-table .col-user-email {width: 100px;}
+.user-settings-table .col-user-emergency-phone {width: 100px;}
+.user-settings-table .col-user-emergency-name {width: 100px;}
+.user-settings-table .col-user-birthday {width: 100px;}
+.user-settings-table .col-user-group {width: 100px;}
+.user-settings-table .col-user-password {width: 100px;}
+.user-settings-table .col-user-work-hours {width: 100px;}
+.user-settings-table .col-user-work-time {width: 100px;}
+.user-settings-table .col-user-owner {width: 100px;}
+
+.user-settings-table tbody td {
+    overflow: hidden;
+}
+
+.div-row {
+    height: 20px;
+}
+.underflow-container {
+    position: relative;
+}
+.underflow {
+    width: 100500px;
+    position: absolute;
+}
+.group-history-block, .group-overview-block, .alert-1-block {
+    margin-left: 10px;
+}
+
+.group-overview-container {width: 1200px;}
+.group-overview-header {height: 30px;}
+
+.group-overview-table .group-user-name {width: 200px;}
+.group-overview-table .group-user-worked {width: 120px;}
+.group-overview-table .group-user-used-free-days {width: 120px;}
+.group-overview-table .group-user-overtime {width: 120px;}
+.group-overview-table .group-user-doctor-days {width: 120px;}
+
+.alerts-container {width: 1000px;}
+.alert-1-header {height: 30px;}
+.alert-1-year-table {width: 180px;}
+.alert-1-year-table table {width: 100px; margin: 0 auto;}

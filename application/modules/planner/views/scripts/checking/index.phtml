@@ -9,7 +9,7 @@ Error! No users.
 
 <div class="span11">
 
-    <table class="table table-bordered table-striped checking-table">
+    <table class="table table-bordered table-striped table-small-td">
         <thead>
         <tr>
             <th class="span3">Naam</th>
@@ -32,7 +32,7 @@ Error! No users.
     </table>
 
     <?php foreach($this->groups as $group): ?>
-    <table class="table table-bordered table-striped checking-table">
+    <table class="table table-bordered table-striped table-small-td">
         <thead>
         <tr <?php if ( ! empty($group['color'])): ?>style="background-color: #<?php echo $group['color']; ?>;"<?php endif; ?>>
             <th class="span3"><?php echo $group['group_name']; ?></th>

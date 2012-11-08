@@ -45,7 +45,7 @@ class Calendar_IndexController extends Zend_Controller_Action
         $showDate = $this->_modifyShowDate($showDate, $changeDateType, $changeDateDirection, $setShowDate);
 
         /*** PREPARE SELECTED DATES FOR SHOW-DATE ***/
-        $selectedDates    = $this->_getParam('selected_dates', '');
+        $selectedDates = $this->_getParam('selected_dates', '');
 //        $selectedDates = $this->_normalizeSelectedDates($oldSelectedDates, $showDate);
         $selectedDates = $this->_normalizeDate($selectedDates);
 
