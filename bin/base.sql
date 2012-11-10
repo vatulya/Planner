@@ -147,3 +147,22 @@ CREATE TABLE `user_parameters` (
   PRIMARY KEY (user_id)
 )
 ;
+
+CREATE TABLE `user_requests` (
+  id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  request_id INT NOT NULL,
+  request_date DATE NOT NULL,
+  status ENUM('open', 'approved', 'rejected') NOT NULL DEFAULT 'open',
+  comment TEXT NOT NULL,
+  admin_id INT NOT NULL DEFAULT 0,
+  created DATETIME NOT NULL,
+  updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE (user_id, request_date),
+  INDEX(user_id),
+  INDEX(request_id),
+  INDEX(request_date),
+  INDEX(status)
+)
+;

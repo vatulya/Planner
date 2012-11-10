@@ -2,6 +2,17 @@
 
     var Calendar = {
 
+        init: function() {
+        },
+
+        // THIS IS TEMPORARY METHOD. NEED MOVE IT TO GLOBAL
+        setDataEl: function(el, key, value) {
+            if (el.length) {
+                el.data(key, value);
+                el.attr('data-' + key, value);
+            }
+        },
+
         getCalendar: function(el) {
             el = $(el);
             var calendar = el.parents('.module-calendar');
@@ -10,32 +21,51 @@
 
         getData: function(el) {
             var data = {};
+            data.container_id       = el.data('container-id');
             data.selected_dates     = el.data('selected-dates');
             data.old_selected_dates = el.data('old-selected-dates');
+            data.show_date          = el.data('show-date');
+            data.editable           = el.data('editable');
             if (typeof data.selected_dates == 'undefined' || data.selected_dates == '') {
-                data.selected_dates == [];
+                data.selected_dates = [];
             } else {
                 data.selected_dates = data.selected_dates.split(',');
             }
             if (typeof data.old_selected_dates == 'undefined' || data.old_selected_dates == '') {
-                data.old_selected_dates == [];
+                data.old_selected_dates = [];
             } else {
                 data.old_selected_dates = data.old_selected_dates.split(',');
+            }
+            if (data.editable) {
+                data.editable = 1;
+            } else {
+                data.editable = 0;
             }
             return data;
         },
 
-        refreshData: function(el) {
-            var selected_dates = Calendar.getData(el).selected_dates;
-            el.find('.calendar-day-cell').each(function(i, el) {
-                el = $(el);
-                var d = el.data('date');
-                if (el.hasClass('selected') && !$.inArray(d, selected_dates))
-                selected_dates.push(d);
-            });
-            selected_dates = selected_dates.join(',');
-            el.data('selected-dates', selected_dates);
-            el.attr('data-selected-dates', selected_dates);
+        setData: function(el, data) {
+            var value;
+            if (typeof data.container_id != 'undefined' && data.container_id != '') {
+                value = data.container_id;
+                Calendar.setDataEl(el, 'container-id', value);
+            }
+            if (data.selected_dates.length) {
+                value = data.selected_dates.join(',');
+                Calendar.setDataEl(el, 'selected-dates', value);
+            }
+            if (data.old_selected_dates.length) {
+                value = data.old_selected_dates.join(',');
+                Calendar.setDataEl(el, 'old-selected-dates', value);
+            }
+            if (typeof data.show_date != 'undefined' && data.show_date != '') {
+                value = data.show_date;
+                Calendar.setDataEl(el, 'show-date', value);
+            }
+            if (typeof data.editable != 'undefined' && data.editable != '') {
+                value = data.editable;
+                Calendar.setDataEl(el, 'editable', value);
+            }
         },
 
         render: function(el) {
@@ -45,8 +75,6 @@
 
         refresh: function(el) {
             var data = Calendar.getData(el);
-            data.container_id       = el.data('container-id');
-            data.show_date          = el.data('show-date');
             data.change_direction   = el.data('change-direction');
             data.change_type        = el.data('change-type');
             data.set_show_date      = el.data('set-show-date');
@@ -72,7 +100,9 @@
             var container = $('#' + el.data('container-id'));
             if ( ! container.length) return;
             $(container).on('click', '.calendar-day-cell', function(e) {
-                Calendar.toggleSelected(e.target);
+                if (el.data('editable')) {
+                    Calendar.toggleSelected(e.target);
+                }
             });
             $(container).on('click', '.calendar-change-date', function(e) {
                 Calendar.changeDate(e.currentTarget);
@@ -84,8 +114,27 @@
 
         toggleSelected: function(el) {
             el = $(el);
+            if (el.hasClass('blocked')) {
+                return; // You can't edit past dates
+            }
+            var date, data, calendar, i;
+            calendar = Calendar.getCalendar(el);
             el.toggleClass('selected');
-            Calendar.refreshData(el.parents('.module-calendar'));
+            data = Calendar.getData(calendar);
+            date = el.data('date');
+            i = $.inArray(date, data.selected_dates);
+            if (el.hasClass('selected')) {
+                if (i === -1) {
+                    data.selected_dates.push(date);
+                }
+            } else {
+                if (i > -1) {
+                    data.selected_dates.splice(i, 1);
+                }
+            }
+            calendar.data('selected-dates', data.selected_dates.join(','));
+            calendar.attr('data-selected-dates', data.selected_dates.join(','));
+            console.log(Calendar.getData(calendar).selected_dates);
             el.trigger('calendar-selected-changed');
         },
 
@@ -105,12 +154,20 @@
             calendar.data('set-show-date', year + '-' + month + '-01');
             calendar.attr('date-set-data-show-date', year + '-' + month + '-01');
             Calendar.refresh(calendar);
+        },
+
+        showModalCalendar: function(el) {
+            var data = Calendar.getData(el);
+
         }
 
     };
     window.Calendar = Calendar;
 
     $(function() {
+
+        Calendar.init();
+
     });
 
 })(this, this.document, this.jQuery);

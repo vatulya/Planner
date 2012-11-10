@@ -27,7 +27,9 @@ $endDate->modify('+1 days');
 $endDate = $endDate->format('Y-m-d');
 
 $today = new DateTime();
+$today->setTime(0, 0, 0);
 $todayDate = $today->format('Y-m-d');
+$todayTimestamp = $today->getTimestamp();
 
 $selectedDates = implode(',', $this->selectedDates);
 $oldSelectedDates = implode(',', $this->oldSelectedDates);
@@ -39,6 +41,7 @@ $oldSelectedDates = implode(',', $this->oldSelectedDates);
     data-old-selected-dates="<?php echo $oldSelectedDates; ?>"
     data-show-date="<?php echo $showDate->format('Y-m-d'); ?>"
     data-container-id="<?php echo $this->containerId; ?>"
+    data-editable="<?php echo $this->editable; ?>"
 >
     <div class="calendar-navigation">
         <div class="navigation-month pull-left input-prepend input-append">
@@ -75,11 +78,12 @@ $oldSelectedDates = implode(',', $this->oldSelectedDates);
     <?php if ($totalDays > 0) : ?>
         <?php while($start->format('Y-m-d') != $endDate): ?>
             <?php
-                $date = $start->format('Y-m-d');
-                $year = $start->format('Y');
-                $month = $start->format('m');
-                $day = $start->format('d');
+                $date      = $start->format('Y-m-d');
+                $year      = $start->format('Y');
+                $month     = $start->format('m');
+                $day       = $start->format('d');
                 $dayNumber = $start->format('w'); // 0 - sunday
+                $timestamp = $start->getTimestamp();
                 if ( ! $dayNumber) { $dayNumber = 7; }
 
                 $css = array(
@@ -88,6 +92,7 @@ $oldSelectedDates = implode(',', $this->oldSelectedDates);
                     'isSelectedClass'     => in_array($date, (array)$this->selectedDates) ? 'selected' : '',
                     'isOldSelectedClass'  => in_array($date, (array)$this->oldSelectedDates) ? 'old-selected' : '',
                     'isToday'             => $date == $todayDate ? 'today' : '',
+                    'isBlocked'          => $timestamp < $todayTimestamp ? 'blocked' : '',
                 );
                 $css = implode(' ', array_filter($css));
             ?>

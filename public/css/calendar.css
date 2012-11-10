@@ -23,14 +23,20 @@
 .calendar-day-cell.current-month.weekend {
     border-color: #cd5c5c;
 }
+.calendar-day-cell.blocked {
+    background-color: #eee;
+    color: #808080;
+}
 .calendar-day-cell.weekend {
     border-color: #ffe4e1;
 }
 .calendar-day-cell.old-selected {
     background-color: #2878d3;
+    color: #000000;
 }
 .calendar-day-cell.selected {
     background-color: #7ab5d3;
+    color: #000000;
 }
 .calendar-day-cell.today {
     font-weight: bold;

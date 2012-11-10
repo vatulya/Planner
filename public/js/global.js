@@ -37,7 +37,7 @@
         },
 
         render: function (html, header) {
-            var span = $('<span class="popup-container"></span>');
+            var span = $('<div class="popup-container"></div>');
             span.html(html);
             this.body.html(span);
             this.header.html(header);
@@ -46,14 +46,14 @@
 
         modal: function(options) {
             this.container.modal(options);
-            var popup = this;
-            popup.container.css('width', '5000px');
+//            var popup = this;
+//            popup.container.css('width', '5000px');
 //            popup.container.css('height', '5000px');
-            var width = (popup.body.find('.popup-container').outerWidth() * 1) + (popup.offsetWidth * 1);
-            var height = (popup.body.find('.popup-container').outerHeight() * 1) + (popup.offsetHeight * 1);
-            popup.container.css('width', width + 'px');
-            popup.body.css('margin-bottom', height + 'px');
-            popup.container.css('margin-left', '-' + (width / 2) + 'px');
+//            var width = (popup.body.find('.popup-container').outerWidth() * 1) + (popup.offsetWidth * 1);
+//            var height = (popup.body.find('.popup-container').outerHeight() * 1) + (popup.offsetHeight * 1);
+//            popup.container.css('width', width + 'px');
+//            popup.body.css('margin-bottom', height + 'px');
+//            popup.container.css('margin-left', '-' + (width / 2) + 'px');
             $('#container').trigger('popup-init');
             return this;
         },
@@ -143,6 +143,8 @@
 
     $(function() {
 
+        Popup.init();
+
         $('#container').on('init', function(e) {
             $('#logout-link').tooltip({placement: 'bottom'});
             $('.show-tooltip').tooltip({placement: 'bottom'});
@@ -175,6 +177,21 @@
             var form = $('#' + target);
             if (target && form.length) {
                 form.submit();
+            }
+        });
+
+        $(document.body).on('click', '.show-in-calendar', function(e) {
+            if (Calendar && Popup) {
+                var el = $(e.currentTarget);
+                var html = '<div id="modal-calendar-container"><div class="module-calendar">&nbsp;</div></div>';
+                var header = 'Calendar view';
+                Popup.render(html, header);
+                var data = Calendar.getData(el);
+                data.container_id = 'modal-calendar-container';
+                var calendar = Popup.body.find('.module-calendar');
+                Calendar.setData(calendar, data);
+                Calendar.render(calendar);
+                Popup.modal('show');
             }
         });
 

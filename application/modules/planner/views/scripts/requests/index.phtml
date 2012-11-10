@@ -2,6 +2,12 @@
 <?php $this->headScript()->appendFile('/js/calendar.js'); ?>
 <?php $this->headLink()->appendStylesheet('/css/calendar.css'); ?>
 
+<?php
+$oldSelectedDates = array();
+foreach ($this->userRequests as $request) {
+    $oldSelectedDates[] = $request['request_date'];
+};
+?>
 
 <div class="span4">
     <?php echo $this->me['full_name']; ?>
@@ -17,9 +23,10 @@
     <div class="span12">
         <div
             class="module-calendar"
-            data-old-selected-dates="01-11-2012,02-11-2012"
-            data-selected-dates="15-11-2012,16-11-2012,17-11-2012,18-11-2012"
+            data-old-selected-dates="<?php echo implode(',', $oldSelectedDates); ?>"
+            data-selected-dates=""
             data-container-id="request-calendar-container"
+            data-editable="1"
         ></div>
     </div>
     <div class="span12">
@@ -38,8 +45,13 @@
                 Openstaande aanvragen:
             </td>
             <td>
-                05-02-2013
-                <button class="btn show-in-calendar pull-right" data-selected-dates='2013-02-05' data-show-date='2013-02-01'><span class="icon-eye-open"></span></button>
+                <?php echo implode(', ', $oldSelectedDates); ?>
+            </td>
+            <td>
+                <button class="btn show-in-calendar pull-right"
+                    data-old-selected-dates="<?php echo implode(',', $oldSelectedDates); ?>"
+                    data-show-date="<?php echo end($oldSelectedDates); ?>"
+                ><span class="icon-eye-open"></span></button>
             </td>
         </tr>
         <tr>
@@ -48,6 +60,8 @@
             </td>
             <td>
                 07-06-2012, 08-06-2012
+            </td>
+            <td>
                 <button class="btn show-in-calendar pull-right" data-selected-dates='2013-02-05' data-show-date='2013-02-01'><span class="icon-eye-open"></span></button>
             </td>
         </tr>
@@ -57,6 +71,8 @@
             </td>
             <td>
                 05-02-2013
+            </td>
+            <td>
                 <button class="btn show-in-calendar pull-right" data-selected-dates='2013-02-05' data-show-date='2013-02-01'><span class="icon-eye-open"></span></button>
             </td>
         </tr>
@@ -65,7 +81,8 @@
                 Historische dagen dit jaar:
             </td>
             <td>
-
+            </td>
+            <td>
                 <button class="btn show-in-calendar pull-right" data-selected-dates='2013-02-05' data-show-date='2013-02-01'><span class="icon-eye-open"></span></button>
             </td>
         </tr>

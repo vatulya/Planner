@@ -27,6 +27,9 @@ class Calendar_IndexController extends Zend_Controller_Action
     {
         $containerId = $this->_getParam('container_id');
 
+        $editable = $this->_getParam('editable');
+        $editable = $editable ? 1 : 0;
+
         /*** GET SHOWN DATE ***/
         $showDate = $this->_getParam('show_date');
         try {$showDate = new DateTime($showDate);} catch (Exception $e) {$showDate = new DateTime();}
@@ -34,9 +37,15 @@ class Calendar_IndexController extends Zend_Controller_Action
 
         /*** PREPARE OLD SELECTED DATES ***/
         $oldSelectedDates = $this->_getParam('old_selected_dates', '');
-//        $selectedDates    = $this->_getParam('selected_dates', '');
-//        $oldSelectedDates = $this->_normalizeOldSelectedDates($oldSelectedDates, $selectedDates, $showDate->format('Y-m'));
         $oldSelectedDates = $this->_normalizeDate($oldSelectedDates);
+        $oldSelectedDates = $this->_sortDates($oldSelectedDates);
+        $oldSelectedDates = $this->_toStringDates($oldSelectedDates);
+
+        /*** PREPARE SELECTED DATES FOR SHOW-DATE ***/
+        $selectedDates = $this->_getParam('selected_dates', '');
+        $selectedDates = $this->_normalizeDate($selectedDates);
+        $selectedDates = $this->_sortDates($selectedDates);
+        $selectedDates = $this->_toStringDates($selectedDates);
 
         /*** PREPARE NEW SHOW DATE ***/
         $changeDateType      = $this->_getParam('change_type', '');
@@ -44,27 +53,13 @@ class Calendar_IndexController extends Zend_Controller_Action
         $setShowDate         = $this->_getParam('set_show_date', '');
         $showDate = $this->_modifyShowDate($showDate, $changeDateType, $changeDateDirection, $setShowDate);
 
-        /*** PREPARE SELECTED DATES FOR SHOW-DATE ***/
-        $selectedDates = $this->_getParam('selected_dates', '');
-//        $selectedDates = $this->_normalizeSelectedDates($oldSelectedDates, $showDate);
-        $selectedDates = $this->_normalizeDate($selectedDates);
-
-        /*** SORT AND PREPARE TO DISPLAY DATES ***/
-        $oldSelectedDates = $this->_sortDates($oldSelectedDates);
-        $selectedDates    = $this->_sortDates($selectedDates);
-        foreach ($oldSelectedDates as $key => $value) {
-            $oldSelectedDates[$key] = $value->format('Y-m-d');
-        }
-        foreach ($selectedDates as $key => $value) {
-            $selectedDates[$key] = $value->format('Y-m-d');
-        }
-
         $this->view->months           = $this->months;
         $this->view->years            = $this->years;
         $this->view->containerId      = $containerId;
         $this->view->showDate         = $showDate;
         $this->view->selectedDates    = $selectedDates;
         $this->view->oldSelectedDates = $oldSelectedDates;
+        $this->view->editable         = $editable;
     }
 
     protected function _modifyShowDate(DateTime $showDate, $changeDateType, $changeDateDirection, $setShowDate)
@@ -104,30 +99,6 @@ class Calendar_IndexController extends Zend_Controller_Action
             return true;
         }
         return false;
-    }
-
-    protected function _normalizeOldSelectedDates($oldSelectedDates, $selectedDates, $displayedYearMonth)
-    {
-        $oldSelectedDates = $this->_normalizeDate($oldSelectedDates);
-        $selectedDates = $this->_normalizeDate($selectedDates);
-        foreach ($oldSelectedDates as $date => $obj) {
-            /** @var $obj DateTime */
-            if ($obj->format('Y-m') != $displayedYearMonth) {
-                continue;
-            }
-            if ( ! array_key_exists($date, $selectedDates)) {
-                unset($oldSelectedDates[$date]);
-            } elseif ( ! array_key_exists($date, $selectedDates)) {
-                $selectedDates[$date] = $obj;
-            }
-        }
-        foreach ($selectedDates as $date => $obj) {
-            if ( ! array_key_exists($date, $oldSelectedDates)) {
-                $oldSelectedDates[$date] = $obj;
-            }
-        }
-
-        return $oldSelectedDates;
     }
 
     protected function _normalizeDate($dates)
@@ -175,17 +146,12 @@ class Calendar_IndexController extends Zend_Controller_Action
         return $dates;
     }
 
-    protected function _normalizeSelectedDates(array $oldSelectedDates, DateTime $showDate)
+    protected function _toStringDates(array $dates, $format = 'Y-m-d')
     {
-        $selectedDates = array();
-        $yearMonth = $showDate->format('Y-m');
-        foreach ($oldSelectedDates as $key => $date) {
-            /** @var $date DateTime */
-            if ($date->format('Y-m') == $yearMonth) {
-                $selectedDates[$key] = $date;
-            }
+        foreach ($dates as $key => $value) {
+            $dates[$key] = $value->format($format);
         }
-        return $selectedDates;
+        return $dates;
     }
 
     protected function _response($status = 0, $message = '', $data = array())
