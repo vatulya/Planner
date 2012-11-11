@@ -3,15 +3,24 @@
 <?php $this->headLink()->appendStylesheet('/css/calendar.css'); ?>
 
 <?php
-$openRequestDates = array();
+$openRequestDates     = array();
 $approvedRequestDates = array();
-$openRequestDates = array();
-$openRequestDates = array();
+$rejectedRequestDates = array();
+$usedRequestDates     = array();
 foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN] as $request) {
     $openRequestDates[] = $request['request_date'];
 };
 foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED] as $request) {
+    try {
+        $requestDate = new My_DateTime($request['request_date']);
+    } catch (Exception $e) {continue;}
     $approvedRequestDates[] = $request['request_date'];
+    if ($requestDate->getTimestamp() < time()) { // today is used too . Bug only in 00:00:00 .
+        $usedRequestDates[] = $request['request_date'];
+    }
+};
+foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED] as $request) {
+    $rejectedRequestDates[] = $request['request_date'];
 };
 ?>
 
@@ -79,10 +88,13 @@ foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_ST
                 Afgewezen dagen:
             </td>
             <td>
-                05-02-2013
+                <?php echo implode(', ', $rejectedRequestDates); ?>
             </td>
             <td>
-                <button class="btn show-in-calendar pull-right" data-selected-dates='2013-02-05' data-show-date='2013-02-01'><span class="icon-eye-open"></span></button>
+                <button class="btn show-in-calendar pull-right"
+                    data-selected-dates="<?php echo implode(',', $rejectedRequestDates); ?>"
+                    data-show-date="<?php echo end($rejectedRequestDates); ?>"
+                ><span class="icon-eye-open"></span></button>
             </td>
         </tr>
         <tr>
@@ -90,9 +102,13 @@ foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_ST
                 Historische dagen dit jaar:
             </td>
             <td>
+                <?php echo implode(', ', $usedRequestDates); ?>
             </td>
             <td>
-                <button class="btn show-in-calendar pull-right" data-selected-dates='2013-02-05' data-show-date='2013-02-01'><span class="icon-eye-open"></span></button>
+                <button class="btn show-in-calendar pull-right"
+                    data-selected-dates="<?php echo implode(',', $usedRequestDates); ?>"
+                    data-show-date="<?php echo end($usedRequestDates); ?>"
+                ><span class="icon-eye-open"></span></button>
             </td>
         </tr>
         </tbody>
