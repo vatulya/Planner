@@ -3,10 +3,11 @@
    <?php if ( empty($this->userDayData['status2'])): ?>
         <?php if ( !empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])): ?>
             <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?>
+        <?php else: ?>
+            <div>&nbsp;</div>
         <?php endif; ?>
     <?php else: ?>
-    <div class="day-status-color-traingler"  style="border-bottom: 28px solid #<?php echo $this->userDayData['status2']['color_hex']; ?>;">
-    </div>
+        <div class="day-status-color-traingler"  style="border-bottom: 28px solid #<?php echo $this->userDayData['status2']['color_hex']; ?>;"></div>
     <?php endif; ?>
 </a>
 <?php else: ?>

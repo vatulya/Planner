@@ -22,9 +22,13 @@ class Application_Model_Db_Status extends Application_Model_Db_Abstract
          return $result;
      }
 
-     public function saveStatus()
+     public function saveStatus($fields)
      {
-
+         $id = $fields['id'];
+         unset($fields['id']);
+         unset($fields['use_status2']);
+         unset($fields['color']);
+         $this->_db->update(Application_Model_Db_User_Planning::TABLE_NAME, $fields, array('id = ?' => $id));
          return true;
      }
 }

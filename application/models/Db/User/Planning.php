@@ -24,22 +24,40 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         $result = $this->_db->fetchRow($select);
         if(!empty($result)) {
             $status = new Application_Model_Status();
-            if (!empty($result['time_start']) && !empty($result['time_end'])) {
-                $date = date_create($result['time_start']);
-                $result['time_start'] = date_format($date, 'H:i');
-                $date = date_create($result['time_end']);
-                $result['time_end'] = date_format($date, 'H:i');
-            }
-            $result['status1'] = $status->getDataById($result['status1']);
-            if (!empty($result['status2'])) {
-                $result['status2'] = $status->getDataById($result['status2']);
-            }  else {
-                $result['status_color2'] = "";
+            $userRequest = new Application_Model_Db_User_Requests();
+            $approveUserDayRequest = $userRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
+            if ($result['status1'] == self::STATUS_DAY_GREEN) {
+                $result['status1'] = $status->getDataById(self::STATUS_DAY_GREEN);
+                if (!empty($result['time_start']) && !empty($result['time_end'])) {
+                    $date = date_create($result['time_start']);
+                    $result['time_start'] = date_format($date, 'H:i');
+                    $date = date_create($result['time_end']);
+                    $result['time_end'] = date_format($date, 'H:i');
+                }
+                if (!empty($result['status2'])) {
+                    $result['status2'] = $status->getDataById($result['status2']);
+                }  else {
+                    $result['status_color2'] = "";
+                }
+            } elseif (!empty($approveUserDayRequest)) {
+                $result['status1'] = $status->getDataById(self::STATUS_DAY_YELLOW);
+                $result = $this->_resetTimeAndSecondStatus($result);
+            } else {
+                $result['status1'] = $status->getDataById($result['status1']);
+                $result = $this->_resetTimeAndSecondStatus($result);
             }
         }
         return $result;
     }
 
+    private function _resetTimeAndSecondStatus($userDayPlan) {
+        unset($userDayPlan['time_start']);
+        unset($userDayPlan['time_end']);
+        unset($userDayPlan['time_start2']);
+        unset($userDayPlan['time_end2']);
+        unset($userDayPlan['status2']);
+        return $userDayPlan;
+    }
 
     public function getUserNewDayPlanByGroup($userId, $groupId, $date)
     {
