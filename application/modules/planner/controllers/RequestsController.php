@@ -40,8 +40,8 @@ class Planner_RequestsController extends My_Controller_Action
 
     public function indexAction()
     {
-        $userParameters = $this->_modelUser->getUserParameters($this->_getParam('user'));
-        $userRequests = $this->_modelRequest->getUserRequests($this->_getParam('user'));
+        $userParameters = $this->_modelUser->getParametersByUserId($this->_getParam('user'));
+        $userRequests = $this->_modelRequest->getRequestsByUserId($this->_getParam('user'));
         $this->view->me['parameters'] = $userParameters;
         $this->view->userRequests = $userRequests;
     }

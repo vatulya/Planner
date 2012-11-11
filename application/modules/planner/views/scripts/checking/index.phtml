@@ -3,12 +3,9 @@ Error! No users.
 <?php else: ?>
 <?php $this->headScript()->appendFile('/js/checking.js'); ?>
 
-    <?php
-    $colors = Application_Model_Group::getAllowedColors();
-    ?>
-
 <div class="span11">
 
+    <?php /* THIS IS DEFAULT GROUP. GROUP WITH ALL USERS *
     <table class="table table-bordered table-striped table-small-td">
         <thead>
         <tr>
@@ -20,16 +17,13 @@ Error! No users.
         </tr>
         </thead>
         <tbody>
-            <?php if ( ! empty($group['users'])): ?>
             <?php foreach($this->users as $user): ?>
             <?php $this->user = $user; ?>
             <?php echo $this->render('checking/_blocks/user_row.phtml'); ?>
             <?php endforeach; ?>
-            <?php else: ?>
-            <tr><td colspan="5">No users in this group</td></tr>
-            <?php endif; ?>
         </tbody>
     </table>
+    <?php */ ?>
 
     <?php foreach($this->groups as $group): ?>
     <table class="table table-bordered table-striped table-small-td">

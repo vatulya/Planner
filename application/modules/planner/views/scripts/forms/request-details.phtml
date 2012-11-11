@@ -1,0 +1,20 @@
+<?php echo $this->element->id; ?>
+<?php echo $this->element->user_id; ?>
+<?php echo $this->element->request_id; ?>
+<fieldset>
+    <div class="control-group">
+        <label class="control-label" for="email">Status:</label>
+        <div class="controls">
+            <?php echo $this->element->email->setAttrib('placeholder', 'Email')->setAttrib('class', 'input-medium') ?>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="password">Password:</label>
+        <div class="controls">
+            <?php echo $this->element->password->setAttrib('placeholder', 'Password')->setAttrib('class', 'input-medium') ?>
+        </div>
+    </div>
+    <div class="form-actions">
+        <?php echo $this->formButton('submit', 'Login', array('class' => 'btn btn-primary pull-center', 'type' => 'submit')) ?>
+    </div>
+</fieldset>

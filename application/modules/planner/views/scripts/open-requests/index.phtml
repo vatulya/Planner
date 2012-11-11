@@ -1,96 +1,94 @@
 <?php $this->headScript()->appendFile('/js/open-requests.js'); ?>
 
+<?php
+$dateNow = date('Y-m-d');
+?>
+
 <div class="span12">
+
+    <?php if ( ! empty($this->groups)): ?>
+
+    <?php foreach ($this->groups as $group): ?>
+
     <table class="table table-bordered open-request-group table-small-td">
         <thead>
-        <tr>
+        <tr <?php if ( ! empty($group['color'])): ?>style="background-color: #<?php echo $group['color']; ?>;"<?php endif; ?>>
             <th colspan="4">
-                Groep Customer Service
+                <?php echo $group['group_name']; ?>
             </th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td class="span3">
-                Suzanne de Goede
-            </td>
-            <td class="span5">
-                21.07.2012, 21.08.2012, 22.08.2012
-            </td>
-            <td class="span2 open-request-user-action">
-                <button class="btn btn-small">Bekijk history</button>
-            </td>
-            <td class="span2 open-request-user-action">
-                <button class="btn btn-small">Voeg toe</button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Harmen van der Meulen
-            </td>
-            <td>
-                22.07.2012
-            </td>
-            <td class="open-request-user-action">
-                <button class="btn btn-small">Bekijk history</button>
-            </td>
-            <td class="open-request-user-action">
-                <button class="btn btn-small">Voeg toe</button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Erik de Wit
-            </td>
-            <td>
 
-            </td>
-            <td class="open-request-user-action">
-                <button class="btn btn-small">Bekijk history</button>
-            </td>
-            <td class="open-request-user-action">
-                <button class="btn btn-small">Voeg toe</button>
-            </td>
-        </tr>
+        <?php if ( ! empty($group['users'])): ?>
+
+            <?php foreach ($group['users'] as $user): ?>
+                <?php
+                $openRequestDates     = array();
+                $approvedRequestDates = array();
+                $rejectedRequestDates = array();
+                foreach ($user['requests'][Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN] as $request) {
+                    $openRequestDates[] = $request['request_date'];
+                };
+                foreach ($user['requests'][Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED] as $request) {
+                    $approvedRequestDates[] = $request['request_date'];
+                };
+                foreach ($user['requests'][Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED] as $request) {
+                    $rejectedRequestDates[] = $request['request_date'];
+                };
+                ?>
+
+                <tr>
+                    <td class="span3">
+                        <?php echo $user['full_name']; ?>
+                    </td>
+                    <td class="span5">
+                        <?php while($request = array_shift($openRequestDates)): ?>
+                        <a href="#" class="no-action open-request-date"
+                            data-request-date="<?php echo $request; ?>"
+                            data-user-id="<?php echo $user['id']; ?>"
+                        ><?php echo $request; ?></a><?php if ( ! empty($openRequestDates)): ?>, <?php endif; ?>
+                        <?php endwhile; ?>
+                    </td>
+                    <td class="span2 open-request-user-action">
+                        <button class="btn show-in-calendar pull-right"
+                            data-old-selected-dates="<?php echo implode(',', $approvedRequestDates); ?>"
+                            data-selected-dates="<?php echo implode(',', $rejectedRequestDates); ?>"
+                            data-show-date="<?php echo $dateNow; ?>"
+                        >Bekijk history</button>
+                    </td>
+                    <td class="span2 open-request-user-action">
+                        <button class="btn btn-small">Voeg toe</button>
+                    </td>
+                </tr>
+
+            <?php endforeach; ?>
+
+        <?php else: ?>
+            <tr><td colspan="4">No users in this group</td></tr>
+        <?php endif; ?>
+
         </tbody>
     </table>
-    <table class="table table-bordered open-request-group table-small-td">
-        <thead>
-        <tr>
-            <th colspan="4">
-                Groep Marketing
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td class="span3">
-                Jantje Helder
-            </td>
-            <td class="span5">
 
-            </td>
-            <td class="span2 open-request-user-action">
-                <button class="btn btn-small">Bekijk history</button>
-            </td>
-            <td class="span2 open-request-user-action">
-                <button class="btn btn-small">Voeg toe</button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Erik Schmit
-            </td>
-            <td>
+    <?php endforeach; ?>
 
-            </td>
-            <td class="open-request-user-action">
-                <button class="btn btn-small">Bekijk history</button>
-            </td>
-            <td class="open-request-user-action">
-                <button class="btn btn-small">Voeg toe</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <?php endif; ?>
+
+</div>
+
+<div class="modal hide span12 popup" id="edit-request-details-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body">
+        <p class="modal-body-p">
+<!--            --><?php //echo $this->requestDetailsForm; ?>
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger button-reject">Reject</button>
+        <button class="btn btn-success button-approve">Approve</button>
+    </div>
 </div>

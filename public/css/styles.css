@@ -176,3 +176,5 @@ form.form-mini {
 .alert-1-header {height: 30px;}
 .alert-1-year-table {width: 180px;}
 .alert-1-year-table table {width: 100px; margin: 0 auto;}
+
+.open-request-date {white-space: nowrap;}

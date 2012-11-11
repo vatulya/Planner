@@ -34,8 +34,30 @@ class Planner_OpenRequestsController extends My_Controller_Action
 
     public function indexAction()
     {
-        $userParameters = $this->_modelUser->getUserParameters($this->_getParam('user'));
-        $this->view->me['parameters'] = $userParameters;
+        $modelGroup = new Application_Model_Group();
+        $modelRequest = new Application_Model_Request();
+        $groups = array();
+        if ($this->_me['role'] >= Application_Model_Auth::ROLE_ADMIN) {
+            $groups = $modelGroup->getAllGroups();
+        } else { // group Admin
+            foreach ($this->_me['admin_groups'] as $groupId) {
+                $groups[] = $modelGroup->getGroupById($groupId);
+            }
+        }
+        foreach ($groups as $key => $group) {
+            $users = $this->_modelUser->getAllUsersByGroup($group['id']);
+            $group['users'] = $users;
+            foreach ($group['users'] as $key => $user) {
+                $user['requests'] = $modelRequest->getRequestsByUserId($user['id']);
+                $group['users'][$key] = $user;
+            }
+            $groups[$key] = $group;
+        }
+
+//        $requestDetailsForm = new Planner_Form_RequestDetails();
+
+//        $this->view->requestDetailsForm = $requestDetailsForm;
+        $this->view->groups = $groups;
     }
 
 }

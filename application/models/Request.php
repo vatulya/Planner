@@ -9,7 +9,7 @@ class Application_Model_Request extends Application_Model_Abstract
         $this->_modelDb = new Application_Model_Db_User_Requests();
     }
 
-    public function getUserRequests($userId, $status = '')
+    public function getRequestsByUserId($userId, $status = '')
     {
         if (empty($status)) {
             $requests = $this->_modelDb->getAllByUserId($userId);

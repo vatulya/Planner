@@ -34,8 +34,7 @@ class Planner_AlertsController extends My_Controller_Action
 
     public function indexAction()
     {
-        $userParameters = $this->_modelUser->getUserParameters($this->_getParam('user'));
-        $this->view->me['parameters'] = $userParameters;
+
     }
 
 }

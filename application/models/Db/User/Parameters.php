@@ -4,7 +4,7 @@ class Application_Model_Db_User_Parameters extends Application_Model_Db_Abstract
 {
     const TABLE_NAME = 'user_parameters';
 
-    public function getUserParameters($userId)
+    public function getParametersByUserId($userId)
     {
         $select = $this->_db->select()
             ->from(array('up' => self::TABLE_NAME))
@@ -19,7 +19,7 @@ class Application_Model_Db_User_Parameters extends Application_Model_Db_Abstract
             $check = $this->_db->fetchRow($selectCheck);
             if ($check) {
                 // Yes. User exists, but without any parameters. This is wrong. Need create default settings
-                $this->setDefaultUserParameters($userId);
+                $this->setUserDefaultParameters($userId);
                 $result = $this->_db->fetchRow($select);
             }
         }
@@ -27,7 +27,7 @@ class Application_Model_Db_User_Parameters extends Application_Model_Db_Abstract
         return $result;
     }
 
-    public function setDefaultUserParameters($userId)
+    public function setUserDefaultParameters($userId)
     {
         $default = array(
             'user_id' => $userId,

@@ -113,10 +113,10 @@ class Application_Model_User extends Application_Model_Abstract
         return $userDay;
     }
 
-    public function getUserParameters($userId)
+    public function getParametersByUserId($userId)
     {
         $modelUserParameters = new Application_Model_Db_User_Parameters();
-        $userParameters = $modelUserParameters->getUserParameters($userId);
+        $userParameters = $modelUserParameters->getParametersByUserId($userId);
         $userParameters = $this->_calculateAdditionalParameters($userParameters);
         return $userParameters;
     }
