@@ -65,14 +65,12 @@ class My_DateTime extends DateTime
             $weekYear['year'] = strftime('%G', $timestamp);
             $weekYear['day'] = strftime('%u', $timestamp);
             if (empty( $weekYear['week']) || empty( $weekYear['year']) || empty($weekYear['day'])) {
-                $weekYear['week'] = 54;   //TODO
-                $weekYear['year'] = 2012;//TODO make alternative get week number
-                $weekYear['day'] = 1;//TODO make alternative get week number
+                $weekYear['week'] = date('W',$timestamp);
+                $weekYear['year'] = date('o',$timestamp);
+                $weekYear['day'] = date('N',$timestamp);
             }
         } catch (Exception $e) {
-            $weekYear['week'] = 54;   //TODO
-            $weekYear['year'] = 2012;//TODO make alternative get week number
-            $weekYear['day'] = 1;//TODO make alternative get week number
+            //TODO
         }
         return $weekYear;
     }
