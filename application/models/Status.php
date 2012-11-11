@@ -19,4 +19,15 @@ class Application_Model_Status extends Application_Model_Abstract
         return $this->_modelDb->getAllStatus();
     }
 
+    public function saveStatus($values)
+    {
+        $result = false;
+        if (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
+
+        }
+        var_dump($values);
+        $result = $this->_modelDb->saveStatus();
+        return $result;
+    }
+
 }

@@ -55,4 +55,39 @@ class My_DateTime extends DateTime
         return $dates;
     }
 
+    static public function getWeekYear($timestamp = "")
+    {
+        if (empty($timestamp)) {
+            $timestamp = time ();
+        }
+        try {
+            $weekYear['week'] = strftime('%V', $timestamp);
+            $weekYear['year'] = strftime('%G', $timestamp);
+            $weekYear['day'] = strftime('%u', $timestamp);
+            if (empty( $weekYear['week']) || empty( $weekYear['year']) || empty($weekYear['day'])) {
+                $weekYear['week'] = 54;   //TODO
+                $weekYear['year'] = 2012;//TODO make alternative get week number
+                $weekYear['day'] = 1;//TODO make alternative get week number
+            }
+        } catch (Exception $e) {
+            $weekYear['week'] = 54;   //TODO
+            $weekYear['year'] = 2012;//TODO make alternative get week number
+            $weekYear['day'] = 1;//TODO make alternative get week number
+        }
+        return $weekYear;
+    }
+
+    static public function getEvenWeek($weekNumber)
+    {
+        if ($weekNumber  % 2 > 0) {
+            return 'even';
+        }
+        return 'odd';
+    }
+
+    public static function getWeekDays()
+    {
+        $weekDays = array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
+        return $weekDays;
+    }
 }

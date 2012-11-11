@@ -83,8 +83,8 @@ class Application_Model_User extends Application_Model_Abstract
     public function getUserWeekPlanByGroup($userId, $groupId,  $year, $week)
     {
         $weekPlan = array();
-        $weekDays = Planner_Model_Date::getWeekDays();
-        $dateWeekStart = new DateTime($year . 'W' . sprintf("%02d", $week));
+        $weekDays = My_DateTime::getWeekDays();
+        $dateWeekStart = new My_DateTime($year . 'W' . sprintf("%02d", $week));
         $weekUserPlan = new Application_Model_Db_User_Planning();
 
         foreach ($weekDays as $numDay=>$nameDay) {
@@ -92,6 +92,9 @@ class Application_Model_User extends Application_Model_Abstract
             $date->modify('+' . $numDay . 'day');
             $date = $date->format('Y-m-d');
             $weekPlan[$nameDay] = $weekUserPlan->getUserDayPlanByGroup($userId, $groupId, $date);
+            if (empty($weekPlan[$nameDay])) {
+                $weekPlan[$nameDay] = $weekUserPlan->getUserNewDayPlanByGroup($userId, $groupId, $date);
+            }
         }
         return $weekPlan;
     }

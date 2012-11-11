@@ -5,6 +5,7 @@ $statuses = $status->getAllStatus();
 $selectedStatus1 = $this->element->status1->getValue();
 $selectedStatus2 = $this->element->status2->getValue();
 ?>
+<button type="button" class="btn  btn-primary" id="select-second-status-button" data-toggle="Single Status for Day">Second Status for Day</button>
 <label class="control-label" for="color">Day color:</label>
 <div class="day-color-selector">
     <?php foreach ($statuses as $status): ?>

@@ -21,4 +21,10 @@ class Application_Model_Db_Status extends Application_Model_Db_Abstract
          $result = $this->_db->fetchAll($select);
          return $result;
      }
+
+     public function saveStatus()
+     {
+
+         return true;
+     }
 }

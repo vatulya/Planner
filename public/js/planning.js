@@ -27,9 +27,16 @@
             });
         },
 
+        selectSecondStatus: function(el) {
+            el = $(el);
+            var oldStatus = $('#select-second-status-button').html();
+            $('#select-second-status-button').html(el.data('toggle'));
+            el.data('toggle', oldStatus)  ;
+        },
+
         initEditAjaxForm: function() {
-            var formEl = $('#form-edit-group');
-            $('#form-edit-group').ajaxForm({
+            var formEl = $('#form-edit-day');
+            $('#form-edit-day').ajaxForm({
                 data: {format: 'json'},
                 success: function(response) {
                     response = response.response;
@@ -81,6 +88,9 @@
     $(function() {
         $(document.body).on('click', '.edit-day', function(e) {
             DaySettings.editDay(e.currentTarget);
+        });
+        $(document.body).on('click', '#select-second-status-button', function(e) {
+            DaySettings.selectSecondStatus(e.currentTarget);
         });
         $(document.body).on('click', '.day-status-color', function(e) {
             DaySettings.changeSelectedColor(e.currentTarget);

@@ -4,9 +4,11 @@ class Planner_PlanningController extends My_Controller_Action
 {
     const HISTORY_WEEK_NUM = 4;
     public $ajaxable = array(
-        'get-week-details' => array('json'),
+        'index'             => array('html'),
+        'get-week-details'  => array('json'),
         'get-edit-day-form' => array('html'),
-        'get-more-history' => array('json'),
+        'save-day-form'     => array('json'),
+        'get-more-history'  => array('json'),
     );
 
     protected $_modelGroup;
@@ -32,20 +34,21 @@ class Planner_PlanningController extends My_Controller_Action
     //    $this->view->nextWeek     = $nextWeekDate->format('W');
 //        $this->view->nextWeekYear = date('Y', strtotime('Monday this week +1 week'));
 //        $this->view->nextWeek     = date('W', strtotime('Monday this week +1 week'));
-          $this->view->weekDays     =  $weekDays = Planner_Model_Date::getWeekDays();
+          $this->view->weekDays     =  $weekDays = My_DateTime::getWeekDays();
     }
 
     public function indexAction()
     {
        // $users = array($this->_me);
-        $date = new Planner_Model_Date();
-        $weekYear = $date->getWeekYear();
+        $date = new My_DateTime();
+        $weekYear = My_DateTime::getWeekYear();
+
         $year = $weekYear['year'];
         $week = $weekYear['week'];
         //$week = 41;
         $historyDateWeekYear = $this->_getNumHistoryWeeks($year, $week);
         $date->modify('+1 week');
-        $nextDateWeekYear = $date->getWeekYear($date->getTimestamp());
+        $nextDateWeekYear = My_DateTime::getWeekYear($date->getTimestamp());
 
 
         $groups = $this->_modelGroup->getAllGroups();
@@ -105,14 +108,15 @@ class Planner_PlanningController extends My_Controller_Action
 
     public function saveDayFormAction()
     {
-        $editForm = new Planner_Form_EditGroup();
-        /** @var $request Zend_Controller_Request_Http */
+        $editForm = new Planner_Form_EditDay();
+        /** @var $request Zend_Controller_Request_Http    */
         $request = $this->getRequest();
         $data = array();
         $status = false;
         if ($request->isPost()) {
             if ($editForm->isValid($request->getPost())) {
-                $data = $this->_modelGroup->saveGroup($editForm->getValues());
+                $status = new Application_Model_Status();
+                $data = $status->saveStatus($editForm->getValues());
                 $status = true;
             } else {
                 $data = $editForm->getErrors();
