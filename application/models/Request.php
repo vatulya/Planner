@@ -9,10 +9,14 @@ class Application_Model_Request extends Application_Model_Abstract
         $this->_modelDb = new Application_Model_Db_User_Requests();
     }
 
-    public function getUserRequests($userId)
+    public function getUserRequests($userId, $status = '')
     {
-        $requests = array();
-        $requests = $this->_modelDb->getAllByUserId($userId);
+        if (empty($status)) {
+            $requests = $this->_modelDb->getAllByUserId($userId);
+            $requests = $this->groupRequestsByStatus($requests);
+        } else {
+            $requests = $this->_modelDb->getAllByUserId($userId, $status);
+        }
         return $requests;
     }
 
@@ -45,6 +49,22 @@ class Application_Model_Request extends Application_Model_Abstract
         // TODO: here need add check correct requested dates
         $result = $this->_modelDb->insert($user['id'], $requestedDates);
         return $result;
+    }
+
+    protected function groupRequestsByStatus(array $requests)
+    {
+        $grouped = array(
+            Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN     => array(),
+            Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED => array(),
+            Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED => array(),
+        );
+        foreach ($requests as $request) {
+            $status = $request['status'];
+            if (array_key_exists($status, $grouped)) {
+                $grouped[$status][] = $request;
+            }
+        }
+        return $grouped;
     }
 
 }

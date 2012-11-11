@@ -8,11 +8,15 @@ class Application_Model_Db_User_Requests extends Application_Model_Db_Abstract
     const USER_REQUEST_STATUS_APPROVED = 'approved';
     const USER_REQUEST_STATUS_REJECTED = 'rejected';
 
-    public function getAllByUserId($userId)
+    public function getAllByUserId($userId, $status = '')
     {
         $select = $this->_db->select()
             ->from(array('ur' => self::TABLE_NAME))
-            ->where('ur.user_id = ?', $userId);
+            ->where('ur.user_id = ?', $userId)
+            ->order('request_date ASC');
+        if ( ! empty($status)) {
+            $select->where('ur.status = ?', $status);
+        }
         $result = $this->_db->fetchAll($select);
         return $result;
     }

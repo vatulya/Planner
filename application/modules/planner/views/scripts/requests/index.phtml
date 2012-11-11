@@ -3,9 +3,15 @@
 <?php $this->headLink()->appendStylesheet('/css/calendar.css'); ?>
 
 <?php
-$oldSelectedDates = array();
-foreach ($this->userRequests as $request) {
-    $oldSelectedDates[] = $request['request_date'];
+$openRequestDates = array();
+$approvedRequestDates = array();
+$openRequestDates = array();
+$openRequestDates = array();
+foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN] as $request) {
+    $openRequestDates[] = $request['request_date'];
+};
+foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED] as $request) {
+    $approvedRequestDates[] = $request['request_date'];
 };
 ?>
 
@@ -23,7 +29,7 @@ foreach ($this->userRequests as $request) {
     <div class="span12">
         <div
             class="module-calendar"
-            data-old-selected-dates="<?php echo implode(',', $oldSelectedDates); ?>"
+            data-old-selected-dates="<?php echo implode(',', $openRequestDates); ?>"
             data-selected-dates=""
             data-container-id="request-calendar-container"
             data-editable="1"
@@ -45,12 +51,12 @@ foreach ($this->userRequests as $request) {
                 Openstaande aanvragen:
             </td>
             <td>
-                <?php echo implode(', ', $oldSelectedDates); ?>
+                <?php echo implode(', ', $openRequestDates); ?>
             </td>
             <td>
                 <button class="btn show-in-calendar pull-right"
-                    data-old-selected-dates="<?php echo implode(',', $oldSelectedDates); ?>"
-                    data-show-date="<?php echo end($oldSelectedDates); ?>"
+                    data-old-selected-dates="<?php echo implode(',', $openRequestDates); ?>"
+                    data-show-date="<?php echo end($openRequestDates); ?>"
                 ><span class="icon-eye-open"></span></button>
             </td>
         </tr>
@@ -59,10 +65,13 @@ foreach ($this->userRequests as $request) {
                 Geaccordeerde aanvragen:
             </td>
             <td>
-                07-06-2012, 08-06-2012
+                <?php echo implode(', ', $approvedRequestDates); ?>
             </td>
             <td>
-                <button class="btn show-in-calendar pull-right" data-selected-dates='2013-02-05' data-show-date='2013-02-01'><span class="icon-eye-open"></span></button>
+                <button class="btn show-in-calendar pull-right"
+                    data-old-selected-dates="<?php echo implode(',', $approvedRequestDates); ?>"
+                    data-show-date="<?php echo end($approvedRequestDates); ?>"
+                ><span class="icon-eye-open"></span></button>
             </td>
         </tr>
         <tr>
