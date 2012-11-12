@@ -178,3 +178,6 @@ form.form-mini {
 .alert-1-year-table table {width: 100px; margin: 0 auto;}
 
 .open-request-date {white-space: nowrap;}
+
+.request-details-status {font-size: 16px; font-weight: bold;}
+.request-details-textarea {width: 510px;}

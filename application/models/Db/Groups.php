@@ -22,6 +22,16 @@ class Application_Model_Db_Groups extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function getGroupsByUserId($userId)
+    {
+        $select = $this->_db->select()
+            ->from(array('ug' => Application_Model_Db_User_Groups::TABLE_NAME), array())
+            ->join(array('g' => self::TABLE_NAME), 'ug.group_id = g.id', array('*'))
+            ->where('ug.user_id = ?', $userId);
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
     public function insertGroup(array $group)
     {
         $data = array(

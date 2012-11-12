@@ -1,4 +1,7 @@
 <?php $this->headScript()->appendFile('/js/open-requests.js'); ?>
+<?php /********** INCLUDE CALENDAR MODULE *****************/ ?>
+<?php $this->headScript()->appendFile('/js/calendar.js'); ?>
+<?php $this->headLink()->appendStylesheet('/css/calendar.css'); ?>
 
 <?php
 $dateNow = date('Y-m-d');
@@ -27,9 +30,10 @@ $dateNow = date('Y-m-d');
                 $openRequestDates     = array();
                 $approvedRequestDates = array();
                 $rejectedRequestDates = array();
-                foreach ($user['requests'][Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN] as $request) {
-                    $openRequestDates[] = $request['request_date'];
-                };
+                $openRequestDates = $user['requests'][Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN];
+//                foreach ($user['requests'][Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN] as $request) {
+//                    $openRequestDates[] = $request['request_date'];
+//                };
                 foreach ($user['requests'][Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED] as $request) {
                     $approvedRequestDates[] = $request['request_date'];
                 };
@@ -45,9 +49,13 @@ $dateNow = date('Y-m-d');
                     <td class="span5">
                         <?php while($request = array_shift($openRequestDates)): ?>
                         <a href="#" class="no-action open-request-date"
-                            data-request-date="<?php echo $request; ?>"
+                            data-id="<?php echo $request['id']; ?>"
                             data-user-id="<?php echo $user['id']; ?>"
-                        ><?php echo $request; ?></a><?php if ( ! empty($openRequestDates)): ?>, <?php endif; ?>
+                            data-request-id="<?php echo $request['request_id']; ?>"
+                            data-request-date="<?php echo $request['request_date']; ?>"
+                            data-status="<?php echo $request['status']; ?>"
+                            data-comment="<?php echo $request['comment']; ?>"
+                        ><?php echo $request['request_date']; ?></a><?php if ( ! empty($openRequestDates)): ?>, <?php endif; ?>
                         <?php endwhile; ?>
                     </td>
                     <td class="span2 open-request-user-action">
@@ -83,12 +91,21 @@ $dateNow = date('Y-m-d');
         <h3></h3>
     </div>
     <div class="modal-body">
-        <p class="modal-body-p">
-<!--            --><?php //echo $this->requestDetailsForm; ?>
-        </p>
+        <div class="control-group">
+            Status:&nbsp;<span class="request-details-status"></span>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Comment:</label>
+            <div class="controls">
+                <textarea placeholder="Comment. This field is requered if you want reject request" class="request-details-textarea" rows="5"></textarea>
+            </div>
+        </div>
+        <div class="alert alert-error">
+            <span class="alert-message"></span>
+        </div>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-danger button-reject">Reject</button>
-        <button class="btn btn-success button-approve">Approve</button>
+        <button class="btn btn-danger button-reject change-open-request-status" data-status='rejected'>Reject</button>
+        <button class="btn btn-success button-approve change-open-request-status" data-status='approved'>Approve</button>
     </div>
 </div>

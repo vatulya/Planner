@@ -24,6 +24,12 @@ class Application_Model_Group extends Application_Model_Abstract
         return $group;
     }
 
+    public function getGroupsByUserId($userId)
+    {
+        $groups = $this->_modelDb->getGroupsByUserId($userId);
+        return $groups;
+    }
+
     public function getUserGroupsAdmin(array $user)
     {
         $admin = array();

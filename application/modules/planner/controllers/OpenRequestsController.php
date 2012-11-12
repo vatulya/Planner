@@ -5,6 +5,7 @@ class Planner_OpenRequestsController extends My_Controller_Action
 
     public $ajaxable = array(
         'index' => array('html'),
+        'set-status' => array('json'),
     );
 
     /**
@@ -54,10 +55,36 @@ class Planner_OpenRequestsController extends My_Controller_Action
             $groups[$key] = $group;
         }
 
-//        $requestDetailsForm = new Planner_Form_RequestDetails();
-
-//        $this->view->requestDetailsForm = $requestDetailsForm;
         $this->view->groups = $groups;
+    }
+
+    public function setStatusAction()
+    {
+        $modelRequest = new Application_Model_Request();
+        $modelGroup = new Application_Model_Group();
+        $userId = $this->_getParam('user_id');
+        $allowed = false;
+        $status = false;
+        if ($this->_me['role'] >= Application_Model_Auth::ROLE_ADMIN) {
+            $allowed = true;
+        } else { // group Admin
+            $userGroups = $modelGroup->getGroupsByUserId($userId);
+            foreach ($userGroups as $group) {
+                if (in_array($group['id'], $this->_me['admin_groups'])) {
+                    $allowed = true;
+                }
+            }
+        }
+        $requestStatus = $this->_getParam('status');
+        $comment = $this->_getParam('comment');
+        if ($allowed) {
+            $status = $modelRequest->setStatusById($this->_getParam('id'), $requestStatus, $comment, $this->_me['id']);
+        }
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
     }
 
 }

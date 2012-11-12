@@ -51,6 +51,31 @@ class Application_Model_Request extends Application_Model_Abstract
         return $result;
     }
 
+    public function setStatusById($requestId, $requestStatus, $comment, $adminId)
+    {
+        $checked = false;
+        $result = false;
+        $allowedStatuses = array(
+            Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN,
+            Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED,
+            Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED,
+        );
+        $comment = trim(strip_tags($comment));
+        if (in_array($requestStatus, $allowedStatuses)) {
+            if ($requestStatus == Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED) {
+                if ( ! empty($comment)) {
+                    $checked = true;
+                }
+            } else {
+                $checked = true;
+            }
+        }
+        if ($checked) {
+            $result = $this->_modelDb->setStatusById($requestId, $requestStatus, $comment, $adminId);
+        }
+        return $result;
+    }
+
     protected function groupRequestsByStatus(array $requests)
     {
         $grouped = array(

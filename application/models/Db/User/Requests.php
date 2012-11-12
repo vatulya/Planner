@@ -42,6 +42,17 @@ class Application_Model_Db_User_Requests extends Application_Model_Db_Abstract
 
     }
 
+    public function setStatusById($requestId, $status, $comment, $adminId)
+    {
+        $data = array(
+            'status'   => $status,
+            'comment'  => $comment,
+            'admin_id' => $adminId,
+        );
+        $result = $this->_db->update(self::TABLE_NAME, $data, array('id = ?' => $requestId));
+        return $result;
+    }
+
     protected function _generateRequestId()
     {
         $date = new DateTime();
