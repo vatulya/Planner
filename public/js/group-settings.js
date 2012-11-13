@@ -184,16 +184,29 @@
 //                    GroupSettings.unblockFormGroupPlanning();
                     response = response.response;
                     if (response.status) {
+                        GroupSettings.showPlanningAlert('success', 'Success');
                         GroupSettings.selectGroupPlanning();
                     } else {
-                        alert('ERROR');
+                        GroupSettings.showPlanningAlert('error', 'Error!');
                     }
                 },
                 error: function(response) {
 //                    GroupSettings.unblockFormGroupPlanning();
-                    alert('Error');
+                    GroupSettings.showPlanningAlert('error', 'Error!');
                 }
             });
+        },
+
+        showPlanningAlert: function(status, message) {
+            var alert = groupPlanningBody.find('.alert');
+            alert.removeClass('alert-success').removeClass('alert-error');
+            alert.addClass('alert-' + status);
+            alert.html(message);
+            alert.show();
+        },
+
+        hidePlanningAlert: function() {
+            groupPlanningBody.find('.alert').hide();
         },
 
         getGroupPlanning: function() {
