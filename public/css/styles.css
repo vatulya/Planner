@@ -153,11 +153,20 @@ form.form-mini {
     height: 20px;
 }
 .underflow-container {
+    height: 20px;
     position: relative;
 }
 .underflow {
     width: 100500px;
     position: absolute;
+}
+.editable {
+    cursor: pointer;
+    margin-bottom: 1px;
+}
+.editable:hover {
+    border-bottom: 1px dashed #808080;
+    margin-bottom: 0px;
 }
 .group-history-block, .group-overview-block, .alert-1-block {
     margin-left: 10px;

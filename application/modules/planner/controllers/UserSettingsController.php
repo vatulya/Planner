@@ -34,7 +34,15 @@ class Planner_UserSettingsController extends My_Controller_Action
 
     public function indexAction()
     {
-
+        $modelGroup = new Application_Model_Group();
+        $users = $this->_modelUser->getAllUsers();
+        foreach ($users as $key => $user) {
+            $user['groups'] = $modelGroup->getGroupsByUserId($user['id']);
+//            $user['hours'];
+//            $user['time_work']['start']; $user['time_work']['end'];
+            $users[$key] = $user;
+        }
+        $this->view->users = $users;
     }
 
 }

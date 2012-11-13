@@ -1,7 +1,7 @@
 <?php $this->headScript()->appendFile('/js/user-settings.js'); ?>
 
 <div class="span12">
-    <table class="table table-bordered user-settings-table table-small-td">
+    <table class="table table-bordered table-hover user-settings-table table-small-td">
         <thead>
         <tr>
             <th class="col-user-name">User</th>
@@ -19,146 +19,104 @@
         </tr>
         </thead>
         <tbody>
+        <?php foreach ($this->users as $user): ?>
+
         <tr>
-            <td>
-                Suzanne de Goede
-            </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="Nederland, SuperCity, str.Super, house 15">
-                            Nederland, SuperCity,  str.Super, house 15
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $user['full_name']; ?>">
+                        <?php echo $user['full_name']; ?>
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="+380-63-123-45-67">
-                            +380-63-123-45-67
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $user['address']; ?>">
+                        <?php echo $user['address']; ?>
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="harmen@futurumshop.nl">
-                            harmen@futurumshop.nl
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $user['phone']; ?>">
+                        <?php echo $user['phone']; ?>
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="+380-63-123-45-67">
-                            +380-63-123-45-67
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $user['email']; ?>">
+                        <?php echo $user['email']; ?>
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="Nederland, SuperCity, str.Super, house 15">
-                            Nederland, SuperCity,  str.Super, house 15
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $user['emergency_phone']; ?>">
+                        <?php echo $user['emergency_phone']; ?>
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="01-02-2012">
-                            01-02-2012
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $user['emergency_full_name']; ?>">
+                        <?php echo $user['emergency_full_name']; ?>
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="Marketing, Commercial, Business">
-                            Marketing, Commercial, Business
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $user['birthdate']; ?>">
+                        <?php echo $user['birthdate']; ?>
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="Click here to change password">
-                            **********
-                        </a>
+            <td class="">
+                <?php
+                $groups = array();
+                foreach ($user['groups'] as $group) {
+                    $groups[] = $group['group_name'];
+                }
+                $groups = implode(', ', $groups);
+                ?>
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $groups; ?>">
+                        <?php echo $groups; ?>
                     </div>
                 </div>
             </td>
-            <td>
+            <td class="">
                 <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="32">
-                            32
-                        </a>
+                    <div class="underflow show-tooltip" data-original-title="Click here to change password">
+                        **********
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="09:00 - 18:00">
-                            09:00 - 18:00
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="32<?php // echo $user['hours']; ?>">
+                        32<?php // echo $user['hours']; ?>
                     </div>
                 </div>
             </td>
-            <td>
-                <div class="underflow-container">
-                    <div class="underflow">
-                        <a href="#" class="show-tooltip no-action" data-original-title="Change to own">
-                            Eigen
-                        </a>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="09:00 - 18:00<?php // echo $user['time_work']['start'] . ' - ' . $user['time_work']['end']; ?>">
+                        09:00 - 18:00<?php // echo $user['time_work']['start'] . ' - ' . $user['time_work']['end']; ?>
+                    </div>
+                </div>
+            </td>
+            <td class="">
+                <div class="underflow-container editable">
+                    <div class="underflow show-tooltip" data-original-title="<?php echo $user['owner']; ?>">
+                        <?php echo $user['owner']; ?>
                     </div>
                 </div>
             </td>
         </tr>
-        <tr>
-            <td class="user-name-col">
-                Harmen van der Meulen
-            </td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td>
-        </tr>
-        <tr>
-            <td class="user-name-col">
-                Erik de Wit
-            </td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td>
-        </tr>
-        <tr>
-            <td class="user-name-col">
-                Jantje Helder
-            </td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td>
-        </tr>
-        <tr>
-            <td class="user-name-col">
-                Erik Schmit
-            </td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td> <td></td>
-            <td></td> <td></td>
-        </tr>
+
+        <?php endforeach; ?>
+
         </tbody>
     </table>
 </div>
