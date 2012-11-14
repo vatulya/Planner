@@ -5,6 +5,11 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
 
     const TABLE_NAME = 'users';
 
+    protected $_allowedSaveFields = array(
+        'email', 'full_name', 'address', 'phone',
+        'emergency_phone', 'emergency_full_name', 'birthday', 'owner',
+    );
+
     public function getUserByEmail($email, DateTime $checkingDate = null)
     {
         $select = $this->_db->select()
@@ -44,6 +49,23 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
             ->order(array('u.full_name ASC'));
         $select = $this->_addCheckinByDate($select, $checkingDate);
         $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
+    public function saveField($userId, $field, $value)
+    {
+        $checkUser = $this->getUserById($userId);
+        $result = false;
+        if (in_array($field, $this->_allowedSaveFields)) {
+            $data = array(
+                $field => $value,
+            );
+            if ($checkUser[$field] == $value) {
+                $result = true;
+            } else {
+                $result = $this->_db->update(self::TABLE_NAME, $data, array('id = ?' => $userId));
+            }
+        }
         return $result;
     }
 

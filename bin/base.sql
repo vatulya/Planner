@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
   phone VARCHAR(75) NOT NULL DEFAULT '',
   emergency_phone VARCHAR(75) NOT NULL DEFAULT '',
   emergency_full_name VARCHAR(255) NOT NULL DEFAULT '',
-  birthdate DATE NOT NULL DEFAULT '0000-00-00',
+  birthday DATE NOT NULL DEFAULT '0000-00-00',
   owner VARCHAR(255) NOT NULL DEFAULT 'Eigen',
 
   created DATETIME NOT NULL,

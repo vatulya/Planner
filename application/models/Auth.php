@@ -62,4 +62,16 @@ class Application_Model_Auth extends Application_Model_Abstract
         return $role;
     }
 
+    static public function getAllowedRoles()
+    {
+        $roles = array(
+            self::ROLE_GUEST       => 'Guest',
+            self::ROLE_USER        => 'User',
+            self::ROLE_GROUP_ADMIN => 'Group admin',
+            self::ROLE_ADMIN       => 'Admin',
+            self::ROLE_SUPER_ADMIN => 'SUPER Admin',
+        );
+        return $roles;
+    }
+
 }

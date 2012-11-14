@@ -29,53 +29,56 @@
         $groups = implode(', ', $groups);
         ?>
 
-        <tr>
+        <tr data-user="<?php echo $user['id']; ?>">
             <td class="show-tooltip" data-original-title="<?php echo $user['full_name']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+                <div class="underflow-container editable" data-field-title="Full name" data-field-name="full_name" data-field-value="<?php echo $user['full_name']; ?>" data-placement="right">
                     <div class="underflow">
                         <?php echo $user['full_name']; ?>
                     </div>
                 </div>
             </td>
             <td class="show-tooltip" data-original-title="<?php echo $user['address']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+                <?php if ($this->me['role'] == Application_Model_Auth::ROLE_SUPER_ADMIN): ?>
+                    <i class="icon-cog change-role-icon show-tooltip" data-original-title="Current role: '<?php echo $this->roles[$user['role']]; ?>'</br>Click to change" data-placement="top""></i>
+                <?php endif; ?>
+                <div class="underflow-container editable" data-field-title="Address" data-field-name="address" data-field-value="<?php echo $user['address']; ?>">
                     <div class="underflow">
                         <?php echo $user['address']; ?>
                     </div>
                 </div>
             </td>
             <td class="show-tooltip" data-original-title="<?php echo $user['phone']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+                <div class="underflow-container editable" data-field-title="Phone" data-field-name="phone" data-field-value="<?php echo $user['phone']; ?>">
                     <div class="underflow">
                         <?php echo $user['phone']; ?>
                     </div>
                 </div>
             </td>
             <td class="show-tooltip" data-original-title="<?php echo $user['email']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+                <div class="underflow-container editable" data-field-title="Mail" data-field-name="email" data-field-value="<?php echo $user['email']; ?>">
                     <div class="underflow">
                         <?php echo $user['email']; ?>
                     </div>
                 </div>
             </td>
             <td class="show-tooltip" data-original-title="<?php echo $user['emergency_phone']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+                <div class="underflow-container editable" data-field-title="Emergynumber" data-field-name="emergency_phone" data-field-value="<?php echo $user['emergency_phone']; ?>">
                     <div class="underflow">
                         <?php echo $user['emergency_phone']; ?>
                     </div>
                 </div>
             </td>
             <td class="show-tooltip" data-original-title="<?php echo $user['emergency_full_name']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+                <div class="underflow-container editable" data-field-title="Emergyname" data-field-name="emergency_full_name" data-field-value="<?php echo $user['emergency_full_name']; ?>">
                     <div class="underflow">
                         <?php echo $user['emergency_full_name']; ?>
                     </div>
                 </div>
             </td>
-            <td class="show-tooltip" data-original-title="<?php echo $user['birthdate']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+            <td class="show-tooltip" data-original-title="<?php echo $user['birthday']; ?>" data-placement="top">
+                <div class="underflow-container editable editable-birthday" data-field-title="Birthdate" data-field-name="birthday" data-field-value="<?php echo $user['birthday']; ?>">
                     <div class="underflow">
-                        <?php echo $user['birthdate']; ?>
+                        <?php echo $user['birthday']; ?>
                     </div>
                 </div>
             </td>
@@ -108,7 +111,7 @@
                 </div>
             </td>
             <td class="show-tooltip" data-original-title="<?php echo $user['owner']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+                <div class="underflow-container editable" data-field-title="Owner" data-field-name="owner" data-field-value="<?php echo $user['owner']; ?>">
                     <div class="underflow">
                         <?php echo $user['owner']; ?>
                     </div>
@@ -120,4 +123,23 @@
 
         </tbody>
     </table>
+</div>
+
+<div id="popover-edit-field-html" style="display: none;">
+    <div class="popover-container" data-user="">
+        <div class="input-append">
+            <input type="text" name="" value="" class="input-edit-field">
+            <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
+        </div>
+    </div>
+</div>
+
+<div id="popover-edit-field-birthday-html" style="display: none;">
+    <div class="popover-container" data-user="">
+        &nbsp;Day: <input type="text" name="" value="" class="input-edit-field input-date-day" placeholder="DD" maxlength="2">
+        &nbsp;Month: <input type="text" name="" value="" class="input-edit-field input-date-month" placeholder="MM" maxlength="2">
+        &nbsp;Year: <input type="text" name="" value="" class="input-edit-field input-date-year" placeholder="YYYY" maxlength="4">
+        <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
+        <div class="small-tip">allowed values from 1940-01-01 to 2010-01-01</div>
+    </div>
 </div>

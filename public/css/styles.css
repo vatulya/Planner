@@ -168,6 +168,23 @@ form.form-mini {
     border-bottom: 1px dashed #808080;
     margin-bottom: 0px;
 }
+.popover {
+    width: 400px;
+}
+.popover-container {
+    text-align: center;
+}
+.input-edit-field {
+    width: 300px;
+}
+.popover-container .input-date-day {width: 30px; margin-bottom: 0px;}
+.popover-container .input-date-month {width: 30px; margin-bottom: 0px;}
+.popover-container .input-date-year {width: 60px; margin-bottom: 0px;}
+.change-role-icon {
+    margin-left: -23px;
+    position: absolute;
+    cursor: pointer;
+}
 .group-history-block, .group-overview-block, .alert-1-block {
     margin-left: 10px;
 }

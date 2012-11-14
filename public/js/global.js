@@ -63,9 +63,14 @@
         }
 
     };
-    document.Popup = Popup;
+    window.Popup = Popup;
 
     var Form = {
+
+        setDataEl: function(el, key, value) {
+            el.data(key, value);
+            el.attr('data-' + key, value);
+        },
 
         hideAllNotifications: function(formEl) {
             formEl.find('.control-group').removeClass('error');
@@ -139,7 +144,7 @@
         }
 
     };
-    document.Form = Form;
+    window.Form = Form;
 
     $(function() {
 

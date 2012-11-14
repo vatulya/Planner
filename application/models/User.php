@@ -124,6 +124,13 @@ class Application_Model_User extends Application_Model_Abstract
         return $userParameters;
     }
 
+    public function saveField($userId, $field, $value)
+    {
+        $result = $this->_modelDb->saveField($userId, $field, $value);
+        return $result;
+
+    }
+
     protected function _calculateAdditionalParameters(array $userParameters)
     {
         $userParameters['allowed_free_hours'] = 100500; // TODO: calc 'based on settings how much they have minus what they used.'
