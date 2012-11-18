@@ -1,0 +1,10 @@
+<?php if ( ! empty($this->status)): ?>
+<?php $status = $this->status;
+      $selectedStatus1 = $this->selectedStatus1;
+      $selectedStatus2 = $this->selectedStatus2;
+    ?>
+<div title="<?php echo $status['description']; ?>" class="day-status-color <?php if ($selectedStatus1 == $status['id'] || $selectedStatus2 == $status['id']): ?> active<?php endif; ?>" style="background-color: #<?php echo $status['color_hex']; ?>;"
+     data-color="<?php echo $status['color']; ?>"
+     data-status="<?php echo $status['id']; ?>"
+><?php echo $status['color']; ?></div>
+<?php endif; ?>

@@ -92,9 +92,6 @@ class Application_Model_User extends Application_Model_Abstract
             $date->modify('+' . $numDay . 'day');
             $date = $date->format('Y-m-d');
             $weekPlan[$nameDay] = $weekUserPlan->getUserDayPlanByGroup($userId, $groupId, $date);
-            if (empty($weekPlan[$nameDay])) {
-                $weekPlan[$nameDay] = $weekUserPlan->getUserNewDayPlanByGroup($userId, $groupId, $date);
-            }
         }
         return $weekPlan;
     }

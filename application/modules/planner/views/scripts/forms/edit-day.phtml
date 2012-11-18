@@ -2,18 +2,30 @@
 <div class="alert alert-success" style="display: none;"></div>
 <?php echo $this->element->id; ?>
 <?php echo $this->element->color; ?>
+<?php echo $this->element->status1; ?>
+<?php echo $this->element->status2; ?>
+<?php
+$status = new Application_Model_Status();
+$statuses = $status->getAllStatus();
+
+$selectedStatus1 = $this->element->status1->getValue();
+$selectedStatus2 = $this->element->status2->getValue();
+$this->selectedStatus1 = $selectedStatus1;
+$this->selectedStatus2 = $selectedStatus2;
+?>
+<div><h3>Day Main Status/Color</h3></div>
 <table>
     <tr>
         <td>
             <label class="control-label" for="time_start">Time start</label>
             <div class="input-append bootstrap-timepicker-component">
-            <?php echo $this->element->time_start->setAttrib('class', 'timepicker-start input-mini') ?>
+                <?php echo $this->element->time_start->setAttrib('class', 'timepicker-start input-mini') ?>
                 <span class="add-on">
                     <i class="icon-time"></i>
                 </span>
             </div>
         </td>
-        <td colspan="2">
+        <td>
             <label class="control-label" for="time_end">Time end</label>
             <div class="input-append bootstrap-timepicker-component">
                 <?php echo $this->element->time_end->setAttrib('class', 'timepicker-end input-mini') ?>
@@ -22,10 +34,47 @@
                 </span>
             </div>
         </td>
+    <tr>
+</table>
+<div class="day-color-selector">
+    <?php if  ($selectedStatus1 == 2) : ?>
+        <?php
+            $this->status = $statuses[$selectedStatus1];
+            echo $this->render('forms/color_button.phtml'); ?>
+    <?php elseif ($selectedStatus1 == 1) : ?>
+        <?php
+            $this->status = $statuses[$selectedStatus1];
+            echo $this->render('forms/color_button.phtml');
+            $this->status = $statuses[2];
+            echo $this->render('forms/color_button.phtml');
+        ?>
+    <?php elseif ($selectedStatus1 == 3) : ?>
+        <?php
+            $this->status = $statuses[$selectedStatus1];
+            echo $this->render('forms/color_button.phtml');
+        ?>
+    <?php endif; ?>
+</div>
+    </br>
+    </br>
+<?php if  ($selectedStatus1 == 2) : ?>
+<div><h3>Day Additional User Status/Color</h3></div>
+
+<table>
+    <tr>
         <td>
-            <label class="control-label" for="time_exclude">Time exclude</label>
+            <label class="control-label" for="time_exclude">Time Start</label>
             <div class="input-append bootstrap-timepicker-component">
-                <?php echo $this->element->time_exclude->setAttrib('class', 'timepicker-exclude input-mini') ?>
+                <?php echo $this->element->time_start2->setAttrib('class', 'timepicker-start2 input-mini') ?>
+                <span class="add-on">
+                    <i class="icon-time"></i>
+                </span>
+            </div>
+        </td>
+        <td>
+            <label class="control-label" for="time_exclude">Time end</label>
+            <div class="input-append bootstrap-timepicker-component">
+                <?php echo $this->element->time_end2->setAttrib('class', 'timepicker-end2 input-mini') ?>
                 <span class="add-on">
                     <i class="icon-time"></i>
                 </span>
@@ -33,4 +82,15 @@
         </td>
     <tr>
 </table>
-<?php echo $this->render('forms/day-status-color.phtml'); ?>
+<button type="button" class="btn  btn-primary" id="select-second-status-button" data-toggle="Single Status for Day">Apply for full day</button>
+<div class="day-color-selector">
+    <?php
+    $this->status = $statuses[4];
+    echo $this->render('forms/color_button.phtml');
+    $this->status = $statuses[5];
+    echo $this->render('forms/color_button.phtml');
+    $this->status = $statuses[6];
+    echo $this->render('forms/color_button.phtml');
+    ?>
+</div>
+<?php endif; ?>

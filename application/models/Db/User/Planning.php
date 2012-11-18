@@ -27,21 +27,23 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             $userRequest = new Application_Model_Db_User_Requests();
             $approveUserDayRequest = $userRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
             if ($result['status1'] == self::STATUS_DAY_GREEN) {
-                $result['status1'] = $status->getDataById(self::STATUS_DAY_GREEN);
-                if (!empty($result['time_start']) && !empty($result['time_end'])) {
-                    $date = date_create($result['time_start']);
-                    $result['time_start'] = date_format($date, 'H:i');
-                    $date = date_create($result['time_end']);
-                    $result['time_end'] = date_format($date, 'H:i');
+                if (!empty($approveUserDayRequest)) {
+                    $result['status1'] = $status->getDataById(self::STATUS_DAY_YELLOW);
+                    $result = $this->_resetTimeAndSecondStatus($result);
+                } else {
+                    $result['status1'] = $status->getDataById(self::STATUS_DAY_GREEN);
+                    if (!empty($result['time_start']) && !empty($result['time_end'])) {
+                        $date = date_create($result['time_start']);
+                        $result['time_start'] = date_format($date, 'H:i');
+                        $date = date_create($result['time_end']);
+                        $result['time_end'] = date_format($date, 'H:i');
+                    }
+                    if (!empty($result['status2'])) {
+                        $result['status2'] = $status->getDataById($result['status2']);
+                    }  else {
+                        $result['status_color2'] = "";
+                    }
                 }
-                if (!empty($result['status2'])) {
-                    $result['status2'] = $status->getDataById($result['status2']);
-                }  else {
-                    $result['status_color2'] = "";
-                }
-            } elseif (!empty($approveUserDayRequest)) {
-                $result['status1'] = $status->getDataById(self::STATUS_DAY_YELLOW);
-                $result = $this->_resetTimeAndSecondStatus($result);
             } else {
                 $result['status1'] = $status->getDataById($result['status1']);
                 $result = $this->_resetTimeAndSecondStatus($result);
@@ -59,7 +61,7 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         return $userDayPlan;
     }
 
-    public function getUserNewDayPlanByGroup($userId, $groupId, $date)
+    public function createNewDayUserPlanByGroup($userId, $groupId, $date)
     {
         $currentDate = new My_DateTime($date);
         $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
@@ -73,22 +75,19 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         $dayPlan['group_id'] = $groupId;
         $dayPlan['user_id'] = $userId;
         $dayPlan['date'] = $date;
-        $userRequest = new Application_Model_Db_User_Requests();
-        $approveUserDayRequest = $userRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
         if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
             $dayPlan['status1'] = self::STATUS_DAY_WHITE;
         } else {
-            if (empty($approveUserDayRequest)) {
-                $dayPlan['status1'] = self::STATUS_DAY_GREEN;
-                $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
-                $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
-            } else {
-                $dayPlan['status1'] = self::STATUS_DAY_YELLOW;
-            }
+            $dayPlan['status1'] = self::STATUS_DAY_GREEN;
+            $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
+            $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
         }
-        $this->_db->insert(self::TABLE_NAME,$dayPlan);
-        $result = $this->getUserDayPlanByGroup($userId, $groupId, $date);
-        return $result;
+        try {
+            $this->_db->insert(self::TABLE_NAME,$dayPlan);
+        } catch (Exception $e ) {
+            //for this day plan already exist
+            echo "exist - user" . $userId . " group "  . $groupId . " date " . $date . "\n" ;
+        }
     }
 
     public function getTotalWorkTimeByGroup($userId, $groupId, $date, $weekLenght = 6)
@@ -116,6 +115,12 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             ->from(array('up' => self::TABLE_NAME))
             ->where('up.id = ?', $dayId);
         $result = $this->_db->fetchRow($select);
+        $userRequest = new Application_Model_Db_User_Requests();
+        $approveUserDayRequest = $userRequest->getAllByUserId($result['user_id'], Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $result['date']);
+        if ($result['status1'] == self::STATUS_DAY_GREEN && !empty($approveUserDayRequest)) {
+            $result['status1'] = self::STATUS_DAY_YELLOW;
+            $result = $this->_resetTimeAndSecondStatus($result);
+        }
         return $result;
     }
 }

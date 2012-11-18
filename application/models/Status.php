@@ -16,7 +16,12 @@ class Application_Model_Status extends Application_Model_Abstract
 
     public function getAllstatus()
     {
-        return $this->_modelDb->getAllStatus();
+        $statuses =  $this->_modelDb->getAllStatus();
+        $statusesNormalized = array();
+        foreach($statuses as $status) {
+            $statusesNormalized[$status['id']] = $status;
+        }
+        return $statusesNormalized;
     }
 
     public function saveStatus($values)

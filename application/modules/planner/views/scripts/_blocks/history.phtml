@@ -34,7 +34,7 @@
     <?php foreach($this->users as $week => $row): ?>
     <tr>
         <?php foreach($row['history'] as $week => $workTime): ?>
-        <td><?php echo $workTime; ?></td>
+        <td><div><?php echo $workTime; ?></div></td>
         <?php endforeach; ?>
     </tr>
     <?php endforeach; ?>

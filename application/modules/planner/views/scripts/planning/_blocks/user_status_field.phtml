@@ -1,10 +1,10 @@
 <?php if ( ! empty($this->userDayData)): ?>
-<a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'get-edit-day-form'), 'planner', true); ?>" class="no-action edit-day" data-day-id="<?php echo $this->userDayData['id']; ?>">
+<a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'get-edit-day-form'), 'planner', true); ?>" class="no-action edit-day" data-day-id="<?php echo $this->userDayData['id']; ?>" title="<?php echo$this->userDayData['date']; ?>">
    <?php if ( empty($this->userDayData['status2'])): ?>
         <?php if ( !empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])): ?>
-            <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?>
+            <div class="underflow-container editable"> <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?></div>
         <?php else: ?>
-            <div>&nbsp;</div>
+            <div class="underflow-container editable"></div>
         <?php endif; ?>
     <?php else: ?>
         <div class="day-status-color-traingler"  style="border-bottom: 28px solid #<?php echo $this->userDayData['status2']['color_hex']; ?>;"></div>

@@ -28,6 +28,7 @@
         },
 
         selectSecondStatus: function(el) {
+            return true;
             el = $(el);
             var oldStatus = $('#select-second-status-button').html();
             $('#select-second-status-button').html(el.data('toggle'));
@@ -65,8 +66,15 @@
                 showMeridian: false,
                 defaultTime: 'value'
             });
-            $('.timepicker-exclude').timepicker({
-                minuteStep: 60,
+            $('.timepicker-start2').timepicker({
+                minuteStep: 10,
+                template: 'modal',
+                showSeconds: false,
+                showMeridian: false,
+                defaultTime: 'value'
+            });
+            $('.timepicker-end2').timepicker({
+                minuteStep: 10,
                 template: 'modal',
                 showSeconds: false,
                 showMeridian: false,
@@ -81,6 +89,8 @@
             var color = $('#form-edit-day').find('#color');
             if (color) {
                 color.val(el.data('color'));
+               // $('#status1').value = el.data('color');
+            //    alert($('#status1').val + el.data('color'));
             }
         }
     };

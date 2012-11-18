@@ -2,7 +2,7 @@
 <?php $user = $this->user; ?>
 <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
     <td class="user-title" >
-        <?php echo $user['full_name']; ?>
+        <div><?php echo "<nobr>" . $user['full_name'] . "</nobr>"; ?> </div>
     </td>
 
     <?php foreach ($this->weekDays as $weekDay): ?>
