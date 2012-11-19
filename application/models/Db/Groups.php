@@ -27,7 +27,8 @@ class Application_Model_Db_Groups extends Application_Model_Db_Abstract
         $select = $this->_db->select()
             ->from(array('ug' => Application_Model_Db_User_Groups::TABLE_NAME), array())
             ->join(array('g' => self::TABLE_NAME), 'ug.group_id = g.id', array('*'))
-            ->where('ug.user_id = ?', $userId);
+            ->where('ug.user_id = ?', $userId)
+            ->order('g.group_name ASC');
         $result = $this->_db->fetchAll($select);
         return $result;
     }

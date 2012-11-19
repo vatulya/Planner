@@ -6,6 +6,7 @@ class Planner_UserSettingsController extends My_Controller_Action
     public $ajaxable = array(
         'index'           => array('html'),
         'save-user-field' => array('json'),
+        'save-user-groups' => array('json'),
     );
 
     /**
@@ -41,11 +42,38 @@ class Planner_UserSettingsController extends My_Controller_Action
             $user['groups'] = $modelGroup->getGroupsByUserId($user['id']);
 //            $user['hours'];
 //            $user['time_work']['start']; $user['time_work']['end'];
+            $user['admin_groups'] = $modelGroup->getUserGroupsAdmin($user);
             $users[$key] = $user;
         }
         $roles = Application_Model_Auth::getAllowedRoles();
-        $this->view->roles = $roles;
-        $this->view->users = $users;
+        $groups = $modelGroup->getAllGroups();
+
+        $this->view->assign(array(
+            'groups' => $groups,
+            'roles'  => $roles,
+            'users'  => $users,
+        ));
+    }
+
+    public function saveUserGroupsAction()
+    {
+        $status  = false;
+
+        $userId = $this->_getParam('user');
+        $groups = $this->_getParam('groups');
+        foreach ($groups as $key => $group) {
+            $group = explode(':', $group);
+            $groups[$key] = array(
+                'group' => (int)$group[0],
+                'admin' => (bool)$group[1],
+            );
+        }
+        $status = $this->_modelUser->saveGroups($userId, $groups);
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
     }
 
     public function saveUserFieldAction()

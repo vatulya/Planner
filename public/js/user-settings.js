@@ -2,7 +2,111 @@
 
     var UserSettings = {
 
+        popup: null,
+
         init: function() {
+            var popup = $('#edit-form-modal');
+            if (popup.length) {
+                UserSettings.popup = popup;
+            }
+        },
+
+        editForm: function(el) {
+            el = $(el);
+            var html = UserSettings.getEditFormPopupHtml(el);
+            UserSettings.popup.find('.modal-header h3').html(el.data('field-title'));
+            UserSettings.popup.find('.modal-body').html(html);
+            UserSettings.popup.modal('show');
+            var focus = UserSettings.popup.find('.for-focus');
+            if (focus) { focus.focus().val(focus.val()); };
+        },
+
+        getEditFormPopupHtml: function(el) {
+            var html = '';
+            var type = '';
+            if (el.hasClass('editable-groups')) {
+                html = UserSettings.getEditableGroupHtml(el);
+                type = 'groups';
+            }
+            var container = html.find('.popup-container');
+            Form.setDataEl(container, 'user', el.parents('tr').data('user'));
+            Form.setDataEl(container, 'type', type);
+            UserSettings.checkGroupAdminCheckbox(html);
+            html = html.html();
+            return html;
+        },
+
+        getEditableGroupHtml: function(el) {
+            var html = $('#popup-edit-form-groups-html');
+            html.find('.group-checkbox').removeAttr('checked');
+            var groups = el.data('field-value');
+            groups = groups.split(';'); // 1:0;2:1;3:0; means id=1 : isAdmin=0 ; id=2 : isAdmin=1 ; id=3 : isAdmin=0
+            for (i in groups) {
+                var group = groups[i];
+                group = group.split(':'); // ID:ADMIN
+                html.find('.group-id-' + group[0]).attr('checked', 'checked');
+                if (group[1] * 1 > 0) {
+                    html.find('.group-admin-' + group[0]).attr('checked', 'checked');
+                }
+            };
+            return html;
+        },
+
+        saveForm: function(el) {
+            var container = UserSettings.popup.find('.popup-container');
+            var data = {};
+            if (container.data('type') == 'groups') {
+                data = UserSettings.getEditFormPopupData(container);
+            }
+            UserSettings.lockPopup();
+            data.user = container.data('user');
+            data.format = 'json';
+            $.ajax({
+                url: '/user-settings/save-user-groups',
+                data: data,
+                success: function(response) {
+                    UserSettings.unlockPopup();
+                    response = response.response;
+                    if (response.status) {
+                        window.location.reload();
+                    } else {
+                        alert('Error! Something wrong.');
+                    }
+                },
+                error: function(response) {
+                    UserSettings.unlockPopup();
+                    alert('Error! Something wrong.');
+                }
+            });
+        },
+
+        lockPopup: function() {
+            UserSettings.popup.find('input, button, select, textarea').attr('disabled', 'disabled').addClass('locked');
+        },
+
+        unlockPopup: function() {
+            UserSettings.popup.find('.locked').removeAttr('disabled').removeClass('.locked');
+        },
+
+        getEditFormPopupData: function(container) {
+            var data = {};
+            var checked = [];
+            var groups = container.find('.group-id');
+            groups.each(function(i, el) {
+                el = $(el);
+                if (el.attr('checked')) {
+                    var id = el.data('group-id');
+                    var admin = container.find('.group-admin-' + id);
+                    if (admin.length > 0 && admin.attr('checked')) {
+                        admin = '1';
+                    } else {
+                        admin = '0';
+                    }
+                    checked.push(id + ':' + admin);
+                }
+            });
+            data.groups = checked;
+            return data;
         },
 
         editField: function(el) {
@@ -28,24 +132,32 @@
                 content: html
             });
             el.popover('show');
+            var focus = $('.popover .popover-content .for-focus');
+            if (focus) { focus.focus().val(focus.val()); };
+        },
+
+        getEditableBirthdayHtml: function(el) {
+            var html = $('#popover-edit-field-birthday-html');
+            var date = el.data('field-value');
+            date = date.split('-');
+            html.find('.input-edit-field.input-date-day').attr('value', date[2]);
+            html.find('.input-edit-field.input-date-month').attr('value', date[1]);
+            html.find('.input-edit-field.input-date-year').attr('value', date[0]);
+            return html;
         },
 
         getEditFieldPopoverHtml: function(el) {
             var html = '';
             var type = '';
             if (el.hasClass('editable-birthday')) {
-                html = $('#popover-edit-field-birthday-html');
-                var date = el.data('field-value');
-                date = date.split('-');
-                html.find('.input-edit-field.input-date-day').attr('value', date[2]);
-                html.find('.input-edit-field.input-date-month').attr('value', date[1]);
-                html.find('.input-edit-field.input-date-year').attr('value', date[0]);
+                html = UserSettings.getEditableBirthdayHtml(el);
                 type = 'birthday';
             } else {
                 html = $('#popover-edit-field-html');
-                html.find('.input-edit-field').val(el.data('field-value'));
-                html.find('.input-edit-field').attr('value', el.data('field-value'));
-                html.find('.input-edit-field').attr('name', el.data('field-name'));
+                html.find('.input-edit-field')
+                    .val(el.data('field-value'))
+                    .attr('value', el.data('field-value'))
+                    .attr('name', el.data('field-name'));
             }
             var container = html.find('.popover-container');
             Form.setDataEl(container, 'user', el.parents('tr').data('user'));
@@ -118,6 +230,21 @@
                 field.removeAttr('disabled');
                 button.removeAttr('disabled');
             }
+        },
+
+        checkGroupAdminCheckbox: function(container) {
+            container.find('.group-checkbox.group-id').each(function(i, el) {
+                el = $(el);
+                var id = el.data('group-id');
+                var adminCheckbox = container.find('.group-checkbox.group-admin-' + id);
+                if (adminCheckbox) {
+                    if (el.attr('checked')) {
+                        adminCheckbox.removeAttr('disabled');
+                    } else {
+                        adminCheckbox.attr('disabled', 'disabled');
+                    }
+                }
+            });
         }
 
     };
@@ -128,8 +255,26 @@
         $(document.body).on('click', '.editable', function(e) {
             UserSettings.editField(e.currentTarget);
         });
+        $(document.body).on('click', '.editable-popup', function(e) {
+            UserSettings.editForm(e.currentTarget);
+        });
         $(document.body).on('click', '.submit-popover-edit-field', function(e) {
             UserSettings.saveField(e.currentTarget);
+        });
+        $(document.body).on('click', '.submit-edit-form', function(e) {
+            UserSettings.saveForm(e.currentTarget);
+        });
+        $(document.body).on('click', '.group-checkbox.group-id', function(e) {
+            UserSettings.checkGroupAdminCheckbox(UserSettings.popup);
+        });
+        $(document.body).on('mouseover', '.change-role-icon', function(e) {
+            $(e.currentTarget).parents('.show-tooltip').tooltip('hide');
+        });
+        $(document.body).on('mouseout', '.change-role-icon', function(e) {
+            var p = $(e.currentTarget).parent('.show-tooltip');
+            if (p.is(':hover')) {
+                p.tooltip('show');
+            }
         });
 
     });

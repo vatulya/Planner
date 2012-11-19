@@ -125,7 +125,36 @@ class Application_Model_User extends Application_Model_Abstract
     {
         $result = $this->_modelDb->saveField($userId, $field, $value);
         return $result;
+    }
 
+    public function saveRole($userId, $role)
+    {
+        $result = false;
+        $allowedRoles = Application_Model_Auth::getAllowedRoles();
+        if ( ! empty($allowedRoles[$role])) {
+            $result = $this->_modelDb->saveRole($userId, $role);
+        }
+        return $result;
+    }
+
+    public function saveGroups($userId, array $groups)
+    {
+        $modelUserGroups = new Application_Model_Db_User_Groups();
+        $result = $modelUserGroups->saveUserGroups($userId, $groups);
+        $user = $this->getUserById($userId);
+        $adminGroups = $modelUserGroups->getUserGroupsAdmin($userId);
+        if ($result) {
+            if (count($adminGroups)) {
+                if ($user['role'] < Application_Model_Auth::ROLE_GROUP_ADMIN) {
+                    $result = $this->saveRole($userId, Application_Model_Auth::ROLE_GROUP_ADMIN);
+                }
+            } else {
+                if ($user['role'] == Application_Model_Auth::ROLE_GROUP_ADMIN) {
+                    $result = $this->saveRole($userId, Application_Model_Auth::ROLE_USER);
+                }
+            }
+        }
+        return $result;
     }
 
     protected function _calculateAdditionalParameters(array $userParameters)

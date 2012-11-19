@@ -52,6 +52,21 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function saveRole($userId, $role)
+    {
+        $result = false;
+        $checkUser = $this->getUserById($userId);
+        if ($checkUser['role'] == $role) {
+            $result = true;
+        } else {
+            $data = array(
+                'role' => (int)$role,
+            );
+            $result = $this->_db->update(self::TABLE_NAME, $data, array('id = ?' => $userId));
+        }
+        return $result;
+    }
+
     public function saveField($userId, $field, $value)
     {
         $checkUser = $this->getUserById($userId);

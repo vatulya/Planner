@@ -23,10 +23,19 @@
 
         <?php
         $groups = array();
+        $groupRoles = '';
+        $adminGroups = array_flip($user['admin_groups']);
         foreach ($user['groups'] as $group) {
-            $groups[] = $group['group_name'];
+            $admin = isset($adminGroups[$group['id']]) ? 1 : 0;
+            if ($admin) {
+                $groups[] = '<strong>' . $group['group_name'] . '</strong>';
+            } else {
+                $groups[] = $group['group_name'];
+            }
+            $groupRoles .= $group['id'] . ':' . $admin . ';';
         }
         $groups = implode(', ', $groups);
+        $groupRoles = rtrim($groupRoles, ';');
         ?>
 
         <tr data-user="<?php echo $user['id']; ?>">
@@ -83,7 +92,7 @@
                 </div>
             </td>
             <td class="show-tooltip" data-original-title="<?php echo $groups; ?>" data-placement="top">
-                <div class="underflow-container editable">
+                <div class="underflow-container editable-popup editable-groups" data-field-title="Groups for user: <?php echo $user['full_name']; ?>" data-field-name="groups" data-field-value="<?php echo $groupRoles; ?>">
                     <div class="underflow">
                         <?php echo $groups; ?>
                     </div>
@@ -125,21 +134,67 @@
     </table>
 </div>
 
+<!-- DEFAULT EDIT POPOVER -->
 <div id="popover-edit-field-html" style="display: none;">
     <div class="popover-container" data-user="">
         <div class="input-append">
-            <input type="text" name="" value="" class="input-edit-field">
+            <input type="text" name="" value="" class="input-edit-field for-focus">
             <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
         </div>
     </div>
 </div>
 
+<!-- BIRTHDAY EDIT POPOVER -->
 <div id="popover-edit-field-birthday-html" style="display: none;">
     <div class="popover-container" data-user="">
-        &nbsp;Day: <input type="text" name="" value="" class="input-edit-field input-date-day" placeholder="DD" maxlength="2">
+        &nbsp;Day: <input type="text" name="" value="" class="input-edit-field input-date-day for-focus" placeholder="DD" maxlength="2">
         &nbsp;Month: <input type="text" name="" value="" class="input-edit-field input-date-month" placeholder="MM" maxlength="2">
         &nbsp;Year: <input type="text" name="" value="" class="input-edit-field input-date-year" placeholder="YYYY" maxlength="4">
         <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
         <div class="small-tip">allowed values from 1940-01-01 to 2010-01-01</div>
+    </div>
+</div>
+
+<!-- GROUPS EDIT POPUP -->
+<div id="popup-edit-form-groups-html" style="display: none;">
+    <div class="edit-form-groups popup-container" data-user="">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="span6">
+                        Group name
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+        <?php foreach ($this->groups as $group): ?>
+            <?php $id = $group['id']; ?>
+                <tr style="background-color: #<?php echo $group['color']; ?>;">
+                    <td>
+                        <input type="checkbox" name="group-id-<?php echo $id; ?>" class="group-checkbox group-id group-id-<?php echo $group['id']; ?>" data-toggle="button" data-group-id="<?php echo $group['id']; ?>"">
+                        <?php echo $group['group_name']; ?>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="group-id-<?php echo $id; ?>" class="group-checkbox group-admin-<?php echo $group['id']; ?>" data-toggle="button" data-group-id="<?php echo $group['id']; ?>"">
+                    </td>
+                </tr>
+        <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal hide span12 popup" id="edit-form-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success submit-edit-form" data-status='approved'>Save</button>
     </div>
 </div>
