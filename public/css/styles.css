@@ -160,11 +160,11 @@ form.form-mini {
     width: 100500px;
     position: absolute;
 }
-.editable {
+.editable, .editable-popup {
     cursor: pointer;
     margin-bottom: 1px;
 }
-.editable:hover {
+.editable:hover, .editable-popup:hover {
     border-bottom: 1px dashed #808080;
     margin-bottom: 0px;
 }
@@ -177,6 +177,8 @@ form.form-mini {
 .input-edit-field {
     width: 300px;
 }
+.popover-container .new_password, .popover-container .new_password_repeat {width: 200px;}
+
 .popover-container .input-date-day {width: 30px; margin-bottom: 0px;}
 .popover-container .input-date-month {width: 30px; margin-bottom: 0px;}
 .popover-container .input-date-year {width: 60px; margin-bottom: 0px;}

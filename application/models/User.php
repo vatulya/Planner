@@ -121,6 +121,32 @@ class Application_Model_User extends Application_Model_Abstract
         return $userParameters;
     }
 
+    public function savePassword($userId, $newPassword, $currentPassword = '', $force = false)
+    {
+        /*
+         * $currentPassword can be empty if we don't check it. This need if some admin changed password for some user.
+         * $force - this param for future logic.
+         */
+        $user = $this->_modelDb->getUserById($userId);
+        $newPassword = trim($newPassword);
+        $modelAuth = new Application_Model_Auth();
+        $result = false;
+        // TODO: refactor it
+        if ($force && ! empty($newPassword)) {
+            $result = $modelAuth->_changePassword($userId, $newPassword);
+        } else {
+            if ( ! empty($user)) {
+                if ( ! empty($newPassword)) {
+                    $currentPasswordEncoded = Application_Model_AuthAdapter::encodePassword($currentPassword);
+                    if (empty($currentPassword) || $user['password'] == $currentPasswordEncoded) {
+                        $result = $modelAuth->_changePassword($userId, $newPassword);
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
     public function saveField($userId, $field, $value)
     {
         $result = $this->_modelDb->saveField($userId, $field, $value);

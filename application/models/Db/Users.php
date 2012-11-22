@@ -6,7 +6,7 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
     const TABLE_NAME = 'users';
 
     protected $_allowedSaveFields = array(
-        'email', 'full_name', 'address', 'phone',
+        'full_name', 'address', 'phone',
         'emergency_phone', 'emergency_full_name', 'birthday', 'owner',
     );
 
@@ -80,6 +80,21 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
             } else {
                 $result = $this->_db->update(self::TABLE_NAME, $data, array('id = ?' => $userId));
             }
+        }
+        return $result;
+    }
+
+    public function savePassword($userId, $password)
+    {
+        $checkUser = $this->getUserById($userId);
+        $result = false;
+        $data = array(
+            'password' => $password,
+        );
+        if ($checkUser['password'] == $password) {
+            $result = true;
+        } else {
+            $result = $this->_db->update(self::TABLE_NAME, $data, array('id = ?' => $userId));
         }
         return $result;
     }

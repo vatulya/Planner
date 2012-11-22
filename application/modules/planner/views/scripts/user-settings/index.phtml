@@ -98,8 +98,8 @@
                     </div>
                 </div>
             </td>
-            <td class="show-tooltip" data-original-title="Click here to change password" data-placement="top">
-                <div class="underflow-container editable">
+            <td class="show-tooltip" data-original-title="Click here to change password'" data-placement="top">
+                <div class="underflow-container editable editable-password" data-field-title="Password for user '<?php echo $user['full_name']; ?>" data-field-name="password" data-field-value="">
                     <div class="underflow">
                         **********
                     </div>
@@ -152,6 +152,33 @@
         &nbsp;Year: <input type="text" name="" value="" class="input-edit-field input-date-year" placeholder="YYYY" maxlength="4">
         <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
         <div class="small-tip">allowed values from 1940-01-01 to 2010-01-01</div>
+    </div>
+</div>
+
+<!-- PASSWORD EDIT POPOVER -->
+<div id="popover-edit-field-password-html" style="display: none;">
+    <div class="popover-container" data-user="">
+        <table>
+            <tbody>
+                <tr>
+                    <td class="span2">
+                        New password:
+                    </td>
+                    <td>
+                        <input type="password" name="new_password" value="" class="input-edit-field new_password" placeholder="New password">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="span2">
+                        Repeat password:
+                    </td>
+                    <td>
+                        <input type="password" name="new_password_repeat" value="" class="input-edit-field new_password_repeat" placeholder="Repeat new password">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
     </div>
 </div>
 

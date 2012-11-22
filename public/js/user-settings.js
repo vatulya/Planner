@@ -146,12 +146,20 @@
             return html;
         },
 
+        getEditablePasswordHtml: function(el) {
+            var html = $('#popover-edit-field-password-html');
+            return html;
+        },
+
         getEditFieldPopoverHtml: function(el) {
             var html = '';
             var type = '';
             if (el.hasClass('editable-birthday')) {
                 html = UserSettings.getEditableBirthdayHtml(el);
                 type = 'birthday';
+            } else if (el.hasClass('editable-password')) {
+                html = UserSettings.getEditablePasswordHtml(el);
+                type = 'password';
             } else {
                 html = $('#popover-edit-field-html');
                 html.find('.input-edit-field')
@@ -177,6 +185,11 @@
                     var birth_year  = container.find('.input-edit-field.input-date-year').val();
                     data.field = type;
                     data.value = birth_year + '-' + birth_month + '-' + birth_day;
+                } else if (type == 'password') {
+                    var new_password   = container.find('.input-edit-field.new_password').val();
+                    var new_password_repeat = container.find('.input-edit-field.new_password_repeat').val();
+                    data.field = type;
+                    data.value = [new_password, new_password_repeat];
                 } else {
                     var field = container.find('.input-edit-field');
                     var key = field.attr('name');
@@ -202,7 +215,15 @@
                     if (response.status) {
                         window.location.reload();
                     } else {
-                        alert('Error! Something wrong.');
+                        var errors = '';
+                        if (response.data.length) {
+                            for (i in response.data) {
+                                errors += response.data[i] + ' ';
+                            }
+                            alert('Error! ' + errors);
+                        } else {
+                            alert('Error! Something wrong.');
+                        }
                     }
                 },
                 error: function(response) {

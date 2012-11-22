@@ -83,29 +83,62 @@ class Planner_UserSettingsController extends My_Controller_Action
         $userId = $this->_getParam('user');
         $field  = $this->_getParam('field');
         $value  = $this->_getParam('value');
-        $checked = $this->_checkUserField($userId, $field, $value);
-        if ($checked) {
-            $status = $this->_modelUser->saveField($userId, $field, $value);
+        $errors = $this->_checkUserField($userId, $field, $value);
+        if (empty($errors)) {
+            if ($field == 'password') {
+                // TODO: refactor change-password logic
+                $status = $this->_modelUser->savePassword($userId, $value[0]);
+            } else {
+                $status = $this->_modelUser->saveField($userId, $field, $value);
+            }
         }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, 'Error!', $errors);
         }
     }
 
     protected function _checkUserField($userId, $field, $value)
     {
-        $checked = false;
+        // TODO: maybe this logic need move into model ?
+        $errors = array();
         switch ($field) {
             case 'email':
                 $validator = new Zend_Validate_EmailAddress();
                 if ($validator->isValid($value)) {
-                    $checked = true;
+                    $used = $this->_modelUser->getUserByEmail($value);
+                    if ( ! $used) {
+                        $checked = true;
+                    } else {
+                        $errors[] = 'This email already exists';
+                    }
+                } else {
+                    $errors[] = 'Wrong email';
+                }
+                break;
+
+            case 'password':
+                // TODO: move this logic into validator
+                if (is_array($value) && isset($value[0], $value[1])) {
+                    $newPassword = trim($value[0]);
+                    $newPasswordRepeat = trim($value[1]);
+                    if ( ! empty($newPassword)) {
+                        if ($newPassword === $newPasswordRepeat) {
+                            // nothing. return empty array of errors
+                        } else {
+                            $errors[] = 'Strings is not same';
+                        }
+                    } else {
+                        $errors[] = 'Empty password';
+                    }
+                } else {
+                    $errors[] = 'Wrong data';
                 }
                 break;
 
             case 'birthday':
+                $checked = false;
                 try {
                     $date = new DateTime($value);
                     $timestamp = $date->getTimestamp();
@@ -113,15 +146,18 @@ class Planner_UserSettingsController extends My_Controller_Action
                         $checked = true;
                     }
                 } catch(Exception $e) { /* error */ }
+                if ( ! $checked) {
+                    $errors[] = 'Wrong birthday date';
+                }
                 break;
 
             default:
-                $checked = true;
+                // nothing. return empty array of errors
                 break;
 
         }
 
-        return $checked;
+        return $errors;
     }
 
 }

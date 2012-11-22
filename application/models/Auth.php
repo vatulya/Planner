@@ -41,6 +41,13 @@ class Application_Model_Auth extends Application_Model_Abstract
         return null;
     }
 
+    public function _changePassword($userId, $newPassword)
+    {
+        $newPasswordEncoded = Application_Model_AuthAdapter::encodePassword($newPassword);
+        $result = $this->_modelDb->savePassword($userId, $newPasswordEncoded);
+        return $result;
+    }
+
     static public function getRole($asString = false)
     {
         $stringAliases = array(
