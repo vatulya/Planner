@@ -9,6 +9,7 @@
             if (popup.length) {
                 UserSettings.popup = popup;
             }
+            UserSettings.initCreateUserForm();
         },
 
         editForm: function(el) {
@@ -124,11 +125,12 @@
                 placement = 'bottom';
             }
             var html = UserSettings.getEditFieldPopoverHtml(el);
+            var title = 'Edit field "' + el.data('field-title') + '"';
             el.popover({
                 html: true,
                 placement: placement,
                 trigger: 'manual',
-                title: 'Edit field "' + el.data('field-title') + '"',
+                title: title,
                 content: html
             });
             el.popover('show');
@@ -170,6 +172,13 @@
             var container = html.find('.popover-container');
             Form.setDataEl(container, 'user', el.parents('tr').data('user'));
             Form.setDataEl(container, 'type', type);
+
+            if (el.hasClass('edit-full-name')) {
+                html.find('.additional-menu').show();
+            } else {
+                html.find('.additional-menu').hide();
+            }
+
             html = html.html();
             return html;
         },
@@ -266,6 +275,107 @@
                     }
                 }
             });
+        },
+
+        showCreateUserForm: function() {
+            var modal = $('#create-user-form-modal');
+            if (modal.length > 0 ) {
+                modal.modal('show');
+            }
+        },
+
+        initCreateUserForm: function() {
+            var formEl = $('#submit-create-user-form');
+            formEl.ajaxForm({
+                data: {format: 'json'},
+                beforeSubmit: function() {
+                    window.Form.hideAllNotifications(formEl);
+                    window.Form.blockForm(formEl);
+                },
+                success: function(response) {
+                    window.Form.unblockForm(formEl);
+                    response = response.response;
+                    if (response.status) {
+                        window.location.reload();
+//                        window.Form.showSuccess(formEl, 2000);
+                    } else {
+                        window.Form.showErrors(formEl, response.data);
+                    }
+                },
+                error: function() {
+                    window.Form.unblockForm(formEl);
+                    window.Form.showErrors(formEl);
+                }
+            });
+        },
+
+        setAdmin: function(el) {
+            el = $(el);
+            var container = el.parents('.popover-container');
+            if (container.length > 0) {
+                if ( ! confirm('Are you sure?')) {
+                    return;
+                }
+                var data = {
+                    user: container.data('user'),
+                    format: 'json'
+                };
+                $.ajax({
+                    url: '/user-settings/set-admin',
+                    data: data,
+                    beforeSubmit: function() {
+                        el.attr('disabled', 'disabled');
+                    },
+                    success: function(response) {
+                        el.removeAttr('disabled');
+                        response = response.response;
+                        if (response.status) {
+                            if (response.data.isAdmin) {
+                                el.addClass('active');
+                            } else {
+                                el.removeClass('active');
+                            }
+                        }
+                    },
+                    error: function() {
+                        el.removeAttr('disabled');
+                    }
+                });
+            }
+        },
+
+        deleteUser: function(el) {
+            el = $(el);
+            var container = el.parents('.popover-container');
+            if (container.length > 0) {
+                if ( ! confirm('Delete user. Are you sure?')) {
+                    return;
+                }
+                var data = {
+                    user: container.data('user'),
+                    format: 'json'
+                };
+                $.ajax({
+                    url: '/user-settings/delete-user',
+                    data: data,
+                    beforeSubmit: function() {
+                        el.attr('disabled', 'disabled');
+                    },
+                    success: function(response) {
+                        el.removeAttr('disabled');
+                        response = response.response;
+                        if (response.status) {
+                            window.location.reload();
+                        } else {
+                            alert('Error! Something wrong.');
+                        }
+                    },
+                    error: function() {
+                        el.removeAttr('disabled');
+                        alert('Error! Something wrong.');
+                    }
+                });
+            }
         }
 
     };
@@ -287,6 +397,15 @@
         });
         $(document.body).on('click', '.group-checkbox.group-id', function(e) {
             UserSettings.checkGroupAdminCheckbox(UserSettings.popup);
+        });
+        $(document.body).on('click', '#create-user', function(e) {
+            UserSettings.showCreateUserForm();
+        });
+        $(document.body).on('click', '.set-admin', function(e) {
+            UserSettings.setAdmin(e.currentTarget);
+        });
+        $(document.body).on('click', '.delete-user', function(e) {
+            UserSettings.deleteUser(e.currentTarget);
         });
         $(document.body).on('mouseover', '.change-role-icon', function(e) {
             $(e.currentTarget).parents('.show-tooltip').tooltip('hide');

@@ -83,7 +83,7 @@
             Form.hideAllNotifications(formEl);
 
             // TODO: need finish show error messages logic
-            if (errorsHash != undefined && errorsHash.length > 0) {
+            if (errorsHash != undefined && $.isPlainObject(errorsHash)) {
                 for (var k in errorsHash) {
                     for (var kk in errorsHash[k]) {
                         var errorDomain = errorsHash[k][kk];

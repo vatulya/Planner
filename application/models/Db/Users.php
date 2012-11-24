@@ -99,6 +99,57 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function insert(array $user)
+    {
+        $data = array(
+            'email'               => empty($user['email']) ? '' : $user['email'],
+            'password'            => empty($user['password']) ? '' : $user['password'],
+            'role'                => Application_Model_Auth::ROLE_USER,
+            'full_name'           => empty($user['full_name']) ? '' : $user['full_name'],
+            'address'             => empty($user['address']) ? '' : $user['address'],
+            'phone'               => empty($user['phone']) ? '' : $user['phone'],
+            'emergency_phone'     => empty($user['emergency_phone']) ? '' : $user['emergency_phone'],
+            'emergency_full_name' => empty($user['emergency_full_name']) ? '' : $user['emergency_full_name'],
+            'birthday'            => empty($user['birthday']) ? '' : $user['birthday'],
+            'owner'               => empty($user['owner']) ? '' : $user['owner'],
+            'created'             => date_create()->format('Y-m-d H:i:s'),
+        );
+        $result = $this->_db->insert(self::TABLE_NAME, $data);
+        return $result;
+    }
+
+    public function setRole($userId, $role)
+    {
+        $role = (int)$role;
+        $result = false;
+        $allowedRoles = Application_Model_Auth::getAllowedRoles();
+        if (array_key_exists($role, $allowedRoles)) {
+            $check = $this->getUserById($userId);
+            if ($check['role'] == $role) {
+                $result = true;
+            } else {
+                if ($check['role'] != Application_Model_Auth::ROLE_SUPER_ADMIN) {
+                    // Nobody can't change role for SUPER ADMIN
+                    $data = array('role' => $role);
+                    $result = $this->_db->update(self::TABLE_NAME, $data, array('id = ?' => $userId));
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function delete($userId)
+    {
+        // TODO: make some archive logic for users and user data
+        // $result - for debug
+        $result = $this->_db->delete(self::TABLE_NAME, array('id = ?' => $userId));
+        $result = $this->_db->delete(Application_Model_Db_User_Checks::TABLE_NAME, array('user_id = ?' => $userId));
+        $result = $this->_db->delete(Application_Model_Db_User_Groups::TABLE_NAME, array('user_id = ?' => $userId));
+        $result = $this->_db->delete(Application_Model_Db_User_Parameters::TABLE_NAME, array('user_id = ?' => $userId));
+        $result = $this->_db->delete(Application_Model_Db_User_Requests::TABLE_NAME, array('user_id = ?' => $userId));
+        return true;
+    }
+
     protected function _addCheckinByDate($select, DateTime $checkingDate = null)
     {
         if ($checkingDate) {

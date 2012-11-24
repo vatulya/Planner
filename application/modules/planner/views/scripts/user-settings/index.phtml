@@ -4,7 +4,12 @@
     <table class="table table-bordered table-hover user-settings-table table-small-td">
         <thead>
         <tr>
-            <th class="col-user-name">User</th>
+            <th class="col-user-name">
+                User
+                <button class="btn btn-small btn-success pull-right show-tooltip" id="create-user" data-original-title="Create new user" data-placement="top">
+                    <i class="icon-plus icon-white"></i>
+                </button>
+            </th>
             <th class="col-user-address">Address</th>
             <th class="col-user-phone">Phone</th>
             <th class="col-user-email">Mail</th>
@@ -36,20 +41,27 @@
         }
         $groups = implode(', ', $groups);
         $groupRoles = rtrim($groupRoles, ';');
+        try {
+            $userBirthdayFormatted = new DateTime($user['birthday']);
+            $userBirthdayFormatted = $userBirthdayFormatted->format('d-m-Y');
+        } catch (Exception $e) {$userBirthdayFormatted = $user['birthday'];}
         ?>
 
         <tr data-user="<?php echo $user['id']; ?>">
             <td class="show-tooltip" data-original-title="<?php echo $user['full_name']; ?>" data-placement="top">
-                <div class="underflow-container editable" data-field-title="Full name" data-field-name="full_name" data-field-value="<?php echo $user['full_name']; ?>" data-placement="right">
+                <div
+                    class="underflow-container editable <?php if ($this->me['role'] == Application_Model_Auth::ROLE_SUPER_ADMIN && $user['role'] != Application_Model_Auth::ROLE_SUPER_ADMIN): ?>edit-full-name<?php endif; ?>"
+                    data-field-title="Full name"
+                    data-field-name="full_name"
+                    data-field-value="<?php echo $user['full_name']; ?>"
+                    data-placement="right"
+                >
                     <div class="underflow">
                         <?php echo $user['full_name']; ?>
                     </div>
                 </div>
             </td>
             <td class="show-tooltip" data-original-title="<?php echo $user['address']; ?>" data-placement="top">
-                <?php if ($this->me['role'] == Application_Model_Auth::ROLE_SUPER_ADMIN): ?>
-                    <i class="icon-cog change-role-icon show-tooltip" data-original-title="Current role: '<?php echo $this->roles[$user['role']]; ?>'</br>Click to change" data-placement="top""></i>
-                <?php endif; ?>
                 <div class="underflow-container editable" data-field-title="Address" data-field-name="address" data-field-value="<?php echo $user['address']; ?>">
                     <div class="underflow">
                         <?php echo $user['address']; ?>
@@ -84,10 +96,10 @@
                     </div>
                 </div>
             </td>
-            <td class="show-tooltip" data-original-title="<?php echo $user['birthday']; ?>" data-placement="top">
+            <td class="show-tooltip" data-original-title="<?php echo $userBirthdayFormatted; ?>" data-placement="top">
                 <div class="underflow-container editable editable-birthday" data-field-title="Birthdate" data-field-name="birthday" data-field-value="<?php echo $user['birthday']; ?>">
                     <div class="underflow">
-                        <?php echo $user['birthday']; ?>
+                        <?php echo $userBirthdayFormatted; ?>
                     </div>
                 </div>
             </td>
@@ -141,6 +153,13 @@
             <input type="text" name="" value="" class="input-edit-field for-focus">
             <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
         </div>
+        <?php if ($this->me['role'] == Application_Model_Auth::ROLE_SUPER_ADMIN): ?>
+        <!-- USER ADDITIONAL MENU POPOVER -->
+        <div class="additional-menu">
+            <button class="btn btn-primary set-admin" type="button">Admin</button>
+            <button class="btn btn-danger delete-user" type="button">Delete</button>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -222,6 +241,20 @@
     <div class="modal-body">
     </div>
     <div class="modal-footer">
-        <button class="btn btn-success submit-edit-form" data-status='approved'>Save</button>
+        <button class="btn btn-success submit-edit-form">Save</button>
+    </div>
+</div>
+
+<div class="modal hide span12 popup" id="create-user-form-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3>Create new user</h3>
+    </div>
+    <div class="modal-body">
+        <?php echo $this->createForm; ?>
+    </div>
+    <div class="modal-footer">
+        <span class="help-inline">* required</span>
+        <button class="btn btn-success button-submit submit-create-user-form" data-form="submit-create-user-form">Save</button>
     </div>
 </div>

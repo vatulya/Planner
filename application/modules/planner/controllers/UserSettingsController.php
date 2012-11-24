@@ -4,9 +4,12 @@ class Planner_UserSettingsController extends My_Controller_Action
 {
 
     public $ajaxable = array(
-        'index'           => array('html'),
-        'save-user-field' => array('json'),
+        'index'            => array('html'),
+        'save-user-field'  => array('json'),
         'save-user-groups' => array('json'),
+        'create-user-form' => array('json'),
+        'set-admin'        => array('json'),
+        'delete-user'      => array('json'),
     );
 
     /**
@@ -48,10 +51,19 @@ class Planner_UserSettingsController extends My_Controller_Action
         $roles = Application_Model_Auth::getAllowedRoles();
         $groups = $modelGroup->getAllGroups();
 
+        $createForm = new Planner_Form_CreateUser(array(
+            'id' => 'submit-create-user-form',
+            'class' => 'form-horizontal',
+            'action' => $this->_helper->url->url(array('controller' => 'user-settings', 'action' => 'create-user-form'), 'planner', true),
+            'autocomplete' => 'off',
+        ));
+        $createForm->setDefault('owner', Application_Model_User::USER_DEFAULT_OWNER);
+
         $this->view->assign(array(
-            'groups' => $groups,
-            'roles'  => $roles,
-            'users'  => $users,
+            'groups'     => $groups,
+            'roles'      => $roles,
+            'users'      => $users,
+            'createForm' => $createForm->prepareDecorators(),
         ));
     }
 
@@ -96,6 +108,73 @@ class Planner_UserSettingsController extends My_Controller_Action
             $this->_response(1, '', array());
         } else {
             $this->_response(0, 'Error!', $errors);
+        }
+    }
+
+    public function createUserFormAction()
+    {
+        $createForm = new Planner_Form_CreateUser();
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        $data = array();
+        $status = false;
+        if ($request->isPost()) {
+            $post = $request->getPost();
+            if (empty($post['owner'])) {
+                $post['owner'] = Application_Model_User::USER_DEFAULT_OWNER;
+            }
+            if ($createForm->isValid($post)) {
+                $user = $createForm->getValues();
+                $check = $this->_modelUser->getUserByEmail($user['email']);
+                if (empty($check)) {
+                    $data = $this->_modelUser->create($createForm->getValues());
+                    $status = true;
+                } else {
+                    $data['email'] = array('This email already exists');
+                }
+            } else {
+                $data = $createForm->getMessages();
+            }
+        }
+        $data = array_filter($data);
+        if ($status) {
+            $this->_response(1, '', $data);
+        } else {
+            $this->_response(0, 'Error!', $data);
+        }
+    }
+
+    public function setAdminAction()
+    {
+        $userId = $this->_getParam('user');
+        $status = false;
+        if ($this->_me['role'] == Application_Model_Auth::ROLE_SUPER_ADMIN) {
+            $status = $this->_modelUser->setAdmin($userId);
+        }
+        if ($status) {
+            $user = $this->_modelUser->getUserById($userId);
+            $isAdmin = false;
+            if ($user['role'] == Application_Model_Auth::ROLE_ADMIN) {
+                $isAdmin = true;
+            }
+            $this->_response(1, '', array('isAdmin' => $isAdmin));
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function deleteUserAction()
+    {
+        $userId = $this->_getParam('user');
+        if ($this->_me['role'] == Application_Model_Auth::ROLE_SUPER_ADMIN) {
+            if ($this->_me['id'] != $userId) {
+                $status = $this->_modelUser->delete($userId);
+            }
+        }
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
         }
     }
 

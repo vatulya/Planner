@@ -6,6 +6,8 @@ class Application_Model_User extends Application_Model_Abstract
     const USER_CHECK_IN = 'in';
     const USER_CHECK_OUT = 'out';
 
+    const USER_DEFAULT_OWNER = 'Eigen';
+
     protected $_modelDb;
 
     protected $_hiddenFields = array(
@@ -30,6 +32,9 @@ class Application_Model_User extends Application_Model_Abstract
     public function getUserByEmail($email)
     {
         $user = $this->_modelDb->getUserByEmail($email);
+        if ( ! $user) {
+            $user = array();
+        }
         $user = $this->_filterHiddenFields($user);
         return $user;
     }
@@ -180,6 +185,41 @@ class Application_Model_User extends Application_Model_Abstract
                 }
             }
         }
+        return $result;
+    }
+
+    public function create(array $user)
+    {
+        $result = false;
+        if ( ! empty($user['email']) && Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
+            $user['password'] = Application_Model_AuthAdapter::encodePassword($user['password']);
+            $result = $this->_modelDb->insert($user);
+        }
+        return $result;
+    }
+
+    public function setAdmin($userId)
+    {
+        $user = $this->getUserById($userId);
+        $newRole = false;
+        if ($user['role'] < Application_Model_Auth::ROLE_ADMIN) {
+            $newRole = Application_Model_Auth::ROLE_ADMIN;
+        } elseif ($user['role'] == Application_Model_Auth::ROLE_ADMIN) {
+            $modelUserGroups = new Application_Model_Db_User_Groups();
+            $adminGroups = $modelUserGroups->getUserGroupsAdmin($userId);
+            if (count($adminGroups) > 0) {
+                $newRole = Application_Model_Auth::ROLE_GROUP_ADMIN;
+            } else {
+                $newRole = Application_Model_Auth::ROLE_USER;
+            }
+        }
+        $result = $this->_modelDb->setRole($userId, $newRole);
+        return $result;
+    }
+
+    public function delete($userId)
+    {
+        $result = $this->_modelDb->delete($userId);
         return $result;
     }
 
