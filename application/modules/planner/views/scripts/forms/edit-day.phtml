@@ -13,7 +13,8 @@ $selectedStatus2 = $this->element->status2->getValue();
 $this->selectedStatus1 = $selectedStatus1;
 $this->selectedStatus2 = $selectedStatus2;
 ?>
-<div><h3>Day Main Status/Color</h3></div>
+
+<div><h3>Day Work Time</h3></div>
 <table>
     <tr>
         <td>
@@ -36,29 +37,8 @@ $this->selectedStatus2 = $selectedStatus2;
         </td>
     <tr>
 </table>
-<div class="day-color-selector">
-    <?php if  ($selectedStatus1 == 2) : ?>
-        <?php
-            $this->status = $statuses[$selectedStatus1];
-            echo $this->render('forms/color_button.phtml'); ?>
-    <?php elseif ($selectedStatus1 == 1) : ?>
-        <?php
-            $this->status = $statuses[$selectedStatus1];
-            echo $this->render('forms/color_button.phtml');
-            $this->status = $statuses[2];
-            echo $this->render('forms/color_button.phtml');
-        ?>
-    <?php elseif ($selectedStatus1 == 3) : ?>
-        <?php
-            $this->status = $statuses[$selectedStatus1];
-            echo $this->render('forms/color_button.phtml');
-        ?>
-    <?php endif; ?>
-</div>
-    </br>
-    </br>
-<?php if  ($selectedStatus1 == 2) : ?>
-<div><h3>Day Additional User Status/Color</h3></div>
+<?php if  ($selectedStatus1 == 2) ://green color status ?>
+<div><h3>Set time and day color</h3></div>
 
 <table>
     <tr>
@@ -82,15 +62,20 @@ $this->selectedStatus2 = $selectedStatus2;
         </td>
     <tr>
 </table>
-<button type="button" class="btn  btn-primary" id="select-second-status-button" data-toggle="Single Status for Day">Apply for full day</button>
+<button type="button" class="btn  btn-primary" id="apply-time-full-day" >Apply for full day</button>
 <div class="day-color-selector">
     <?php
-    $this->status = $statuses[4];
-    echo $this->render('forms/color_button.phtml');
-    $this->status = $statuses[5];
-    echo $this->render('forms/color_button.phtml');
-    $this->status = $statuses[6];
-    echo $this->render('forms/color_button.phtml');
+        $this->status = $statuses[4];
+        echo $this->render('forms/color_button.phtml');
+        $this->status = $statuses[5];
+        echo $this->render('forms/color_button.phtml');
+        $this->status = $statuses[6];
+        echo $this->render('forms/color_button.phtml');
     ?>
 </div>
+<?php elseif ($selectedStatus1 = 1) ://white color status ?>
+<?php
+    $this->status = $statuses[7];
+    echo $this->render('forms/color_button.phtml');
+?>
 <?php endif; ?>

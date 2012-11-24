@@ -4,9 +4,7 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
 {
     const TABLE_NAME = 'user_planning';
 
-    const STATUS_DAY_WHITE = '1';
-    const STATUS_DAY_GREEN = '2';
-    const STATUS_DAY_YELLOW = '3';
+
 
     public function __construct()
     {
@@ -22,71 +20,19 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             ->where('up.date = ?', $date);
             //->where('up.date <= ADDDATE( ?, INTERVAL 6 DAY)', $date)
         $result = $this->_db->fetchRow($select);
-        if(!empty($result)) {
-            $status = new Application_Model_Status();
-            $userRequest = new Application_Model_Db_User_Requests();
-            $approveUserDayRequest = $userRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
-            if ($result['status1'] == self::STATUS_DAY_GREEN) {
-                if (!empty($approveUserDayRequest)) {
-                    $result['status1'] = $status->getDataById(self::STATUS_DAY_YELLOW);
-                    $result = $this->_resetTimeAndSecondStatus($result);
-                } else {
-                    $result['status1'] = $status->getDataById(self::STATUS_DAY_GREEN);
-                    if (!empty($result['time_start']) && !empty($result['time_end'])) {
-                        $date = date_create($result['time_start']);
-                        $result['time_start'] = date_format($date, 'H:i');
-                        $date = date_create($result['time_end']);
-                        $result['time_end'] = date_format($date, 'H:i');
-                    }
-                    if (!empty($result['status2'])) {
-                        $result['status2'] = $status->getDataById($result['status2']);
-                    }  else {
-                        $result['status_color2'] = "";
-                    }
-                }
-            } else {
-                $result['status1'] = $status->getDataById($result['status1']);
-                $result = $this->_resetTimeAndSecondStatus($result);
-            }
-        }
         return $result;
     }
 
-    private function _resetTimeAndSecondStatus($userDayPlan) {
-        unset($userDayPlan['time_start']);
-        unset($userDayPlan['time_end']);
-        unset($userDayPlan['time_start2']);
-        unset($userDayPlan['time_end2']);
-        unset($userDayPlan['status2']);
-        return $userDayPlan;
-    }
 
-    public function createNewDayUserPlanByGroup($userId, $groupId, $date)
+
+    public function createNewDayUserPlanByGroup($dayPlan)
     {
-        $currentDate = new My_DateTime($date);
-        $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
-        $weekType = My_DateTime::getEvenWeek($dateWeekYear['week']);
-        $groupPlanning = new Application_Model_Db_Group_Plannings();
-        $weekGroupPlanning = $groupPlanning->getGroupPlanning($groupId, $weekType, $dateWeekYear['day']);
-        if (!empty($weekGroupPlanning[0])) {
-            $weekGroupPlanning = $weekGroupPlanning[0];
-        }
-        $dayPlan = array();
-        $dayPlan['group_id'] = $groupId;
-        $dayPlan['user_id'] = $userId;
-        $dayPlan['date'] = $date;
-        if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
-            $dayPlan['status1'] = self::STATUS_DAY_WHITE;
-        } else {
-            $dayPlan['status1'] = self::STATUS_DAY_GREEN;
-            $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
-            $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
-        }
+        var_dump($dayPlan);
         try {
             $this->_db->insert(self::TABLE_NAME,$dayPlan);
         } catch (Exception $e ) {
             //for this day plan already exist
-            echo "exist - user" . $userId . " group "  . $groupId . " date " . $date . "\n" ;
+            echo "exist - use \n" ;
         }
     }
 
@@ -115,12 +61,6 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             ->from(array('up' => self::TABLE_NAME))
             ->where('up.id = ?', $dayId);
         $result = $this->_db->fetchRow($select);
-        $userRequest = new Application_Model_Db_User_Requests();
-        $approveUserDayRequest = $userRequest->getAllByUserId($result['user_id'], Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $result['date']);
-        if ($result['status1'] == self::STATUS_DAY_GREEN && !empty($approveUserDayRequest)) {
-            $result['status1'] = self::STATUS_DAY_YELLOW;
-            $result = $this->_resetTimeAndSecondStatus($result);
-        }
         return $result;
     }
 }

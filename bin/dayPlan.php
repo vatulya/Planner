@@ -35,7 +35,7 @@ foreach ($groups as $key => $group) {
     $groups[$key]['users'] = $modelUser->getAllUsersByGroup($groupId);
     if (!empty($groups[$key]['users'])) {
         foreach ($groups[$key]['users'] as $keyUser => $user) {
-            $userPlan->createNewDayUserPlanByGroup($user['user_id'], $groupId, $date);
+            $modelUser->createNewDayUserPlanByGroup($user['user_id'], $groupId, $date);
         }
     }
 

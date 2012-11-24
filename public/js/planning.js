@@ -9,22 +9,24 @@
 
         editDay: function(el) {
             el = $(el);
-            modalEditH3.show();
-            modalBody.html('Loading...');
-            modal.modal();
-            $.ajax({
-                url: el.attr('href'),
-                data: {
-                    day: el.data('day-id')
-                },
-                success: function(response) {
-                    modalBody.html(response);
-                    DaySettings.initEditAjaxForm();
-                },
-                error: function(response) {
-                    modalBody.html('Error! Something wrong.');
-                }
-            });
+            if (el.data('status') != 3) {  //no popup for yellow status
+                modalEditH3.show();
+                modalBody.html('Loading...');
+                modal.modal();
+                $.ajax({
+                    url: el.attr('href'),
+                    data: {
+                        day: el.data('day-id')
+                    },
+                    success: function(response) {
+                        modalBody.html(response);
+                        DaySettings.initEditAjaxForm();
+                    },
+                    error: function(response) {
+                        modalBody.html('Error! Something wrong.');
+                    }
+                });
+            }
         },
 
         selectSecondStatus: function(el) {
@@ -82,16 +84,10 @@
             });
         },
 
-        changeSelectedColor: function(el) {
+        applyTimeFullDay: function(el) {
             el = $(el);
-            $('.day-status-color').removeClass('active');
-            el.addClass('active');
-            var color = $('#form-edit-day').find('#color');
-            if (color) {
-                color.val(el.data('color'));
-               // $('#status1').value = el.data('color');
-            //    alert($('#status1').val + el.data('color'));
-            }
+            $('#time_start2').attr('value',  $('#time_start').attr('value'));
+            $('#time_end2').attr('value',  $('#time_end').attr('value'));
         }
     };
 
@@ -99,8 +95,8 @@
         $(document.body).on('click', '.edit-day', function(e) {
             DaySettings.editDay(e.currentTarget);
         });
-        $(document.body).on('click', '#select-second-status-button', function(e) {
-            DaySettings.selectSecondStatus(e.currentTarget);
+        $(document.body).on('click', '#apply-time-full-day', function(e) {
+            DaySettings.applyTimeFullDay(e.currentTarget);
         });
         $(document.body).on('click', '.day-status-color', function(e) {
             DaySettings.changeSelectedColor(e.currentTarget);

@@ -1,5 +1,5 @@
 <?php if ( ! empty($this->userDayData)): ?>
-<a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'get-edit-day-form'), 'planner', true); ?>" class="no-action edit-day" data-day-id="<?php echo $this->userDayData['id']; ?>" title="<?php echo$this->userDayData['date']; ?>">
+<a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'get-edit-day-form'), 'planner', true); ?>" class="no-action edit-day" data-day-id="<?php echo $this->userDayData['id']; ?>"  data-status="<?php echo $this->userDayData['status1']['id']; ?>" title="<?php echo$this->userDayData['date']; ?>">
    <?php if ( empty($this->userDayData['status2'])): ?>
         <?php if ( !empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])): ?>
             <div class="underflow-container editable"> <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?></div>

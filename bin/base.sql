@@ -167,3 +167,15 @@ CREATE TABLE `user_requests` (
   INDEX(status)
 )
 ;
+
+CREATE TABLE `user_overtime` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `user_id` int(4) NOT NULL,
+  `date` date NOT NULL,
+  `time_start` time DEFAULT NULL,
+  `time_end` time DEFAULT NULL,
+  `group_id` int(4) DEFAULT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`,`group_id`,`date`)
+) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8

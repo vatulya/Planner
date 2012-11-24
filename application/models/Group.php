@@ -71,11 +71,19 @@ class Application_Model_Group extends Application_Model_Abstract
         return true;
     }
 
-    public function getGroupPlanning($groupId, $weekType = null)
+    public function getGroupPlanning($groupId, $weekType = null, $day='')
     {
         $groupPlannings = new Application_Model_Db_Group_Plannings();
-        $planning = $groupPlannings->getGroupPlanning($groupId, $weekType);
+        $planning = $groupPlannings->getGroupPlanning($groupId, $weekType, $day);
         return $planning;
+    }
+
+    public function getGroupPlanningByDate($groupId, $date)
+    {
+        $currentDate = new My_DateTime($date);
+        $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
+        $weekType = My_DateTime::getEvenWeek($dateWeekYear['week']);
+        return $this->getGroupPlanning($groupId, $weekType, $dateWeekYear['day']);
     }
 
     public function saveGroupPlanning($groupId, array $planning, array $pause)
