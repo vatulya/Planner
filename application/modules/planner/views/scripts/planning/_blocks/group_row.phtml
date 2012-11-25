@@ -18,7 +18,7 @@
                 <?php if ($currentWeekYear['week'] != $this->week): ?>
                 | Actual Week |
                 <?php else : ?>
-                | ... |
+                &nbsp;
                 <?php endif; ?>
             </a>
             <a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">

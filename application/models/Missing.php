@@ -18,12 +18,12 @@ class Application_Model_Missing extends Application_Model_Abstract
     public function saveUserMissingDay($formData)
     {
         //TODO add check role
-        if (empty($formData['status']) || empty($formData['time_start2']) || empty($formData['time_end2']) || empty($formData['user_id']) || empty($formData['date'])) {
+        if (empty($formData['status2']) || empty($formData['time_start2']) || empty($formData['time_end2']) || empty($formData['user_id']) || empty($formData['date'])) {
             return false;
         }
         $missingDayData = array(
             "user_id"    => $formData['user_id'],
-            "status"     => $formData['status'],
+            "status"     => $formData['status2'],
             "time_start" => $formData['time_start2'],
             "time_end"   => $formData['time_end2'],
             "date"       => $formData['date']

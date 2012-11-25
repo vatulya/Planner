@@ -44,7 +44,7 @@
                 success: function(response) {
                     response = response.response;
                     if (response.status) {
-                        document.Form.showSuccess(formEl);
+                        //document.Form.showSuccess(formEl);
                         window.location.reload();
                     } else {
                         document.Form.showErrors(formEl);
@@ -88,6 +88,17 @@
             el = $(el);
             $('#time_start2').attr('value',  $('#time_start').attr('value'));
             $('#time_end2').attr('value',  $('#time_end').attr('value'));
+        },
+        changeSelectedColor: function(el) {
+            el = $(el);
+            $('.day-status-color').removeClass('active');
+            el.addClass('active');
+            var color = $('#form-edit-day').find('#color');
+            if (color) {
+                color.val(el.data('color'));
+                $('#status2').val( el.data('status'));
+                //    alert($('#status1').val + el.data('color'));
+            }
         }
     };
 

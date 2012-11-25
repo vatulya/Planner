@@ -73,4 +73,10 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         $this->_db->update(self::TABLE_NAME, $fields, array('id = ?' => $id));
         return true;
     }
+
+    public function saveWorkTime($formData)
+    {
+        //TODO realize logic for update
+        $this->_db->update(self::TABLE_NAME, $fields, array('id = ?' => $id));
+    }
 }

@@ -15,50 +15,60 @@ class Application_Model_Planning extends Application_Model_Abstract
     public function __construct()
     {
         $this->_modelDb = new Application_Model_Db_User_Planning();
-        $this->_modelMissing = new Application_Model_Missing();
+        $this->_modelMissing  = new Application_Model_Missing();
+        $this->_modelOvertime = new Application_Model_Db_User_Overtime();
     }
 
-    public function getUserWeekPlanByGroup($userId, $groupId,  $year, $week)
+    public function getUserWeekPlanByGroup($userId, $groupId,  $year, $week, $meId)
     {
         $weekPlan = array();
         $weekDays = My_DateTime::getWeekDays();
         $dateWeekStart = new My_DateTime($year . 'W' . sprintf("%02d", $week));
-        $currentDate = new My_DateTime();
-        $currentDate = $currentDate->getTimestamp();
-        $weekUserPlan = new Application_Model_Db_User_Planning();
-        $groupPlanning = new Application_Model_Group();
-
 
         foreach ($weekDays as $numDay=>$nameDay) {
-        $date = clone $dateWeekStart;
-        $date->modify('+' . $numDay . 'day');
-        $dateFormat = $date->format('Y-m-d');
-        // echo $date->getTimestamp() . "----" . $currentDate . "----"  .$dateFormat. "<br>";
-        if ($date->getTimestamp() >= $currentDate) {
-        $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $dateFormat);
-        if (!empty($weekGroupPlanning[0])) {
-        $weekGroupPlanning = $weekGroupPlanning[0];
-        }
-        $dayPlan = array();
-        $dayPlan['group_id'] = $groupId;
-        $dayPlan['user_id'] = $userId;
-        $dayPlan['date'] = $dateFormat;
-        if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
-          $dayPlan['status1'] = self::STATUS_DAY_WHITE;
-        } else {
-            $dayPlan['status1'] = self::STATUS_DAY_GREEN;
-            $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
-            $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
-        }
-        $weekPlan[$nameDay] = $this->_setStatusByRules($dayPlan);
-        //  echo "<pre> - $groupId  ----day " . $dateFormat ;
-                      //  var_dump($weekPlan[$nameDay]);
-
-            }  else {
-                $weekPlan[$nameDay] = $this->_setStatusByRules($weekUserPlan->getUserDayPlanByGroup($userId, $groupId, $dateFormat));
-            }
+            $date = clone $dateWeekStart;
+            $date->modify('+' . $numDay . 'day');
+            $dateFormat = $date->format('Y-m-d');
+            $weekPlan[$nameDay] = $this->getDayGroupUserPlanByDate($userId, $groupId, $dateFormat, $meId) ;
         }
         return $weekPlan;
+    }
+
+    public function getDayGroupUserPlanByDate($userId, $groupId, $dateFormat, $meId)
+    {
+        $weekUserPlan = new Application_Model_Db_User_Planning();
+        $groupPlanning = new Application_Model_Group();
+        $currentDate = new My_DateTime();
+        $currentDate = $currentDate->getTimestamp();
+        $date = new My_DateTime($dateFormat);
+        if ($date->getTimestamp() >= $currentDate) {
+            $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $dateFormat);
+            if (!empty($weekGroupPlanning[0])) {
+                $weekGroupPlanning = $weekGroupPlanning[0];
+            }
+            $dayPlan = array();
+            $dayPlan['group_id'] = $groupId;
+            $dayPlan['user_id'] = $userId;
+            $dayPlan['date'] = $dateFormat;
+            $dayPlan['editable'] = false;
+            if ($meId == $userId) {
+                $dayPlan['editable'] = true;
+            }
+            if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
+                $dayPlan['status1'] = self::STATUS_DAY_WHITE;
+            } else {
+                $dayPlan['status1'] = self::STATUS_DAY_GREEN;
+                $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
+                $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
+            }
+            return $this->_setStatusByRules($dayPlan);
+        }  else {
+            $dayPlan = $weekUserPlan->getUserDayPlanByGroup($userId, $groupId, $dateFormat);
+            if ($meId == $userId) {
+                $dayPlan['editable'] = true;
+            }
+            return $this->_setStatusByRules($dayPlan);
+        }
     }
 
     public function createNewDayUserPlanByGroup($userId, $groupId, $date)
@@ -105,8 +115,10 @@ class Application_Model_Planning extends Application_Model_Abstract
                     }
                     if (!empty($missingUserDayStatuses)) {
                         $result['status2'] = $status->getDataById($missingUserDayStatuses['status']);
+                        $result['time_start2'] = $missingUserDayStatuses['time_start'];
+                        $result['time_end2'] = $missingUserDayStatuses['time_end'];
                     }  else {
-                        $result['status_color2'] = "";
+                        $result['status2'] = "";
                     }
                 }
             } else {
@@ -118,6 +130,14 @@ class Application_Model_Planning extends Application_Model_Abstract
                     $result['time_end2']   = $overtime['time_end'];
                     $result['status2'] = $status->getDataById(self::STATUS_DAY_OVERTIME);
                 }
+            }
+            //If the day as now allow edit form
+            $date = new My_DateTime();
+            $currentDateFormat = $date->format('Y-m-d');
+            if (!empty($result['editable']) || $result['date'] == $currentDateFormat) {
+                $result['editable'] = true;
+            } else {
+                $result['editable'] = false;
             }
         } else {
             $result = $this->_setDefaultStatusForEmptyPlan();
@@ -165,16 +185,29 @@ class Application_Model_Planning extends Application_Model_Abstract
 
     public function saveDayAdditionalUserStatus($formData)
     {
-        $status = $formData['status'];
+        if (!empty($formData['time_start']) && !empty($formData['time_end'])) {
+            //TODO realize logic for update
+            //$this->_modelDb->saveWorkTime($formData);
+        }
+        $status = $formData['status2'];
         if ($status == self::STATUS_DAY_RED || $status == self::STATUS_DAY_CYAN || $status == self::STATUS_DAY_BLUE) {
             return $this->_modelMissing->saveUserMissingDay($formData);
         } elseif ($status == self::STATUS_DAY_OVERTIME) {
-            var_dump($formData);
-            //TODO save overtime
-            return true;
+            return $this->saveUserOvertimeDay($formData);
         }
-        var_dump($formData);
         return false;
+    }
+
+    public function saveUserOvertimeDay($formData)
+    {
+        $overtimeData = array(
+            'user_id'    => $formData['user_id'],
+            'group_id'   => $formData['group_id'],
+            'date'       => $formData['date'],
+            'time_start' => $formData['time_start2'],
+            'time_end'   => $formData['time_end2']
+        );
+        return $this->_modelOvertime->saveUserDayOvertimeByDate($overtimeData);
     }
 
     public function getUserDayOvertimeByDate($userId, $groupId, $date)
