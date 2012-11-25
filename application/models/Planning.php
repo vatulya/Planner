@@ -50,10 +50,7 @@ class Application_Model_Planning extends Application_Model_Abstract
             $dayPlan['group_id'] = $groupId;
             $dayPlan['user_id'] = $userId;
             $dayPlan['date'] = $dateFormat;
-            $dayPlan['editable'] = false;
-            if ($meId == $userId) {
-                $dayPlan['editable'] = true;
-            }
+            $dayPlan['editable'] = $this->_getEditableDay($userId, $groupId);
             if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
                 $dayPlan['status1'] = self::STATUS_DAY_WHITE;
             } else {
@@ -64,11 +61,21 @@ class Application_Model_Planning extends Application_Model_Abstract
             return $this->_setStatusByRules($dayPlan);
         }  else {
             $dayPlan = $weekUserPlan->getUserDayPlanByGroup($userId, $groupId, $dateFormat);
-            if ($meId == $userId) {
-                $dayPlan['editable'] = true;
-            }
             return $this->_setStatusByRules($dayPlan);
         }
+    }
+
+    private function _getEditableDay($userId, $groupId)
+    {
+        $auth = new Application_Model_Auth();
+        $user = $auth->getCurrentUser();
+        $meId = $user['id'];
+        $userGroup = new Application_Model_Db_User_Groups();
+        $groupsAdmin = $userGroup->getUserGroupsAdmin($meId);
+        if ($meId == $userId || (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) || in_array($groupId, $groupsAdmin)) {
+            return true;
+        }
+        return false;
     }
 
     public function createNewDayUserPlanByGroup($userId, $groupId, $date)
@@ -134,10 +141,8 @@ class Application_Model_Planning extends Application_Model_Abstract
             //If the day as now allow edit form
             $date = new My_DateTime();
             $currentDateFormat = $date->format('Y-m-d');
-            if (!empty($result['editable']) || $result['date'] == $currentDateFormat) {
-                $result['editable'] = true;
-            } else {
-                $result['editable'] = false;
+            if ($result['date'] == $currentDateFormat) {
+                $result['editable'] = $this->_getEditableDay($result['user_id'], $result['group_id']);
             }
         } else {
             $result = $this->_setDefaultStatusForEmptyPlan();
