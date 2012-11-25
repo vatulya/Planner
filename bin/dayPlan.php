@@ -21,6 +21,7 @@ $application = new Zend_Application(
 $application->bootstrap();
 
 $modelGroup    = new Application_Model_Group();
+$modelPlanning = new Application_Model_Planning();
 $modelUser     = new Application_Model_User();
 $userPlan      = new Application_Model_Db_User_Planning();
 
@@ -35,7 +36,7 @@ foreach ($groups as $key => $group) {
     $groups[$key]['users'] = $modelUser->getAllUsersByGroup($groupId);
     if (!empty($groups[$key]['users'])) {
         foreach ($groups[$key]['users'] as $keyUser => $user) {
-            $modelUser->createNewDayUserPlanByGroup($user['user_id'], $groupId, $date);
+            $modelPlanning->createNewDayUserPlanByGroup($user['user_id'], $groupId, $date);
         }
     }
 

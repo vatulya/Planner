@@ -45,7 +45,7 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             )
             ->where('up.user_id = ?', $userId)
             ->where('up.group_id = ?', $groupId)
-            ->where('up.status1 = ?', 0)
+            ->where('up.status1 = ?', Application_Model_Planning::STATUS_DAY_GREEN)
             ->where('up.date >= ?', $date)
             ->where('up.date <= ADDDATE( ?, INTERVAL ' . $weekLenght . ' DAY)', $date);
         $result = $this->_db->fetchOne($select);
@@ -62,5 +62,15 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             ->where('up.id = ?', $dayId);
         $result = $this->_db->fetchRow($select);
         return $result;
+    }
+
+    public function saveStatus($fields)
+    {
+        $id = $fields['id'];
+        unset($fields['id']);
+        unset($fields['use_status2']);
+        unset($fields['color']);
+        $this->_db->update(self::TABLE_NAME, $fields, array('id = ?' => $id));
+        return true;
     }
 }

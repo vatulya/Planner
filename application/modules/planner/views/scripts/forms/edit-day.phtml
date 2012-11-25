@@ -1,19 +1,18 @@
 <div class="alert alert-error" style="display: none;"></div>
 <div class="alert alert-success" style="display: none;"></div>
 <?php echo $this->element->id; ?>
-<?php echo $this->element->color; ?>
-<?php echo $this->element->status1; ?>
-<?php echo $this->element->status2; ?>
+<?php echo $this->element->status_main; ?>
+<?php echo $this->element->status; ?>
 <?php
 $status = new Application_Model_Status();
 $statuses = $status->getAllStatus();
 
-$selectedStatus1 = $this->element->status1->getValue();
-$selectedStatus2 = $this->element->status2->getValue();
+$selectedStatus1 = $this->element->status_main->getValue();
+$selectedStatus2 = $this->element->status->getValue();
 $this->selectedStatus1 = $selectedStatus1;
 $this->selectedStatus2 = $selectedStatus2;
 ?>
-
+<?php if ($selectedStatus1 != 1) ://white color status ?>
 <div><h3>Day Work Time</h3></div>
 <table>
     <tr>
@@ -37,7 +36,7 @@ $this->selectedStatus2 = $selectedStatus2;
         </td>
     <tr>
 </table>
-<?php if  ($selectedStatus1 == 2) ://green color status ?>
+<?php endif; ?>
 <div><h3>Set time and day color</h3></div>
 
 <table>
@@ -62,7 +61,10 @@ $this->selectedStatus2 = $selectedStatus2;
         </td>
     <tr>
 </table>
+<?php if ($selectedStatus1 != 1) ://white color status ?>
 <button type="button" class="btn  btn-primary" id="apply-time-full-day" >Apply for full day</button>
+<?php endif; ?>
+<?php if  ($selectedStatus1 == 2) ://green color status ?>
 <div class="day-color-selector">
     <?php
         $this->status = $statuses[4];
@@ -73,9 +75,10 @@ $this->selectedStatus2 = $selectedStatus2;
         echo $this->render('forms/color_button.phtml');
     ?>
 </div>
-<?php elseif ($selectedStatus1 = 1) ://white color status ?>
+<?php elseif ($selectedStatus1 == 1) ://white color status ?>
 <?php
     $this->status = $statuses[7];
+    //$this->selectedStatus2 = 7;
     echo $this->render('forms/color_button.phtml');
 ?>
 <?php endif; ?>

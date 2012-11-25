@@ -16,41 +16,42 @@ class Planner_PlanningController extends My_Controller_Action
 
     public function init()
     {
+        $this->_me           = $this->_helper->CurrentUser();
         $this->view->me = $this->_me = $this->_helper->CurrentUser();
         parent::init();
         $this->_modelGroup    = new Application_Model_Group();
         $this->_modelUser     = new Application_Model_User();
-    //    $this->_me           = $this->_helper->CurrentUser();
-    //    $this->view->me      = $this->_helper->CurrentUser();
-    //    $this->_setParam('userId', $this->_me['id']);
+        $this->_modelPlanning = new Application_Model_Planning();
 
-        $currentWeekDateMonday = new DateTime();
+    //    $currentWeekDateMonday = new DateTime();
        // $currentWeekDateMonday->modify('last Monday');  2012-10-05
        // $this->view->currentWeekDateMonday  = $currentWeekDateMonday->format('W');
        // $this->view->nextWeekDateMonday     = $currentWeekDateMonday->format('W');
 
-        $currentWeekDateMonday->modify('+1 week');
+     //     $currentWeekDate = new DateTime();
     //    $this->view->nextWeekYear = $nextWeekDate->format('Y');
     //    $this->view->nextWeek     = $nextWeekDate->format('W');
 //        $this->view->nextWeekYear = date('Y', strtotime('Monday this week +1 week'));
 //        $this->view->nextWeek     = date('W', strtotime('Monday this week +1 week'));
           $this->view->weekDays     =  $weekDays = My_DateTime::getWeekDays();
+          $this->view->currentWeekYear = My_DateTime::getWeekYear();
     }
 
     public function indexAction()
     {
-       // $users = array($this->_me);
-        $date = new My_DateTime();
-        $weekYear = My_DateTime::getWeekYear();
 
-        $year = $weekYear['year'];
-        $week = $weekYear['week'];
-        //$week = 41;
-        $historyDateWeekYear = $this->_getNumHistoryWeeks($year, $week);
-        $date->modify('+1 week');
-        $nextDateWeekYear = My_DateTime::getWeekYear($date->getTimestamp());
+        $request = Zend_Controller_Front::getInstance()->getRequest();
+        $week = $request->getParam('week');
+        $year = $request->getParam('year');
+        if (empty($week) || empty($year))  {
+            $weekYear = My_DateTime::getWeekYear();
+            $year = $weekYear['year'];
+            $week = $weekYear['week'];
+        }
+        $this->view->nextWeekYear = My_DateTime::getNextYearWeek($year,$week);
+        $this->view->prevWeekYear = My_DateTime::getPrevYearWeek($year,$week);
 
-
+        $historyDateWeekYear = My_DateTime::getNumHistoryWeeks($year, $week);
         $groups = $this->_modelGroup->getAllGroups();
 
         foreach ($groups as $key => $group) {
@@ -69,7 +70,6 @@ class Planner_PlanningController extends My_Controller_Action
         $this->view->week                = $week;
         $this->view->year                = $year;
         $this->view->historyDateWeekYear = $historyDateWeekYear;
-        $this->view->nextDateWeekYear    = $nextDateWeekYear;
         $this->view->groups              = $groups;
     }
 
@@ -80,7 +80,7 @@ class Planner_PlanningController extends My_Controller_Action
         //echo "<pre>";
         //var_dump($user['history']);
 
-        $user['weekPlan'] = $this->_modelUser->getUserWeekPlanByGroup($user['user_id'], $groupId,  $year, $week);
+        $user['weekPlan'] = $this->_modelPlanning->getUserWeekPlanByGroup($user['user_id'], $groupId,  $year, $week);
         return $user;
     }
 
@@ -94,9 +94,27 @@ class Planner_PlanningController extends My_Controller_Action
         ));
 
         if ($dayId) {
-            $day = $this->_modelUser->getUserDayById($dayId);
+            $day = $this->_modelPlanning->getUserDayById($dayId);
             if ($day) {
-                $editForm->populate($day);
+                $missingModel = new Application_Model_Missing();
+                $overtime = $this->_modelPlanning->getUserDayOvertimeByDate($day['user_id'], $day['group_id'], $day['date']);
+                $missingDayStatus = $missingModel->getUserDayMissingPlanByDate($day['user_id'], $day['date']);
+                $formData = array(
+                    "id"          => $day['id'],
+                    "status_main" => $day['status1'],
+                    "time_start"  => $day['time_start'],
+                    "time_end"    => $day['time_end'],
+                );
+                if ($overtime) {
+                    $formData['time_start2'] =  $overtime['time_start'];
+                    $formData['time_end2']   =  $overtime['time_end'];
+                    $formData['status']      =  Application_Model_Planning::STATUS_DAY_OVERTIME;
+                } elseif (!empty($missingDayStatus['status'])) {
+                    $formData['time_start2'] =  $missingDayStatus['time_start'];
+                    $formData['time_end2']   =  $missingDayStatus['time_end'];
+                    $formData['status']      =  $missingDayStatus['status'];
+                }
+                $editForm->populate($formData);
             } else {
                 return false;
             }
@@ -115,9 +133,7 @@ class Planner_PlanningController extends My_Controller_Action
         $status = false;
         if ($request->isPost()) {
             if ($editForm->isValid($request->getPost())) {
-                $status = new Application_Model_Status();
-                $data = $status->saveStatus($editForm->getValues());
-                $status = true;
+                $status = $this->_modelPlanning->saveDayAdditionalUserStatus($editForm->getValues());
             } else {
                 $data = $editForm->getErrors();
             }
@@ -135,7 +151,6 @@ class Planner_PlanningController extends My_Controller_Action
         $oldestWeek = $this->_getParam('oldestWeek');
 
         $user['history'] = $this->_getHistory($userId, $oldestYear, $oldestWeek);
-
         $html = $view->render('_blocks/history.phtml');
         $data = array(
             'html' => $html,
@@ -146,7 +161,7 @@ class Planner_PlanningController extends My_Controller_Action
     protected function _getHistory($userId, $groupId, $fromYear, $fromWeek, $weeksCount = self::HISTORY_WEEK_NUM)
     {
         $history = array();
-        $historyWeeks = $this->_getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount);
+        $historyWeeks = My_DateTime::getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount);
         foreach ($historyWeeks as $week => $year) {
             $history[$week] = $this->_getWeekHistory($userId, $groupId, $year, $week);
         }
@@ -156,21 +171,8 @@ class Planner_PlanningController extends My_Controller_Action
 
     protected function _getWeekHistory($userId, $groupId, $year, $week)
     {
-        return $this->_modelUser->getUserWorkTimeByGroup($userId, $groupId, $year, $week);
+        return $this->_modelPlanning->getUserWorkTimeByGroup($userId, $groupId, $year, $week);
     }
 
-    protected function _getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount = self::HISTORY_WEEK_NUM)
-    {
-        $historyWeeks = array();
-        $start = new DateTime($fromYear . 'W' . sprintf("%02d", $fromWeek));
-        for ($i = $weeksCount; $i > 0; $i-- ) {
-            $historyDate = clone $start;
-            $historyDate->modify('-' . $i . ' week');
-            $year = $historyDate->format('Y');
-            $week = $historyDate->format('W');
-            $historyWeeks[$week] = $year;
-        }
-        //$historyWeeks = array_reverse($historyWeeks, true);
-        return  $historyWeeks;
-    }
+
 }

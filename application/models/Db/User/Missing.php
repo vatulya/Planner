@@ -10,8 +10,15 @@ class Application_Model_Db_User_Missing extends Application_Model_Db_Abstract
             ->from(array('um' => self::TABLE_NAME))
             ->where('um.user_id = ?', $userId)
             ->where('um.date = ?', $date);
-        //->where('up.date <= ADDDATE( ?, INTERVAL 6 DAY)', $date)
         $result = $this->_db->fetchRow($select);
         return $result;
     }
+
+    public function saveUserMissingDay($missingData)
+    {
+        $this->_db->delete(self::TABLE_NAME, array('user_id = ?' => $missingData['user_id'], 'date = ?' => $missingData['date']));
+        $result = $this->_db->insert(self::TABLE_NAME, $missingData);
+        return $result;
+    }
+
 }

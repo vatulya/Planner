@@ -7,7 +7,7 @@
         $date = date('Y-m-d', strtotime($year . 'W' . $week));
 
         $headerWeeks         .= '<th>
-            <a href="' . $this->url(array('action' => 'get-week-details'), 'planner', true). '" class="no-action get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $date . '">
+            <a href="' . $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $year, 'week' => $week), 'planner', true). '" class="get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $date . '">
                 Week ' . $week . '
             </a>
         </th>';

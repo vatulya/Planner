@@ -1,6 +1,7 @@
 <?php
 class My_DateTime extends DateTime
 {
+    const HISTORY_WEEK_NUM = 4;
 
     static public function normalizeDate($dates)
     {
@@ -75,6 +76,32 @@ class My_DateTime extends DateTime
         return $weekYear;
     }
 
+    static public function getTimestampByYearWeek($year, $week)
+    {
+        try {
+            $date = new My_DateTime($year . 'W' . sprintf("%02d", $week));
+            return $date->getTimestamp();
+        } catch (Exception $e) {
+
+        }
+    }
+
+    static public function getNextYearWeek($year, $week)
+    {
+        $date = new My_DateTime($year . 'W' . sprintf("%02d", $week));
+        $date->modify('+1 week');
+        $weekYear = self::getWeekYear($date->getTimestamp());
+        return $weekYear;
+    }
+
+    static public function getPrevYearWeek($year, $week)
+    {
+        $date = new My_DateTime($year . 'W' . sprintf("%02d", $week));
+        $date->modify('-1 week');
+        $weekYear = self::getWeekYear($date->getTimestamp());
+        return $weekYear;
+    }
+
     static public function getEvenWeek($weekNumber)
     {
         if ($weekNumber  % 2 > 0) {
@@ -87,5 +114,20 @@ class My_DateTime extends DateTime
     {
         $weekDays = array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
         return $weekDays;
+    }
+
+    public static function getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount = self::HISTORY_WEEK_NUM)
+    {
+        $historyWeeks = array();
+        $start = new DateTime($fromYear . 'W' . sprintf("%02d", $fromWeek));
+        for ($i = $weeksCount; $i > 0; $i-- ) {
+            $historyDate = clone $start;
+            $historyDate->modify('-' . $i . ' week');
+            $year = $historyDate->format('Y');
+            $week = $historyDate->format('W');
+            $historyWeeks[$week] = $year;
+        }
+        //$historyWeeks = array_reverse($historyWeeks, true);
+        return  $historyWeeks;
     }
 }
