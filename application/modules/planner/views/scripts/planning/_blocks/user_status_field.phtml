@@ -1,4 +1,16 @@
 <?php if ( ! empty($this->userDayData)): ?>
+<?php
+    $title = @$this->userDayData['date'] . '</br>' . @$this->userDayData['status1']['description'];
+    if (!empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])) {
+        $title .= ": " . $this->userDayData['time_start'] . "-" . $this->userDayData['time_end'] . " | Total:" . $this->userDayData['total_time'];
+    }
+    if (!empty($this->userDayData['status2']['description'])) {
+        $title .= "</br>" . $this->userDayData['status2']['description'];
+        if (!empty($this->userDayData['time_start2']) && !empty($this->userDayData['time_end2'])) {
+            $title .= ": <nobr>" . $this->userDayData['time_start2'] . "-" . $this->userDayData['time_end2'] . "&nbsp;|&nbsp;Total&nbsp;" . $this->userDayData['total_time2'] . "</nobr>" ;
+        }
+    }
+?>
 <a href="<?php echo $this->url(
     array(
         'controller' => 'planning',
@@ -6,15 +18,17 @@
         'date' => $this->userDayData['date'],
         'user_id' => $this->userDayData['user_id'],
         'group_id' => $this->userDayData['group_id']
-    ), 'planner', true); ?>" class="no-action <?php if ($this->userDayData['editable']) {echo " edit-day";} ?>"  data-status="<?php echo $this->userDayData['status1']['id']; ?>" title="<?php echo $this->userDayData['date']; ?>">
+    ), 'planner', true); ?>"
+   class="no-action  <?php if ($this->userDayData['editable']) {echo " edit-day";} ?>"
+   data-status="<?php echo $this->userDayData['status1']['id']; ?>" >
    <?php if ( empty($this->userDayData['status2'])): ?>
         <?php if ( !empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])): ?>
-            <div class="underflow-container editable"> <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?></div>
+            <div class="underflow-container editable show-tooltip"  title="<?php echo  $title ?>" > <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?></div>
         <?php else: ?>
-            <div class="underflow-container editable"></div>
+            <div class="underflow-container editable show-tooltip"  title="<?php echo  $title ?>"></div>
         <?php endif; ?>
     <?php else: ?>
-        <div class="day-status-color-traingler"  style="border-bottom: 28px solid #<?php echo $this->userDayData['status2']['color_hex']; ?>;"></div>
+        <div class="day-status-color-traingler show-tooltip"  title="<?php echo  $title ?>" style="border-bottom: 28px solid #<?php echo $this->userDayData['status2']['color_hex']; ?>;"></div>
     <?php endif; ?>
 </a>
 <?php else: ?>

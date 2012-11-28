@@ -38,9 +38,10 @@
                     data-week="<?php echo $this->weekTasks['week']; ?>"
                     data-userId="<?php echo $this->group['id']; ?>"
                     >
-        <br />
+
 
         <div class="week-details-container">
+            </br>
             <table class="table table-bordered table-condensed table-striped week-table">
 
                 <thead>
@@ -53,7 +54,7 @@
                     </th>
                     <th  style="background-color: #<?php echo $this->group['color'];?>" >
                         <a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
-                           Next Week <?php //echo $week; ?>
+                            <nobr>Next Week</nobr>
                         </a>
                     </th>
                 </tr>

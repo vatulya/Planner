@@ -4,10 +4,8 @@
     $historyRows         = array();
     $emptyRow            = '';
     foreach ($this->historyDateWeekYear as $week => $year) {
-        $date = date('Y-m-d', strtotime($year . 'W' . $week));
-
         $headerWeeks         .= '<th>
-            <a href="' . $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $year, 'week' => $week), 'planner', true). '" class="get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $date . '">
+            <a href="' . $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $year, 'week' => $week), 'planner', true). '" class="get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $week . '">
                 Week ' . $week . '
             </a>
         </th>';
@@ -34,7 +32,7 @@
     <?php foreach($this->users as $week => $row): ?>
     <tr>
         <?php foreach($row['history'] as $week => $workTime): ?>
-        <td><div><?php echo $workTime; ?></div></td>
+        <td><div class="show-tooltip"  title="zz<?php // echo  $title ?>" ><?php echo $workTime; ?></div></td>
         <?php endforeach; ?>
     </tr>
     <?php endforeach; ?>

@@ -14,7 +14,7 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
     public function getUserDayPlanByGroup($userId, $groupId, $date)
     {
         $select = $this->_db->select()
-            ->from(array('up' => self::TABLE_NAME))
+            ->from(array('up' => self::TABLE_NAME), array('*', 'total_time' => 'TIMEDIFF(time_end,time_start)'))
             ->where('up.user_id = ?', $userId)
             ->where('up.group_id = ?', $groupId)
             ->where('up.date = ?', $date);
@@ -36,7 +36,7 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         }
     }
 
-    public function getTotalWorkTimeByGroup($userId, $groupId, $date, $weekLenght = 6)
+    public function getTotalWorkTimeByGroup($userId, $groupId, $date, $weekLenght = 7)
     {
         $select = $this->_db->select()
             ->from(

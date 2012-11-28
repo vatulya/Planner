@@ -7,7 +7,7 @@ class Application_Model_Db_User_Missing extends Application_Model_Db_Abstract
     public function getUserDayMissingPlanByDate($userId, $date)
     {
         $select = $this->_db->select()
-            ->from(array('um' => self::TABLE_NAME))
+            ->from(array('um' => self::TABLE_NAME), array('*', 'total_time' => 'TIMEDIFF(time_end,time_start)'))
             ->where('um.user_id = ?', $userId)
             ->where('um.date = ?', $date);
         $result = $this->_db->fetchRow($select);

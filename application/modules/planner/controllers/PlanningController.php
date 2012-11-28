@@ -118,16 +118,12 @@ class Planner_PlanningController extends My_Controller_Action
         $history = array();
         $historyWeeks = My_DateTime::getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount);
         foreach ($historyWeeks as $week => $year) {
-            $history[$week] = $this->_getWeekHistory($userId, $groupId, $year, $week);
+            $history[$week] = $this->_modelPlanning->getWeekHistory($userId, $groupId, $year, $week);
         }
-        //$history = array_reverse($history, true);
         return $history;
     }
 
-    protected function _getWeekHistory($userId, $groupId, $year, $week)
-    {
-        return $this->_modelPlanning->getUserWorkTimeByGroup($userId, $groupId, $year, $week);
-    }
+
 
 
 }

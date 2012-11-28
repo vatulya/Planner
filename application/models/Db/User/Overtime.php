@@ -7,7 +7,7 @@ class Application_Model_Db_User_Overtime extends Application_Model_Db_Abstract
     public function getUserDayOvertimeByDate($userId, $groupId, $date)
     {
         $select = $this->_db->select()
-            ->from(array('uo' => self::TABLE_NAME))
+            ->from(array('uo' => self::TABLE_NAME), array('*', 'total_time' => 'TIMEDIFF(time_end,time_start)'))
             ->where('uo.user_id = ?', $userId)
             ->where('uo.group_id = ?', $groupId)
             ->where('uo.date = ?', $date);

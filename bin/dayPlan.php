@@ -8,6 +8,8 @@ set_include_path(implode(PATH_SEPARATOR, array(
     get_include_path(),
 )));
 
+date_default_timezone_set('Europe/Amsterdam');
+
 defined('APPLICATION_ENV') || define('APPLICATION_ENV', (isset($argv[1]) ? $argv[1] : 'production'));
 
 /** Zend_Application */
