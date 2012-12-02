@@ -43,7 +43,7 @@ form.form-mini {
     margin-bottom: 0px;
 }
 .group-settings-table td {
-    vertical-align: middle;
+    vertical-align: top;
     padding: 3px;
 }
 .create-group {

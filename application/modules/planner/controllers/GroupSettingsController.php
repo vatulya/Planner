@@ -11,6 +11,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'delete-group'                       => array('json'),
         'save-group-planning'                => array('json'),
         'save-group-setting-max-free-people' => array('json'),
+        'save-group-exceptions'              => array('json'),
     );
 
     /**
@@ -27,12 +28,16 @@ class Planner_GroupSettingsController extends My_Controller_Action
 
     public function indexAction()
     {
+        $year = date('Y');
         $generalGroup = $this->_modelGroup->getGeneralGroup();
         $generalGroup['settings'] = $this->_modelGroup->getGeneralGroupSettings();
+        $generalGroup['exceptions'] = $this->_modelGroup->getGeneralExceptions();
+        $generalGroup['grouped_exceptions'] = $this->_modelGroup->groupExceptions($generalGroup['exceptions'], $year);
         $groups = $this->_modelGroup->getAllGroups();
         foreach ($groups as $key => $group) {
             $group['settings'] = $this->_modelGroup->getGroupSettings($group['id']);
-//            $group['exceptions'] = $this->_modelGroup->getGroupExceptions($group['id']);
+            $group['exceptions'] = $this->_modelGroup->getExceptions($group['id']);
+            $group['grouped_exceptions'] = $this->_modelGroup->groupExceptions($group['exceptions'], $year);
             $groups[$key] = $group;
         }
         $this->view->generalGroup = $generalGroup;
@@ -151,6 +156,20 @@ class Planner_GroupSettingsController extends My_Controller_Action
     public function saveGroupSettingMaxFreePeopleAction()
     {
         $status = $this->_modelGroup->saveGroupSetting($this->_getParam('group'), 'max_free_people', $this->_getParam('max_free_people', 0));
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function saveGroupExceptionsAction()
+    {
+        $groupId          = $this->_getParam('group', 0);
+        $selectedDates    = $this->_getParam('selected_dates', array());
+        $maxFreePeople    = $this->_getParam('max_free_people');
+        $editDates        = $this->_getParam('edit_dates', array());
+        $status = $this->_modelGroup->saveGroupExceptions($groupId, $editDates, $selectedDates, $maxFreePeople);
         if ($status) {
             $this->_response(1, '', array());
         } else {

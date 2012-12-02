@@ -1,4 +1,7 @@
 <?php $this->headScript()->appendFile('/js/group-settings.js'); ?>
+<?php /********** INCLUDE CALENDAR MODULE *****************/ ?>
+<?php $this->headScript()->appendFile('/js/calendar.js'); ?>
+<?php $this->headLink()->appendStylesheet('/css/calendar.css'); ?>
 
 <?php
 $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'action' => 'save-group-setting-max-free-people'), 'planner', true);
@@ -47,14 +50,10 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
                 </div>
             </td>
             <td>
-                <button class="btn btn-mini btn-success create-group-exception"><i class="icon-plus-sign icon-white"></i></button>
-                <?php if ( ! empty($this->generalSettings['exceptions'])): ?>
-                <?php foreach ($this->generalSettings['exceptions'] as $exception): ?>
-
-                <?php endforeach; ?>
-                <?php else: ?>
-                no exceptions
-                <?php endif; ?>
+                <?php
+                $this->group = $this->generalGroup;
+                echo $this->render('group-settings/_blocks/group_exceptions.phtml');
+                ?>
             </td>
             <td>
                 <div class="input-append">
@@ -115,14 +114,52 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
                         </form>
                     </td>
                     <td>
-                        <button class="btn btn-mini btn-success create-group-exception"><i class="icon-plus-sign icon-white"></i></button>
-                        <?php if ( ! empty($group['exceptions'])): ?>
-                            <?php foreach ($group['exceptions'] as $exception): ?>
+                        <?php
+                        $this->group = $group;
+                        echo $this->render('group-settings/_blocks/group_exceptions.phtml');
+                        ?>
 
-                            <?php endforeach; ?>
+                        <?php /*
+                        $exceptions = array();
+                        if ( ! empty($group['exceptions'])) {
+                            foreach ($group['exceptions'] as $exceptionGroup) {
+                                $exceptions[] = $exceptionGroup['exception_date'];
+                            }
+                        }
+                        ?>
+                        <button class="btn btn-mini btn-success create-group-exception"
+                            data-old-selected-dates="<?php echo implode(',', $exceptions); ?>"
+                            data-group="<?php echo $group['id']; ?>"
+                        ><i class="icon-plus-sign icon-white"></i></button>
+                        <?php if ( ! empty($group['grouped_exceptions'])): ?>
+                        <?php foreach ($group['grouped_exceptions'] as $exceptionGroup): ?>
+                            <?php
+                            $start = reset($exceptionGroup); // get first date
+                            $end   = end($exceptionGroup);   // get last date
+                            if ($end['exception_date'] == $start['exception_date']) {
+                                // here one date
+                                try {
+                                    $date = new DateTime($start['exception_date']);
+                                    $date = $date->format('Y-m-d');
+                                } catch (Exception $e) { $date = $start['exception_date']; }
+                                echo $date . ' : ' . $start['max_free_people'];
+                            } else {
+                                try {
+                                    $dateStart = new DateTime($start['exception_date']);
+                                    $dateStart = $dateStart->format('d-m-Y');
+                                } catch (Exception $e) { $dateStart = $start['exception_date']; }
+                                try {
+                                    $dateEnd   = new DateTime($end['exception_date']);
+                                    $dateEnd   = $dateEnd->format('d-m-Y');
+                                } catch (Exception $e) { $dateEnd = $start['exception_date']; }
+                                echo $dateStart . ' till ' . $dateEnd . ' : ' . $start['max_free_people'];
+                            }
+                            ?>
+                            </br>
+                        <?php endforeach; ?>
                         <?php else: ?>
                         no exceptions
-                        <?php endif; ?>
+                        <?php endif; */ ?>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -159,5 +196,33 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
     <div class="modal-footer">
         <a type="button" class="btn btn-danger button-delete-group no-action" data-group-id="" href="<?php echo $this->url(array('controller' => 'group-settings', 'action' => 'delete-group'), 'planner', true); ?>">Delete</a>
         <button type="button" class="btn btn-primary button-submit" data-form="form-edit-group">Save</button>
+    </div>
+</div>
+
+<div class="modal hide popup" id="edit-group-exceptions-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3>Group exceptions</h3>
+    </div>
+    <div class="modal-body">
+        <div id="exceptions-calendar-container">
+        <div
+            class="module-calendar"
+            data-selected-dates=""
+            data-container-id="exceptions-calendar-container"
+            data-editable="1"
+        ></div>
+        </div>
+        <div class="pull-left">
+            <div>
+                <span class="param-name">Geselecteerd is:</span> <span class="exceptions-text"></span>
+            </div>
+            <input type="hidden" name="edit-dates" value="" class="edit-dates">
+            <input type="hidden" name="group" value="" class="group-id">
+            Max. free people: <input type="text" name="max_free_people" value="0" class="max_free_people">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success button-approve" id='submit-group-exceptions'>Save</button>
     </div>
 </div>

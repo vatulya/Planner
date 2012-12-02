@@ -68,6 +68,9 @@
     var Form = {
 
         setDataEl: function(el, key, value) {
+            if (typeof value == 'undefined') {
+                value = '';
+            }
             el.data(key, value);
             el.attr('data-' + key, value);
         },

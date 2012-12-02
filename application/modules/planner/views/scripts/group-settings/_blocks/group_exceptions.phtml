@@ -1,0 +1,74 @@
+<?php
+$group = $this->group;
+?>
+
+
+<?php
+$exceptions = array();
+if ( ! empty($group['exceptions'])) {
+    foreach ($group['exceptions'] as $exceptionGroup) {
+        $date = $exceptionGroup['exception_date'];
+        $exceptions[$date] = $date;
+    }
+}
+?>
+<button class="btn btn-mini btn-success create-group-exception"
+    data-old-selected-dates="<?php echo implode(',', $exceptions); ?>"
+    data-group="<?php echo $group['id']; ?>"
+    data-show-date=""
+><i class="icon-plus-sign icon-white"></i></button>
+
+
+<?php if ( ! empty($group['grouped_exceptions'])): ?>
+<?php foreach ($group['grouped_exceptions'] as $exceptionGroup): ?>
+    <?php
+        $text = '';
+        $oldSelectedDates = $exceptions;
+        $selectedDates = array();
+        $editDates = array();
+        foreach ($exceptionGroup as $exceptionDate) {
+            $date = $exceptionDate['exception_date'];
+            $selectedDates[$date] = $date;
+            unset($oldSelectedDates[$date]);
+        }
+        $editDates = $selectedDates;
+        $editMaxFreePeople = 0;
+
+        $start = reset($exceptionGroup); // get first date
+        $end   = end($exceptionGroup);   // get last date
+
+        $dateFormat = 'd-m-Y';
+        if ($end['exception_date'] == $start['exception_date']) {
+            // here one date
+            try {
+                $date = new DateTime($start['exception_date']);
+                $date = $date->format($dateFormat);
+            } catch (Exception $e) { $date = $start['exception_date']; }
+            $text = $date . ' : ' . $start['max_free_people'];
+        } else {
+            try {
+                $dateStart = new DateTime($start['exception_date']);
+                $dateStart = $dateStart->format($dateFormat);
+            } catch (Exception $e) { $dateStart = $start['exception_date']; }
+            try {
+                $dateEnd   = new DateTime($end['exception_date']);
+                $dateEnd   = $dateEnd->format($dateFormat);
+            } catch (Exception $e) { $dateEnd = $start['exception_date']; }
+            $text = $dateStart . ' till ' . $dateEnd . ' : ' . $start['max_free_people'];
+        }
+        $editMaxFreePeople = $start['max_free_people'];
+    ?>
+
+    <a href="#"
+       class="edit-group-exception"
+       data-old-selected-dates="<?php echo implode(',', $oldSelectedDates); ?>"
+       data-selected-dates="<?php echo implode(',', $selectedDates); ?>"
+       data-edit-dates="<?php echo implode(',', $editDates); ?>"
+       data-max_free_people="<?php echo $editMaxFreePeople; ?>"
+       data-group="<?php echo $group['id']; ?>"
+    ><?php echo $text; ?></a>
+    </br>
+    <?php endforeach; ?>
+<?php else: ?>
+no exceptions
+<?php endif; ?>

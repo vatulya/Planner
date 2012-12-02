@@ -142,6 +142,18 @@ CREATE TABLE `group_settings` (
 )
 ;
 
+CREATE TABLE `group_exceptions` (
+  id INT NOT NULL AUTO_INCREMENT,
+  group_id INT NOT NULL,
+  exception_date DATE,
+  max_free_people INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  UNIQUE (group_id, exception_date),
+  INDEX (group_id),
+  INDEX (exception_date)
+)
+;
+
 CREATE TABLE `user_parameters` (
   user_id INT NOT NULL,
   used_free_hours INT NOT NULL DEFAULT 0,

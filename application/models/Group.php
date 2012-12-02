@@ -140,6 +140,57 @@ class Application_Model_Group extends Application_Model_Abstract
         return $settings;
     }
 
+    public function getExceptions($groupId)
+    {
+        $groupExceptions = new Application_Model_Db_Group_Exceptions();
+        $exceptions = $groupExceptions->getExceptions($groupId);
+        return $exceptions;
+    }
+
+    public function getGeneralExceptions()
+    {
+        // Yes. This method is copy of getExceptions but with $groupId = 0.
+        $groupExceptions = new Application_Model_Db_Group_Exceptions();
+        $exceptions = $groupExceptions->getExceptions(0);
+        return $exceptions;
+    }
+
+    public function groupExceptions(array $exceptions, $year = null)
+    {
+        $grouped = array();
+        $lastDate = null;
+        $lastMaxFreePeople = null;
+        $id = 0;
+        foreach ($exceptions as $exception) {
+            try {
+                $date = new DateTime($exception['exception_date']);
+                if ($year && $date->format('Y') != $year) {
+                    continue;
+                }
+                $prevDate = clone $date;
+                $prevDate->modify('-1 days');
+                if ($prevDate != $lastDate || (int)$exception['max_free_people'] !== $lastMaxFreePeople) {
+                    $id++;
+                }
+                $grouped[$id][] = $exception;
+                $lastDate = $date;
+                $lastMaxFreePeople = (int)$exception['max_free_people'];
+            } catch (Exception $e) { continue; }
+        }
+        return $grouped;
+    }
+
+    public function saveGroupExceptions($groupId, $oldSelectedDates, $selectedDates, $maxFreePeople)
+    {
+        $modelDbGroupExceptions = new Application_Model_Db_Group_Exceptions();
+        if (count($oldSelectedDates) > 0 ) {
+            $result = $modelDbGroupExceptions->editGroupExceptions($groupId, $oldSelectedDates, $selectedDates, $maxFreePeople);
+        } else {
+            $result = $modelDbGroupExceptions->insertGroupExceptions($groupId, $selectedDates, $maxFreePeople);
+        }
+        return $result;
+    }
+
     protected function _preparePlanning(array $planning)
     {
         $prepared = array();

@@ -99,6 +99,11 @@
         bind: function(el) {
             var container = $('#' + el.data('container-id'));
             if ( ! container.length) return;
+
+            container.undelegate('.calendar-day-cell', 'click');
+            container.undelegate('.calendar-change-date', 'click');
+            container.undelegate('.calendar-change-date-select', 'change');
+
             $(container).on('click', '.calendar-day-cell', function(e) {
                 if (el.data('editable')) {
                     Calendar.toggleSelected(e.target);
@@ -116,6 +121,9 @@
             el = $(el);
             if (el.hasClass('blocked')) {
                 return; // You can't edit past dates
+            }
+            if (el.hasClass('old-selected')) {
+                return; // You can't edit old seleted dates
             }
             var date, data, calendar, i;
             calendar = Calendar.getCalendar(el);
@@ -154,11 +162,6 @@
             calendar.data('set-show-date', year + '-' + month + '-01');
             calendar.attr('date-set-data-show-date', year + '-' + month + '-01');
             Calendar.refresh(calendar);
-        },
-
-        showModalCalendar: function(el) {
-            var data = Calendar.getData(el);
-
         }
 
     };

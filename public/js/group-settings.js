@@ -5,7 +5,8 @@
         modalEditH3 = modal.find('.header-edit-group'),
         modalTmplGroupName = modal.find('.tmpl-group-name'),
         modalDeleteGroup = modal.find('.button-delete-group'),
-        modalBody = modal.find('.modal-body');
+        modalBody = modal.find('.modal-body')
+        ;
 
     var groupPlanning = $('.group-work-days-planning'),
         groupPlanningSelect = $('#group-planning'),
@@ -13,8 +14,13 @@
 
     var GroupSettings = {
 
+        calendarContainer: $('#exceptions-calendar-container'),
+        calendar: null,
+
+
         init: function() {
             GroupSettings.initMiniAjaxForms();
+            GroupSettings.initCalendar();
         },
 
         initMiniAjaxForms: function() {
@@ -246,6 +252,80 @@
                 };
             }
             return data;
+        },
+
+        initCalendar: function() {
+            GroupSettings.calendarContainer.on('calendar-loaded', function(e, calendar) {
+                GroupSettings.calendar = calendar;
+                GroupSettings.refreshSelectedDates();
+            });
+            GroupSettings.calendarContainer.on('calendar-selected-changed', function(e) {
+                GroupSettings.refreshSelectedDates();
+            });
+        },
+
+        refreshSelectedDates: function() {
+            var data = Calendar.getData(GroupSettings.calendar);
+            var modal = $('#edit-group-exceptions-modal');
+            var span = modal.find('.exceptions-text');
+            var selectedDates = data.selected_dates;
+            if (typeof selectedDates == 'object') {
+                selectedDates = selectedDates.join(', ');
+            } else if (typeof selectedDates != 'string') {
+                selectedDates = '';
+            }
+            span.html(selectedDates);
+        },
+
+        submitGroupExceptions: function() {
+            var data = Calendar.getData(GroupSettings.calendar);
+            var modal = $('#edit-group-exceptions-modal');
+            data.max_free_people = modal.find('.max_free_people').val();
+            data.group = modal.find('.group-id').val();
+            data.edit_dates = modal.find('.edit-dates').val();
+            if (data.edit_dates != '') {
+                data.edit_dates = data.edit_dates.split(',');
+            } else {
+                data.edit_dates = [];
+            }
+            data.format = 'json';
+            $.ajax({
+                url: '/group-settings/save-group-exceptions',
+                data: data,
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.location.reload();
+                    } else {
+                        alert('Error! Something wrong.');
+                    }
+                },
+                error: function(response) {
+                    alert('Error! Something wrong.');
+                }
+            });
+        },
+
+        showEditExceptionsPopup: function(el) {
+            el = $(el);
+            var modal = $('#edit-group-exceptions-modal');
+            var body = modal.find('.modal-body');
+            var max_free_people = 0;
+            if (el.data('max_free_people') > 0) {
+                max_free_people = el.data('max_free_people');
+            }
+            body.find('.max_free_people').val(max_free_people);
+            body.find('.exceptions').val(el.data('selected-dates'));
+            modal.find('.group-id').val(el.data('group'));
+            modal.find('.edit-dates').val(el.data('edit-dates'));
+
+            var calendar = body.find('.module-calendar');
+            Form.setDataEl(calendar, 'old-selected-dates', el.data('old-selected-dates'));
+            Form.setDataEl(calendar, 'selected-dates', el.data('selected-dates'));
+            Form.setDataEl(calendar, 'show-date', el.data('show-date'));
+            Calendar.render(calendar);
+
+            modal.modal();
         }
 
     };
@@ -269,6 +349,12 @@
         });
         $(document.body).on('click', '.group-planning-save', function(e) {
             GroupSettings.saveGroupPlanning();
+        });
+        $(document.body).on('click', '.create-group-exception, .edit-group-exception', function(e) {
+            GroupSettings.showEditExceptionsPopup(e.currentTarget);
+        });
+        $('#submit-group-exceptions').on('click', function(e) {
+            GroupSettings.submitGroupExceptions();
         });
 
         GroupSettings.init();
