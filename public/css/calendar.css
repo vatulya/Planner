@@ -1,11 +1,19 @@
 .module-calendar {
-    width: 420px;
+    width: 470px;
 }
 .calendar-navigation {
     height: 50px;
 }
 .calendar-change-date {
     cursor: pointer;
+}
+.week-number {
+    width: 50px;
+    float: left;
+    margin-top: 7px;
+    line-height: 14px;
+    text-align: center;
+    color: #d3d3d3;
 }
 .calendar-day-cell {
     width: 54px;

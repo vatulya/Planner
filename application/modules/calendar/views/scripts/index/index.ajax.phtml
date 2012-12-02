@@ -96,6 +96,14 @@ $oldSelectedDates = implode(',', $this->oldSelectedDates);
                 );
                 $css = implode(' ', array_filter($css));
             ?>
+            <?php if ($dayNumber == 1) : // monday ?>
+                <?php
+                $weeknumber = $start->format('W');
+                ?>
+                <div class="week-number">
+                    <?php echo $weeknumber; ?>
+                </div>
+            <?php endif; ?>
 
             <div
                 class="calendar-day-cell <?php echo $css; ?>"
