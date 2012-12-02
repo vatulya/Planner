@@ -30,6 +30,9 @@ class Calendar_IndexController extends Zend_Controller_Action
         $editable = $this->_getParam('editable');
         $editable = $editable ? 1 : 0;
 
+        $maxSelect = $this->_getParam('max_select', 0);
+        $maxSelect = $maxSelect > 0 ? (int)$maxSelect : 0;
+
         /*** GET SHOWN DATE ***/
         $showDate = $this->_getParam('show_date');
         try {$showDate = new DateTime($showDate);} catch (Exception $e) {$showDate = new DateTime();}
@@ -53,13 +56,18 @@ class Calendar_IndexController extends Zend_Controller_Action
         $setShowDate         = $this->_getParam('set_show_date', '');
         $showDate = $this->_modifyShowDate($showDate, $changeDateType, $changeDateDirection, $setShowDate);
 
-        $this->view->months           = $this->months;
-        $this->view->years            = $this->years;
-        $this->view->containerId      = $containerId;
-        $this->view->showDate         = $showDate;
-        $this->view->selectedDates    = $selectedDates;
-        $this->view->oldSelectedDates = $oldSelectedDates;
-        $this->view->editable         = $editable;
+        $assign = array(
+            'months'           => $this->months,
+            'years'            => $this->years,
+            'containerId'      => $containerId,
+            'showDate'         => $showDate,
+            'selectedDates'    => $selectedDates,
+            'oldSelectedDates' => $oldSelectedDates,
+            'editable'         => $editable,
+            'maxSelect'        => $maxSelect,
+        );
+
+        $this->view->assign($assign);
     }
 
     protected function _modifyShowDate(DateTime $showDate, $changeDateType, $changeDateDirection, $setShowDate)

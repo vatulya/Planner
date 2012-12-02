@@ -326,6 +326,73 @@
             Calendar.render(calendar);
 
             modal.modal();
+        },
+
+        showCreateHolidayPopup: function(el) {
+            el = $(el);
+            var modal = $('#add-group-holidays-modal');
+            var body = modal.find('.modal-body');
+            modal.find('.group-id').val(el.data('group'));
+            modal.find('.holiday_name').val('');
+
+            var calendar = body.find('.module-calendar');
+            Form.setDataEl(calendar, 'old-selected-dates', el.data('old-selected-dates'));
+            Form.setDataEl(calendar, 'selected-dates', '');
+            Form.setDataEl(calendar, 'show-date', '');
+            Calendar.render(calendar);
+
+            modal.modal();
+        },
+
+        submitGroupHolidays: function() {
+            var modal, calendar, data;
+            modal             = $('#add-group-holidays-modal');
+            calendar          = modal.find('.module-calendar');
+            data              = Calendar.getData(calendar);
+            data.group        = modal.find('.group-id').val();
+            data.holiday_name = modal.find('.holiday_name').val();
+            data.format       = 'json';
+            $.ajax({
+                url: '/group-settings/save-group-holidays',
+                data: data,
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.location.reload();
+                    } else {
+                        alert('Error! Something wrong.');
+                    }
+                },
+                error: function(response) {
+                    alert('Error! Something wrong.');
+                }
+            });
+        },
+
+        deleteGroupHoliday: function(el) {
+            el = $(el);
+            var text = el.data('holiday-name');
+            text = 'Delete holiday "' + text + '"? Are you sure?';
+            if (confirm(text)) {
+                var data = {};
+                data.holiday = el.data('holiday');
+                data.format = 'json';
+                $.ajax({
+                    url: '/group-settings/delete-group-holidays',
+                    data: data,
+                    success: function(response) {
+                        response = response.response;
+                        if (response.status) {
+                            window.location.reload();
+                        } else {
+                            alert('Error! Something wrong.');
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error! Something wrong.');
+                    }
+                });
+            }
         }
 
     };
@@ -353,8 +420,17 @@
         $(document.body).on('click', '.create-group-exception, .edit-group-exception', function(e) {
             GroupSettings.showEditExceptionsPopup(e.currentTarget);
         });
+        $(document.body).on('click', '.create-holiday', function(e) {
+            GroupSettings.showCreateHolidayPopup(e.currentTarget);
+        });
+        $(document.body).on('click', '.remove-holiday', function(e) {
+            GroupSettings.deleteGroupHoliday(e.currentTarget);
+        });
         $('#submit-group-exceptions').on('click', function(e) {
             GroupSettings.submitGroupExceptions();
+        });
+        $('#submit-group-holidays').on('click', function(e) {
+            GroupSettings.submitGroupHolidays();
         });
 
         GroupSettings.init();

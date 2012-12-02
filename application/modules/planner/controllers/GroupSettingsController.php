@@ -12,6 +12,8 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'save-group-planning'                => array('json'),
         'save-group-setting-max-free-people' => array('json'),
         'save-group-exceptions'              => array('json'),
+        'save-group-holidays'                => array('json'),
+        'delete-group-holidays'              => array('json'),
     );
 
     /**
@@ -40,8 +42,13 @@ class Planner_GroupSettingsController extends My_Controller_Action
             $group['grouped_exceptions'] = $this->_modelGroup->groupExceptions($group['exceptions'], $year);
             $groups[$key] = $group;
         }
-        $this->view->generalGroup = $generalGroup;
-        $this->view->groups = $groups;
+        $generalHolidays = $this->_modelGroup->getGeneralHolidays();
+        $assign = array(
+            'generalGroup'    => $generalGroup,
+            'groups'          => $groups,
+            'generalHolidays' => $generalHolidays,
+        );
+        $this->view->assign($assign);
     }
 
     public function getEditGroupFormAction()
@@ -170,6 +177,36 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $maxFreePeople    = $this->_getParam('max_free_people');
         $editDates        = $this->_getParam('edit_dates', array());
         $status = $this->_modelGroup->saveGroupExceptions($groupId, $editDates, $selectedDates, $maxFreePeople);
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function saveGroupHolidaysAction()
+    {
+        $groupId          = $this->_getParam('group', 0);
+        $selectedDate     = $this->_getParam('selected_dates', array());
+        $holidayName      = $this->_getParam('holiday_name', '');
+        if (is_array($selectedDate)) {
+            $selectedDate = reset($selectedDate); // only first element
+        }
+        $status = $this->_modelGroup->saveGroupHoliday($groupId, $selectedDate, $holidayName);
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function deleteGroupHolidaysAction()
+    {
+        $holidayId = $this->_getParam('holiday', 0);
+        $status = false;
+        if ($holidayId > 0) {
+            $status = $this->_modelGroup->deleteGroupHolidayById($holidayId);
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {

@@ -191,6 +191,41 @@ class Application_Model_Group extends Application_Model_Abstract
         return $result;
     }
 
+    public function getHolidays($groupId)
+    {
+        $groupHolidays = new Application_Model_Db_Group_Holidays();
+        $holidays = $groupHolidays->getHolidays($groupId);
+        return $holidays;
+    }
+
+    public function getGeneralHolidays()
+    {
+        // Yes. This method is copy of getExceptions but with $groupId = 0.
+        $groupHolidays = new Application_Model_Db_Group_Holidays();
+        $holidays = $groupHolidays->getHolidays(0);
+        return $holidays;
+    }
+
+    public function saveGroupHoliday($groupId, $selectedDate, $holidayName)
+    {
+        $modelDbGroupHolidays = new Application_Model_Db_Group_Holidays();
+        $result = false;
+        if ($selectedDate) {
+            $result = $modelDbGroupHolidays->insertGroupHoliday($groupId, $selectedDate, $holidayName);
+        }
+        return $result;
+    }
+
+    public function deleteGroupHolidayById($holidayId)
+    {
+        $modelDbGroupHolidays = new Application_Model_Db_Group_Holidays();
+        $result = false;
+        if ($holidayId) {
+            $result = $modelDbGroupHolidays->deleteGroupHolidayById($holidayId);
+        }
+        return $result;
+    }
+
     protected function _preparePlanning(array $planning)
     {
         $prepared = array();

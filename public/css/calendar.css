@@ -31,7 +31,7 @@
 .calendar-day-cell.current-month.weekend {
     border-color: #cd5c5c;
 }
-.calendar-day-cell.blocked {
+.calendar-day-cell.blocked, .calendar-day-cell.temporary-blocked {
     background-color: #eee;
     color: #808080;
 }

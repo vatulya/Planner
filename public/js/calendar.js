@@ -26,6 +26,7 @@
             data.old_selected_dates = el.data('old-selected-dates');
             data.show_date          = el.data('show-date');
             data.editable           = el.data('editable');
+            data.max_select         = el.data('max-select');
             if (typeof data.selected_dates == 'undefined' || data.selected_dates == '') {
                 data.selected_dates = [];
             } else {
@@ -40,6 +41,11 @@
                 data.editable = 1;
             } else {
                 data.editable = 0;
+            }
+            if (data.max_select > 0) {
+                data.max_select = data.max_select;
+            } else {
+                data.max_select = 0;
             }
             return data;
         },
@@ -66,6 +72,10 @@
                 value = data.editable;
                 Calendar.setDataEl(el, 'editable', value);
             }
+            if (typeof data.max_select != 'undefined' && data.max_select != '') {
+                value = data.max_select;
+                Calendar.setDataEl(el, 'max-select', value);
+            }
         },
 
         render: function(el) {
@@ -88,6 +98,7 @@
                     var parent = el.parent();
                     parent.html(response);
                     el = container.find('.module-calendar');
+                    Calendar.checkSelectedLimit(el);
                     container.trigger('calendar-loaded', [el]);
                 },
                 error: function(response) {
@@ -125,6 +136,9 @@
             if (el.hasClass('old-selected')) {
                 return; // You can't edit old seleted dates
             }
+            if (el.hasClass('temporary-blocked')) {
+                return; // You can't edit this cell temporary. See 'select_limit'
+            }
             var date, data, calendar, i;
             calendar = Calendar.getCalendar(el);
             el.toggleClass('selected');
@@ -142,7 +156,7 @@
             }
             calendar.data('selected-dates', data.selected_dates.join(','));
             calendar.attr('data-selected-dates', data.selected_dates.join(','));
-            console.log(Calendar.getData(calendar).selected_dates);
+            Calendar.checkSelectedLimit(calendar);
             el.trigger('calendar-selected-changed');
         },
 
@@ -162,6 +176,17 @@
             calendar.data('set-show-date', year + '-' + month + '-01');
             calendar.attr('date-set-data-show-date', year + '-' + month + '-01');
             Calendar.refresh(calendar);
+        },
+
+        checkSelectedLimit: function(calendar) {
+            var data = Calendar.getData(calendar);
+            if (data.max_select > 0) {
+                if (data.max_select <= data.selected_dates.length) {
+                    calendar.find('.calendar-day-cell').not('.selected').addClass('temporary-blocked');
+                } else {
+                    calendar.find('.calendar-day-cell').removeClass('temporary-blocked');
+                }
+            }
         }
 
     };

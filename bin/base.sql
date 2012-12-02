@@ -154,6 +154,18 @@ CREATE TABLE `group_exceptions` (
 )
 ;
 
+CREATE TABLE `group_holidays` (
+  id INT NOT NULL AUTO_INCREMENT,
+  group_id INT NOT NULL,
+  holiday_date DATE,
+  holiday_name VARCHAR(255),
+  PRIMARY KEY (id),
+  UNIQUE (group_id, holiday_date),
+  INDEX (group_id),
+  INDEX (holiday_date)
+)
+;
+
 CREATE TABLE `user_parameters` (
   user_id INT NOT NULL,
   used_free_hours INT NOT NULL DEFAULT 0,
