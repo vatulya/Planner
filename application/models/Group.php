@@ -210,6 +210,9 @@ class Application_Model_Group extends Application_Model_Abstract
     {
         $modelDbGroupHolidays = new Application_Model_Db_Group_Holidays();
         $result = false;
+        if (is_array($selectedDate)) {
+            $selectedDate = reset($selectedDate); // only first element. only one date
+        }
         if ($selectedDate) {
             $result = $modelDbGroupHolidays->insertGroupHoliday($groupId, $selectedDate, $holidayName);
         }

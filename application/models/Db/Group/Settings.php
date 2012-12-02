@@ -9,7 +9,8 @@ class Application_Model_Db_Group_Settings extends Application_Model_Db_Abstract
      * @var array
      */
     protected $_allowedSaveSettings = array(
-        'max_free_people'
+        'max_free_people',
+        'alert_over_limit_free_people',
     );
 
     /**

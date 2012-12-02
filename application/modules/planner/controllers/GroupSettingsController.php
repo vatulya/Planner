@@ -14,6 +14,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'save-group-exceptions'              => array('json'),
         'save-group-holidays'                => array('json'),
         'delete-group-holidays'              => array('json'),
+        'save-alert-over-limit'              => array('json'),
     );
 
     /**
@@ -189,9 +190,6 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $groupId          = $this->_getParam('group', 0);
         $selectedDate     = $this->_getParam('selected_dates', array());
         $holidayName      = $this->_getParam('holiday_name', '');
-        if (is_array($selectedDate)) {
-            $selectedDate = reset($selectedDate); // only first element
-        }
         $status = $this->_modelGroup->saveGroupHoliday($groupId, $selectedDate, $holidayName);
         if ($status) {
             $this->_response(1, '', array());
@@ -207,6 +205,17 @@ class Planner_GroupSettingsController extends My_Controller_Action
         if ($holidayId > 0) {
             $status = $this->_modelGroup->deleteGroupHolidayById($holidayId);
         }
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function saveAlertOverLimitAction()
+    {
+        $limit = $this->_getParam('alert_over_limit_free_people', 0);
+        $status = $this->_modelGroup->saveGroupSetting(0, 'alert_over_limit_free_people', $limit);
         if ($status) {
             $this->_response(1, '', array());
         } else {

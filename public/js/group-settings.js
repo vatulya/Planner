@@ -29,21 +29,21 @@
                 formEl.ajaxForm({
                     data: {format: 'json'},
                     beforeSubmit: function() {
-                        document.Form.hideAllNotificationsMini(formEl);
-                        document.Form.blockForm(formEl);
+                        window.Form.hideAllNotificationsMini(formEl);
+                        window.Form.blockForm(formEl);
                     },
                     success: function(response) {
-                        document.Form.unblockForm(formEl);
+                        window.Form.unblockForm(formEl);
                         response = response.response;
                         if (response.status) {
-                            document.Form.showSuccessMini(formEl, 2000);
+                            window.Form.showSuccessMini(formEl, 2000);
                         } else {
-                            document.Form.showErrorsMini(formEl);
+                            window.Form.showErrorsMini(formEl);
                         }
                     },
                     error: function() {
-                        document.Form.unblockForm(formEl);
-                        document.Form.showErrorsMini(formEl);
+                        window.Form.unblockForm(formEl);
+                        window.Form.showErrorsMini(formEl);
                     }
                 });
             });

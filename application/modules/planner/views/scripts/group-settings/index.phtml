@@ -57,9 +57,10 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
             </td>
             <td>
                 <div class="input-append">
-                    <form method="POST" class="form-mini">
-                        <input type="text" class="span1 rule-int btn-mini" value="5">
-                        <button class="btn btn-success btn-no-text" type="button"><i class="icon-ok icon-white"></i></button>
+                    <form method="POST" class="form-mini save-alert-over-limit-form mini-ajax-form" action="/group-settings/save-alert-over-limit">
+                        <input type="hidden" name="group" value="0">
+                        <input type="text" class="span1 rule-int btn-mini alert-over-limit" value="<?php echo (int)$this->generalGroup['settings']['alert_over_limit_free_people']; ?>" name="alert_over_limit_free_people">
+                        <button class="btn btn-success btn-no-text" type="submit"><i class="icon-ok icon-white"></i></button>
                     </form>
                 </div>
             </td>

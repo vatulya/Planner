@@ -138,6 +138,7 @@ CREATE TABLE `group_settings` (
   pause_start TIME DEFAULT NULL,
   pause_end TIME DEFAULT NULL,
   max_free_people INT NOT NULL DEFAULT 0,
+  alert_over_limit_free_people INT NOT NULL DEFAULT 0,
   PRIMARY KEY (group_id)
 )
 ;
