@@ -16,7 +16,7 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
                 Settings general
             </th>
             <th class="span2">
-                Holydaynumbers
+                Holiday numbers
             </th>
             <th class="span3">
                 Exception period/numbers
@@ -81,7 +81,7 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
                 Group
             </th>
             <th class="span2">
-                Holydaynumbers
+                Holiday numbers
             </th>
             <th class="span3">
                 Exception period/numbers
@@ -114,52 +114,10 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
                         </form>
                     </td>
                     <td>
-                        <?php
+                    <?php
                         $this->group = $group;
                         echo $this->render('group-settings/_blocks/group_exceptions.phtml');
-                        ?>
-
-                        <?php /*
-                        $exceptions = array();
-                        if ( ! empty($group['exceptions'])) {
-                            foreach ($group['exceptions'] as $exceptionGroup) {
-                                $exceptions[] = $exceptionGroup['exception_date'];
-                            }
-                        }
-                        ?>
-                        <button class="btn btn-mini btn-success create-group-exception"
-                            data-old-selected-dates="<?php echo implode(',', $exceptions); ?>"
-                            data-group="<?php echo $group['id']; ?>"
-                        ><i class="icon-plus-sign icon-white"></i></button>
-                        <?php if ( ! empty($group['grouped_exceptions'])): ?>
-                        <?php foreach ($group['grouped_exceptions'] as $exceptionGroup): ?>
-                            <?php
-                            $start = reset($exceptionGroup); // get first date
-                            $end   = end($exceptionGroup);   // get last date
-                            if ($end['exception_date'] == $start['exception_date']) {
-                                // here one date
-                                try {
-                                    $date = new DateTime($start['exception_date']);
-                                    $date = $date->format('Y-m-d');
-                                } catch (Exception $e) { $date = $start['exception_date']; }
-                                echo $date . ' : ' . $start['max_free_people'];
-                            } else {
-                                try {
-                                    $dateStart = new DateTime($start['exception_date']);
-                                    $dateStart = $dateStart->format('d-m-Y');
-                                } catch (Exception $e) { $dateStart = $start['exception_date']; }
-                                try {
-                                    $dateEnd   = new DateTime($end['exception_date']);
-                                    $dateEnd   = $dateEnd->format('d-m-Y');
-                                } catch (Exception $e) { $dateEnd = $start['exception_date']; }
-                                echo $dateStart . ' till ' . $dateEnd . ' : ' . $start['max_free_people'];
-                            }
-                            ?>
-                            </br>
-                        <?php endforeach; ?>
-                        <?php else: ?>
-                        no exceptions
-                        <?php endif; */ ?>
+                    ?>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -173,14 +131,60 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
 
 </div>
 
+<div class="span12 normal-user-holidays">
+    <div class="input-prepend input-append">
+        <form method="POST" class="form-mini">
+            <span class="add-on">Number of holiday hours based on 100% (40 hours) working week:</span>
+            <input type="text" class="span1 rule-int btn-mini" value="5">
+            <button class="btn btn-success btn-no-text" type="button"><i class="icon-ok icon-white"></i></button>
+        </form>
+    </div>
+</div>
+
+<div class="span12 regular-holidays">
+    <table class="">
+        <tbody>
+        <tr>
+            <td>
+                <button class="btn btn-mini btn-success create-regular-holiday" data-old-selected-dates="2012-12-12,2012-12-13,2012-12-19"><i class="icon-plus-sign icon-white"></i></button>
+                Special free days per year
+                <a href="#" class="show-tooltip no-action" data-original-title="Christmas, Eastern, etc."><i class="icon-info-sign"></i></a>:
+            </td>
+            <td style="width: 600px;">
+                <span class="label label-info">
+                    22.04.2012 Eastern
+                    <a href="#" class="show-tooltip no-action" data-original-title="Remove">
+                        <i class="icon-remove icon-white"></i>
+                    </a>
+                </span>
+                <span class="label label-info">
+                    13.12.2012 Christmas
+                    <a href="#" class="show-tooltip no-action" data-original-title="Remove">
+                        <i class="icon-remove icon-white"></i>
+                    </a>
+                </span>
+                <span class="label label-info">
+                    01.05.2013 Pinksteren
+                    <a href="#" class="show-tooltip no-action" data-original-title="Remove">
+                        <i class="icon-remove icon-white"></i>
+                    </a>
+                </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 <div class="span12 group-work-days-planning">
-    <h3>Select group for planning:</h3>
-    <select name="group-planning" id="group-planning">
-        <option value="">Please selecte group...</option>
-        <?php foreach ($this->groups as $group): ?>
-            <option value="<?php echo $group['id']; ?>" style="background-color: #<?php echo $group['color']; ?>;" data-group-color="<?php echo $group['color']; ?>"><?php echo $group['group_name']; ?></option>
-        <?php endforeach; ?>
-    </select>
+    <div class="header">
+        <strong>Select group for planning:</strong>
+        <select name="group-planning" id="group-planning">
+            <option value="">Please selecte group...</option>
+            <?php foreach ($this->groups as $group): ?>
+                <option value="<?php echo $group['id']; ?>" style="background-color: #<?php echo $group['color']; ?>;" data-group-color="<?php echo $group['color']; ?>"><?php echo $group['group_name']; ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
     <div class="planning-body"></div>
 </div>
 
