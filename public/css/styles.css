@@ -170,6 +170,7 @@ form.form-mini {
 .underflow-container {
     height: 20px;
     position: relative;
+    overflow: hidden;
 }
 .underflow {
     width: 100500px;
