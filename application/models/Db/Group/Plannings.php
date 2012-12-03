@@ -7,7 +7,7 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
     const WEEK_TYPE_ODD = 'odd';
     const WEEK_TYPE_EVEN = 'even';
 
-    public function getGroupPlanning($groupId, $weekType = null, $day='')
+    public function getGroupPlanning($groupId, $weekType = null, $day = null)
     {
         $select = $this->_db->select()
             ->from(array('gp' => self::TABLE_NAME), array('*', 'total_time' => 'TIMEDIFF(time_end,time_start)'))
@@ -18,8 +18,8 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
         } else {
             $select->order(array('gp.week_type DESC', 'gp.day_number ASC'));
         }
-        if (!empty($day)) {
-            $select->where('gp.day_number = ?', $day);
+        if ($day !== null) {
+            $select->where('gp.day_number = ?', (int)$day);
         }
         $result = $this->_db->fetchAll($select);
         return $result;

@@ -71,7 +71,7 @@ class Application_Model_Group extends Application_Model_Abstract
         return true;
     }
 
-    public function getGroupPlanning($groupId, $weekType = null, $day='')
+    public function getGroupPlanning($groupId, $weekType = null, $day = null)
     {
         $groupPlannings = new Application_Model_Db_Group_Plannings();
         $planning = $groupPlannings->getGroupPlanning($groupId, $weekType, $day);
@@ -229,6 +229,17 @@ class Application_Model_Group extends Application_Model_Abstract
         return $result;
     }
 
+    public function checkIsWorkDay($groupId)
+    {
+        $modelDbGroupPlanning = new Application_Model_Db_Group_Plannings();
+        $date = new DateTime();
+        $weekType = $date->format('W');
+        $weekType = ( $weekType % 2 ) > 0 ? Application_Model_Db_Group_Plannings::WEEK_TYPE_ODD : Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN;
+        $day = $date->format('N');
+        $planning = $modelDbGroupPlanning->getGroupPlanning($groupId, $weekType, $day);
+        return (bool)$planning;
+    }
+
     protected function _preparePlanning(array $planning)
     {
         $prepared = array();
@@ -242,7 +253,7 @@ class Application_Model_Group extends Application_Model_Abstract
                 continue; // wrong time
             }
             $day['day_number'] = intval($day['day_number']);
-            if ($day['day_number'] < 1 || $day['day_number'] > 6 ) {
+            if ($day['day_number'] < 1 || $day['day_number'] > 7 ) {
                 continue; // wrong day number
             }
             if ($day['week_type'] != Application_Model_Db_Group_Plannings::WEEK_TYPE_ODD && $day['week_type'] != Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN) {

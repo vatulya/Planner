@@ -129,7 +129,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $getWeekDays = function($weekType) {
             $week = array();
             $dayNumber = 0;
-            while (++$dayNumber <= 6) {
+            while (++$dayNumber <= 7) {
                 $day = array(
                     'week_type'  => $weekType,
                     'day_number' => $dayNumber,

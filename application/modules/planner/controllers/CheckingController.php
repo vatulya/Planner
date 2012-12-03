@@ -42,6 +42,10 @@ class Planner_CheckingController extends My_Controller_Action
         $users = $this->_modelUser->getAllUsers($date);
         $groups = $this->_modelGroup->getAllGroups();
         foreach ($groups as $key => $group) {
+            if ( ! $this->_modelGroup->checkIsWorkDay($group['id'])) {
+                unset($groups[$key]);
+                continue; // get groups what must work today only
+            }
             $groupUsers = $this->_modelUser->getAllUsersByGroup($group['id'], $date);
             $groups[$key]['users'] = $groupUsers;
         }
