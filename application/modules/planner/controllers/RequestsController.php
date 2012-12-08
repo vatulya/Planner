@@ -40,10 +40,28 @@ class Planner_RequestsController extends My_Controller_Action
 
     public function indexAction()
     {
-        $userParameters = $this->_modelUser->getParametersByUserId($this->_getParam('user'));
-        $userRequests = $this->_modelRequest->getRequestsByUserId($this->_getParam('user'));
+        $userId = $this->_getParam('user');
+        $userParameters = $this->_modelUser->getParametersByUserId($userId);
+        $userRequests = $this->_modelRequest->getRequestsByUserId($userId);
+        $blocked = array();
+        $modelGroup = new Application_Model_Group();
+        $groups = $modelGroup->getGroupsByUserId($userId);
+        foreach ($groups as $group) {
+            $groupBlocked = $modelGroup->getNotAllowedForRequestsDates($group['id']);
+            foreach ($groupBlocked as $block) {
+                try {
+                    $date = new DateTime($block['calendar_date']);
+                    $date = $date->format('Y-m-d');
+                    $blocked[$date] = $date;
+                } catch (Exception $e) {continue;}
+            }
+        }
+        $assign = array(
+            'userRequests' => $userRequests,
+            'blocked'      => $blocked,
+        );
         $this->view->me['parameters'] = $userParameters;
-        $this->view->userRequests = $userRequests;
+        $this->view->assign($assign);
     }
 
     public function saveRequestAction()

@@ -31,7 +31,7 @@
 .calendar-day-cell.current-month.weekend {
     border-color: #cd5c5c;
 }
-.calendar-day-cell.blocked, .calendar-day-cell.temporary-blocked {
+.calendar-day-cell.past-blocked, .calendar-day-cell.temporary-blocked {
     background-color: #eee;
     color: #808080;
 }
@@ -40,6 +40,10 @@
 }
 .calendar-day-cell.old-selected {
     background-color: #2878d3;
+    color: #000000;
+}
+.calendar-day-cell.blocked {
+    background-color: #ee7156;
     color: #000000;
 }
 .calendar-day-cell.selected {

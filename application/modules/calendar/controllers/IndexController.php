@@ -38,6 +38,12 @@ class Calendar_IndexController extends Zend_Controller_Action
         try {$showDate = new DateTime($showDate);} catch (Exception $e) {$showDate = new DateTime();}
         $showDate->setDate($showDate->format('Y'), $showDate->format('m'), '01'); // 2012-12-01
 
+        /*** PREPARE BLOCKED DATES ***/
+        $blockedDates = $this->_getParam('blocked_dates', '');
+        $blockedDates = $this->_normalizeDate($blockedDates);
+        $blockedDates = $this->_sortDates($blockedDates);
+        $blockedDates = $this->_toStringDates($blockedDates);
+
         /*** PREPARE OLD SELECTED DATES ***/
         $oldSelectedDates = $this->_getParam('old_selected_dates', '');
         $oldSelectedDates = $this->_normalizeDate($oldSelectedDates);
@@ -63,6 +69,7 @@ class Calendar_IndexController extends Zend_Controller_Action
             'showDate'         => $showDate,
             'selectedDates'    => $selectedDates,
             'oldSelectedDates' => $oldSelectedDates,
+            'blockedDates'     => $blockedDates,
             'editable'         => $editable,
             'maxSelect'        => $maxSelect,
         );

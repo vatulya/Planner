@@ -24,6 +24,7 @@
             data.container_id       = el.data('container-id');
             data.selected_dates     = el.data('selected-dates');
             data.old_selected_dates = el.data('old-selected-dates');
+            data.blocked_dates      = el.data('blocked-dates');
             data.show_date          = el.data('show-date');
             data.editable           = el.data('editable');
             data.max_select         = el.data('max-select');
@@ -36,6 +37,11 @@
                 data.old_selected_dates = [];
             } else {
                 data.old_selected_dates = data.old_selected_dates.split(',');
+            }
+            if (typeof data.blocked_dates == 'undefined' || data.blocked_dates == '') {
+                data.blocked_dates = [];
+            } else {
+                data.blocked_dates = data.blocked_dates.split(',');
             }
             if (data.editable) {
                 data.editable = 1;
@@ -63,6 +69,10 @@
             if (data.old_selected_dates.length) {
                 value = data.old_selected_dates.join(',');
                 Calendar.setDataEl(el, 'old-selected-dates', value);
+            }
+            if (data.blocked_dates.length) {
+                value = data.blocked_dates.join(',');
+                Calendar.setDataEl(el, 'blocked-dates', value);
             }
             if (typeof data.show_date != 'undefined' && data.show_date != '') {
                 value = data.show_date;
@@ -131,6 +141,9 @@
         toggleSelected: function(el) {
             el = $(el);
             if (el.hasClass('blocked')) {
+                return; // You can't edit blocked dates
+            }
+            if (el.hasClass('past-blocked')) {
                 return; // You can't edit past dates
             }
             if (el.hasClass('old-selected')) {

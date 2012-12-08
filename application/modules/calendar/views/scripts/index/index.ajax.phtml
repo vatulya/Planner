@@ -27,12 +27,14 @@ $todayTimestamp = $today->getTimestamp();
 
 $selectedDates = implode(',', $this->selectedDates);
 $oldSelectedDates = implode(',', $this->oldSelectedDates);
+$blockedDates = implode(',', $this->blockedDates);
 ?>
 
 <div
     class="module-calendar"
     data-selected-dates="<?php echo $selectedDates; ?>"
     data-old-selected-dates="<?php echo $oldSelectedDates; ?>"
+    data-blocked-dates="<?php echo $blockedDates; ?>"
     data-show-date="<?php echo $showDate->format('Y-m-d'); ?>"
     data-container-id="<?php echo $this->containerId; ?>"
     data-editable="<?php echo $this->editable; ?>"
@@ -87,7 +89,8 @@ $oldSelectedDates = implode(',', $this->oldSelectedDates);
                     'isSelectedClass'     => in_array($date, (array)$this->selectedDates) ? 'selected' : '',
                     'isOldSelectedClass'  => in_array($date, (array)$this->oldSelectedDates) ? 'old-selected' : '',
                     'isToday'             => $date == $todayDate ? 'today' : '',
-                    'isBlocked'          => $timestamp < $todayTimestamp ? 'blocked' : '',
+                    'isPast'              => $timestamp < $todayTimestamp ? 'past-blocked' : '',
+                    'isBlocked'           => in_array($date, (array)$this->blockedDates) ? 'blocked' : '',
                 );
                 $css = implode(' ', array_filter($css));
             ?>

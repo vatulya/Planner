@@ -41,6 +41,7 @@ foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_ST
             class="module-calendar"
             data-old-selected-dates="<?php echo implode(',', $openRequestDates); ?>"
             data-selected-dates=""
+            data-blocked-dates="<?php echo implode(',', $this->blocked); ?>"
             data-container-id="request-calendar-container"
             data-editable="1"
         ></div>

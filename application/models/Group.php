@@ -240,6 +240,13 @@ class Application_Model_Group extends Application_Model_Abstract
         return (bool)$planning;
     }
 
+    public function getNotAllowedForRequestsDates($groupId)
+    {
+        $modelGroup = new Application_Model_Db_Groups();
+        $result = $modelGroup->getNotAllowedForRequestsDates($groupId);
+        return $result;
+    }
+
     protected function _preparePlanning(array $planning)
     {
         $prepared = array();
