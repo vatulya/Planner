@@ -117,10 +117,10 @@
                     </div>
                 </div>
             </td>
-            <td class="show-tooltip" data-original-title="32<?php // echo $user['hours']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+            <td class="show-tooltip" data-original-title="<?php echo $user['parameters']['regular_work_hours']; ?>" data-placement="top">
+                <div class="underflow-container editable" data-field-title="Regular work hours per week" data-field-name="regular_work_hours" data-field-value="<?php echo $user['parameters']['regular_work_hours']; ?>">
                     <div class="underflow">
-                        32<?php // echo $user['hours']; ?>
+                        <?php echo $user['parameters']['regular_work_hours']; ?>
                     </div>
                 </div>
             </td>

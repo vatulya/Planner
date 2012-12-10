@@ -91,7 +91,6 @@ class Application_Model_User extends Application_Model_Abstract
     {
         $modelUserParameters = new Application_Model_Db_User_Parameters();
         $userParameters = $modelUserParameters->getParametersByUserId($userId);
-        $userParameters = $this->_calculateAdditionalParameters($userParameters);
         return $userParameters;
     }
 
@@ -192,10 +191,33 @@ class Application_Model_User extends Application_Model_Abstract
         return $result;
     }
 
-    protected function _calculateAdditionalParameters(array $userParameters)
+    public function saveRegularWorkHours($userId, $hours)
     {
-        $userParameters['allowed_free_hours'] = 100500; // TODO: calc 'based on settings how much they have minus what they used.'
-        return $userParameters;
+        $result = false;
+        if ($hours > 0 && $hours <= 40) {
+            $modelUserParameters = new Application_Model_Db_User_Parameters();
+            $userParametersOld = $modelUserParameters->getParametersByUserId($userId);
+            $result = $modelUserParameters->setRegularWorkHours($userId, $hours);
+            if ($result) {
+                $this->recalculateOpenFreeHours($userId, $userParametersOld['regular_work_hours'], $hours);
+            }
+        }
+        return $result;
+    }
+
+    public function recalculateOpenFreeHours($userId, $oldHours, $newHours)
+    {
+        $modelUserParameters = new Application_Model_Db_User_Parameters();
+        if ($newHours == 40) {
+            $modelParameters = new Application_Model_Db_Parameters();
+            $newOpenFreeHours = $modelParameters->getParameter('default_open_free_hours');
+        } else {
+            $userParametersOld = $modelUserParameters->getParametersByUserId($userId);
+            $deltaPercentage = $newHours / $oldHours;
+            $newOpenFreeHours = $userParametersOld['open_free_hours'] * $deltaPercentage;
+            $newOpenFreeHours = sprintf('%01.2f', $newOpenFreeHours);
+        }
+        $modelUserParameters->setOpenFreeHours($userId, $newOpenFreeHours);
     }
 
 }

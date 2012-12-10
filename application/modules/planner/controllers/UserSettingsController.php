@@ -43,7 +43,7 @@ class Planner_UserSettingsController extends My_Controller_Action
         $users = $this->_modelUser->getAllUsers();
         foreach ($users as $key => $user) {
             $user['groups'] = $modelGroup->getGroupsByUserId($user['id']);
-//            $user['hours'];
+            $user['parameters'] = $this->_modelUser->getParametersByUserId($user['id']);
 //            $user['time_work']['start']; $user['time_work']['end'];
             $user['admin_groups'] = $modelGroup->getUserGroupsAdmin($user);
             $users[$key] = $user;
@@ -100,6 +100,8 @@ class Planner_UserSettingsController extends My_Controller_Action
             if ($field == 'password') {
                 // TODO: refactor change-password logic
                 $status = $this->_modelUser->savePassword($userId, $value[0]);
+            } elseif ($field == 'regular_work_hours') {
+                $status = $this->_modelUser->saveRegularWorkHours($userId, $value);
             } else {
                 $status = $this->_modelUser->saveField($userId, $field, $value);
             }

@@ -43,6 +43,40 @@ class Planner_RequestsController extends My_Controller_Action
         $userId = $this->_getParam('user');
         $userParameters = $this->_modelUser->getParametersByUserId($userId);
         $userRequests = $this->_modelRequest->getRequestsByUserId($userId);
+        $blocked = $this->_getBlockedDatesByUserId($userId);
+        $assign = array(
+            'userRequests' => $userRequests,
+            'blocked'      => $blocked,
+        );
+        $this->view->me['parameters'] = $userParameters;
+        $this->view->assign($assign);
+    }
+
+    public function saveRequestAction()
+    {
+        $userId = $this->_getParam('user');
+        $modelRequests = new Application_Model_Request();
+        $selectedDates = $this->_getParam('selected_dates', array());
+        $blocked = $this->_getBlockedDatesByUserId($userId);
+        $check = array_intersect($blocked, $selectedDates);
+        if (count($check)) {
+            $status = false;
+        } else {
+            $modelPlanner = new Application_Model_Db_User_Planning();
+//            $workDays = $modelPlanner->getUserDayPlanByGroup($userId, , )
+            // TODO: Here need add check how much work hours need for selected dates. If more then user have then ERROR.
+            $status = $modelRequests->saveRequest($userId, $selectedDates);
+        }
+
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    protected function _getBlockedDatesByUserId($userId)
+    {
         $blocked = array();
         $modelGroup = new Application_Model_Group();
         $groups = $modelGroup->getGroupsByUserId($userId);
@@ -56,24 +90,7 @@ class Planner_RequestsController extends My_Controller_Action
                 } catch (Exception $e) {continue;}
             }
         }
-        $assign = array(
-            'userRequests' => $userRequests,
-            'blocked'      => $blocked,
-        );
-        $this->view->me['parameters'] = $userParameters;
-        $this->view->assign($assign);
-    }
-
-    public function saveRequestAction()
-    {
-        $modelRequests = new Application_Model_Request();
-        $selectedDates = $this->_getParam('selected_dates', array());
-        $status = $modelRequests->saveRequest($this->_getParam('user'), $selectedDates);
-        if ($status) {
-            $this->_response(1, '', array());
-        } else {
-            $this->_response(0, 'Error!', array());
-        }
+        return $blocked;
     }
 
 }

@@ -169,7 +169,9 @@ CREATE TABLE `group_holidays` (
 
 CREATE TABLE `user_parameters` (
   user_id INT NOT NULL,
+  open_free_hours DECIMAL(5,2) NOT NULL DEFAULT 0,
   used_free_hours INT NOT NULL DEFAULT 0,
+  regular_work_hours INT NOT NULL DEFAULT 40,
   PRIMARY KEY (user_id)
 )
 ;
@@ -204,3 +206,11 @@ CREATE TABLE `user_overtime` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`,`group_id`,`date`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8
+;
+
+CREATE TABLE `parameters` (
+  id INT NOT NULL DEFAULT 1, -- this field just reserved and not used
+  default_open_free_hours INT NOT NULL,
+  PRIMARY KEY (id)
+)
+;

@@ -36,4 +36,47 @@ class Application_Model_Db_User_Parameters extends Application_Model_Db_Abstract
         $result = $this->_db->insert(self::TABLE_NAME, $default);
         return $result;
     }
+
+    public function setRegularWorkHours($userId, $hours)
+    {
+        $data = array(
+            'regular_work_hours' => (int)$hours,
+        );
+        $where = array(
+            'user_id = ?' => $userId,
+        );
+        $select = $check = $this->_db->select()
+            ->from(self::TABLE_NAME, 'regular_work_hours')
+            ->where('user_id = ?', $userId);
+        $regularWorkHours = (int)$this->_db->fetchOne($select);
+        if ($regularWorkHours == $hours) {
+            $result = 1;
+        } else {
+            $result = $this->_db->update(self::TABLE_NAME, $data, $where);
+        }
+        return $result;
+    }
+
+    public function setOpenFreeHours($userId, $hours)
+    {
+        $hours = sprintf('%01.2f', $hours);
+        $data = array(
+            'open_free_hours' => $hours,
+        );
+        $where = array(
+            'user_id = ?' => $userId,
+        );
+        $select = $check = $this->_db->select()
+            ->from(self::TABLE_NAME, 'open_free_hours')
+            ->where('user_id = ?', $userId);
+        $openFreeHours = $this->_db->fetchOne($select);
+        $openFreeHours = sprintf('%01.2f', $openFreeHours);
+        if ($openFreeHours == $hours) {
+            $result = 1;
+        } else {
+            $result = $this->_db->update(self::TABLE_NAME, $data, $where);
+        }
+        return $result;
+    }
+
 }

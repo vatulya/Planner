@@ -48,6 +48,19 @@ class Application_Model_Request extends Application_Model_Abstract
         }
         // TODO: here need add check correct requested dates
         $result = $this->_modelDb->insert($user['id'], $requestedDates);
+
+        $subOpenHours = 0;
+        foreach ($requestedDates as $date) {
+            // TODO: Here need correct calculation work hours of requested dates and sub this hours from Open user hours
+            $subOpenHours += 8; // as default work hours
+        }
+        if ($subOpenHours > 0) {
+            $modelDbUserParameters = new Application_Model_Db_User_Parameters();
+            $parameters = $modelDbUserParameters->getParametersByUserId($userId);
+            $openHours = $parameters['open_free_hours'] - $subOpenHours;
+            $modelDbUserParameters->setOpenFreeHours($userId, $openHours);
+        }
+
         return $result;
     }
 
