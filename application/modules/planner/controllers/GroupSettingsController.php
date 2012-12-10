@@ -15,6 +15,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'save-group-holidays'                => array('json'),
         'delete-group-holidays'              => array('json'),
         'save-alert-over-limit'              => array('json'),
+        'save-default-open-free-hours'       => array('json'),
     );
 
     /**
@@ -43,11 +44,14 @@ class Planner_GroupSettingsController extends My_Controller_Action
             $group['grouped_exceptions'] = $this->_modelGroup->groupExceptions($group['exceptions'], $year);
             $groups[$key] = $group;
         }
-        $generalHolidays = $this->_modelGroup->getGeneralHolidays();
+        $generalHolidays      = $this->_modelGroup->getGeneralHolidays();
+        $modelParameters      = new Application_Model_Parameter();
+        $defaultOpenFreeHours = $modelParameters->getDefaultOpenFreeHours();
         $assign = array(
-            'generalGroup'    => $generalGroup,
-            'groups'          => $groups,
-            'generalHolidays' => $generalHolidays,
+            'generalGroup'         => $generalGroup,
+            'groups'               => $groups,
+            'generalHolidays'      => $generalHolidays,
+            'defaultOpenFreeHours' => $defaultOpenFreeHours,
         );
         $this->view->assign($assign);
     }
@@ -216,6 +220,18 @@ class Planner_GroupSettingsController extends My_Controller_Action
     {
         $limit = $this->_getParam('alert_over_limit_free_people', 0);
         $status = $this->_modelGroup->saveGroupSetting(0, 'alert_over_limit_free_people', $limit);
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function saveDefaultOpenFreeHoursAction()
+    {
+        $value = $this->_getParam('default_open_free_hours', 216);
+        $modelParameter = new Application_Model_Parameter();
+        $status = $modelParameter->setDefaultOpenFreeHours($value);
         if ($status) {
             $this->_response(1, '', array());
         } else {

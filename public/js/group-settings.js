@@ -393,6 +393,27 @@
                     }
                 });
             }
+        },
+
+        saveDefaultOpenFreeHours: function() {
+            var data = {};
+            data.default_open_free_hours = $('#default_open_free_hours').val();
+            data.format = 'json';
+            $.ajax({
+                url: '/group-settings/save-default-open-free-hours',
+                data: data,
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.location.reload();
+                    } else {
+                        alert('Error! Something wrong.');
+                    }
+                },
+                error: function(response) {
+                    alert('Error! Something wrong.');
+                }
+            });
         }
 
     };
@@ -431,6 +452,9 @@
         });
         $('#submit-group-holidays').on('click', function(e) {
             GroupSettings.submitGroupHolidays();
+        });
+        $('.save-default-open-free-hours').on('click', function(e) {
+            GroupSettings.saveDefaultOpenFreeHours();
         });
 
         GroupSettings.init();

@@ -134,11 +134,9 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
 
 <div class="span12 normal-user-holidays">
     <div class="input-prepend input-append">
-        <form method="POST" class="form-mini">
-            <span class="add-on">Number of holiday hours based on 100% (40 hours) working week:</span>
-            <input type="text" class="span1 rule-int btn-mini" value="5">
-            <button class="btn btn-success btn-no-text" type="button"><i class="icon-ok icon-white"></i></button>
-        </form>
+        <span class="add-on">Number of holiday hours based on 100% (40 hours) working week:</span>
+        <input type="text" class="span1 rule-int btn-mini" name="default_open_free_hours" id="default_open_free_hours" value="<?php echo $this->defaultOpenFreeHours; ?>">
+        <button class="btn btn-success btn-no-text save-default-open-free-hours" type="button"><i class="icon-ok icon-white"></i></button>
     </div>
 </div>
 
