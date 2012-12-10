@@ -53,6 +53,15 @@ class Application_Model_Db_User_Requests extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function getById($id)
+    {
+        $select = $this->_db->select()
+            ->from(self::TABLE_NAME)
+            ->where('id = ?', $id);
+        $result = $this->_db->fetchRow($select);
+        return $result;
+    }
+
     protected function _generateRequestId()
     {
         $date = new DateTime();

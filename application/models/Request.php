@@ -85,6 +85,14 @@ class Application_Model_Request extends Application_Model_Abstract
         }
         if ($checked) {
             $result = $this->_modelDb->setStatusById($requestId, $requestStatus, $comment, $adminId);
+            if ($requestStatus == Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED) {
+                // TODO: here need check how much work hours in this request and add this hours to user open hours.
+                $request = $this->_modelDb->getById($requestId);
+                $modelUserParameters = new Application_Model_Db_User_Parameters();
+                $parameters = $modelUserParameters->getParametersByUserId($request['user_id']);
+                $openFreeHours = $parameters['open_free_hours'] + 8; // as default
+                $modelUserParameters->setOpenFreeHours($request['user_id'], $openFreeHours);
+            }
         }
         return $result;
     }
