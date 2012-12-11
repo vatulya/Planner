@@ -1,7 +1,7 @@
 <?php $this->headScript()->appendFile('/js/overview.js'); ?>
 
 <div class="span12 group-overview-container">
-    <div class="group-overview-header">
+    <!--div class="group-overview-header">
         <div class="year-total pull-left">
             <a href="#" class="show-tooltip no-action" data-original-title="09:00 - 18:00">
                 <span class="param-name">Year totals:</span>
@@ -13,280 +13,149 @@
                 Export
             </button>
         </div>
-    </div>
+    </div-->
 
-    <div class="group-history-block pull-left">
-        <div class="div-row">
-            <a href="#" class="no-action">
-                More history
+<?php foreach ($this->groups as $group): ?>
+<?php $this->group = $group; ?>
+<div
+        class="row user_row width-full"
+        id="<?php echo $this->group['id']; ?>"
+        data-user-id="<?php echo $this->group['id']; ?>"
+        >
+    <?php
+    $this->users = $this->group['users'];
+    $nextWeekYear = $this->nextWeekYear;
+    $prevWeekYear = $this->prevWeekYear;
+    $currentWeekYear = $this->currentWeekYear;
+    ?>
+    <div class="user_row_container">
+        <span class="span4 block-history">
+            <a href="<?php echo $this->url(array('controller' => 'overview', 'action' => 'index', 'year' => $prevWeekYear['year'], 'week' => $prevWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $prevWeekYear['year'] . ' week:' . $prevWeekYear['week']; ?>">
+                < Prev Week
             </a>
-        </div>
-        <div class="group-history-table">
-            <table class="table table-bordered table-small-td">
+            <?php if ($currentWeekYear['week'] != $this->week): ?>
+            <a href="<?php echo $this->url(array('controller' => 'overview', 'action' => 'index', 'year' => $currentWeekYear['year'], 'week' => $currentWeekYear['week']), 'planner', true); ?>" class="show-more-history"  title="<?php echo 'Year:' . $currentWeekYear['year'] . ' week:' . $currentWeekYear['week']; ?>">
+                | Actual Week |
+            </a>
+            <a href="<?php echo $this->url(array('controller' => 'overview', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
+                Next Week >
+            </a>
+            <?php endif; ?>
+                <div class="history-container-scrollable">
+                    <div class="history-container">
+                        <?php echo $this->render('_blocks/history.phtml'); ?>
+                    </div>
+                </div>
+        </span>
+
+
+        <span
+                class="span10 block-week-details week-details main-data-container user-id-<?php echo $this->group['id']; ?> year-<?php echo $this->weekTasks['year']; ?> week-<?php echo $this->weekTasks['week']; ?>"
+                data-year="<?php echo $this->weekTasks['year']; ?>"
+                data-week="<?php echo $this->weekTasks['week']; ?>"
+                data-userId="<?php echo $this->group['id']; ?>"
+                >
+
+            <div class="group-history-block pull-left">
+                <div class="div-row">&nbsp;</div>
+                <div class="group-free-days-table">
+                    <table class="history table table-bordered table-condensed table-striped">
+                        <thead>
+                        <tr class="week-table-header" >
+                            <th>&nbsp;</th>
+                        </tr>
+                        <tr  class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
+                            <th>
+                                Open
+                                <a href="#" class="show-tooltip no-action" data-original-title="Openstaande saldo"><i class="icon-info-sign"></i></a>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($this->users)): ?>
+                                <tr><td >&nbsp;  </td></tr>
+                            <?php else: ?>
+                            <?php foreach ($this->users as $user): ?>
+                                <?php $this->user = $user; ?>
+                                <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
+                                    <td>
+                                        <span><?php echo 0 ?></span>
+                                        <a href="#" class="no-action pull-right">
+                                            <i class="icon-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+       <div class="group-overview-block pull-left">
+           <div class="div-row">&nbsp;</div>
+            <table class="history table table-bordered table-condensed table-striped">
+
                 <thead>
-                <tr style="background-color: #F5F5DC;">
-                    <th>Week 26</th>
-                    <th>Week 27</th>
-                    <th>Week 28</th>
-                    <th>Week 29</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="group-history-block pull-left">
-        <div class="div-row">&nbsp;</div>
-        <div class="group-free-days-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #F5F5DC;">
+                <tr class="week-table-header" >
+                    <th  colspan="4"   ></th>
+                    <!--th  style="background-color: #<?php echo $this->group['color'];?>" -->
                     <th>
-                        Open
-                        <a href="#" class="show-tooltip no-action" data-original-title="Openstaande saldo"><i class="icon-info-sign"></i></a>
+                        <a href="#" class="bootstrab-tooltip no-action get-week-details" >
+                            Week <?php echo $this->week; ?>
+                        </a>
                     </th>
                 </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <span>2</span>
-                        <a href="#" class="no-action pull-right">
-                            <i class="icon-edit"></i>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span>1</span>
-                        <a href="#" class="no-action pull-right">
-                            <i class="icon-edit"></i>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span>3</span>
-                        <a href="#" class="no-action pull-right">
-                            <i class="icon-edit"></i>
-                        </a>
-                    </td>
-                </tr>
+                    <tr class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
+                        <th class="group-user-name" ><?php echo $this->group['group_name']; ?></th>
+                        <th class="group-user-worked">Gewerkte uren</th>
+                        <th class="group-user-used-free-days">Vrije uren</th>
+                        <th class="group-user-overtime">Overuren</th>
+                        <th class="group-user-doctor-days">Ziekte/buitengew</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php if (empty($this->users)): ?>
+                <td colspan="7" class="user-not-found">
+                    No users in this group
+                </td>
+                    <?php else: ?>
+                    <?php foreach ($this->users as $user): ?>
+                        <?php $this->user = $user; ?>
+                        <?php //echo $this->render('planning/_blocks/week_user_plan.phtml'); ?>
+                        <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
+                            <td class="user-title" >
+                                <div><?php echo "<nobr>" . $user['full_name'] . "</nobr>"; ?> </div>
+                            </td>
+                            <td>
+                                <span><?php echo $user['weekHours']['work_hours']  ?></span>
+                                <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
+                            </td>
+                            <td>
+                                <span><?php echo $user['weekHours']['vacation_hours']  ?></span>
+                                <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
+                            </td>
+                            <td>
+                                <span><?php echo $user['weekHours']['overtime_hours']  ?></span>
+                                <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
+                            </td>
+                            <td>
+                                <span><?php echo $user['weekHours']['missing_hours']  ?></span>
+                                <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
+                            </td>
+
+
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
+
+    </span>
     </div>
-    <div class="group-overview-block pull-left">
-        <div class="div-row pull-right">
-            <a href="#" class="no-action">
-                Week 30
-            </a>
-        </div>
-        <div class="group-overview-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #F5F5DC;">
-                    <th class="group-user-name">Groep Customer Service</th>
-                    <th class="group-user-worked">Gewerkte uren</th>
-                    <th class="group-user-used-free-days">Vrije uren</th>
-                    <th class="group-user-overtime">Overuren</th>
-                    <th class="group-user-doctor-days">Ziekte/buitengew</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>Suzanne de Goede</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>Harmen van der Meulen</td>
-                    <td>
-                        <span>71</span>
-                        <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
-                    </td>
-                    <td>
-                        <span>14</span>
-                        <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
-                    </td>
-                    <td>
-                        <span>0</span>
-                        <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
-                    </td>
-                    <td>
-                        <span>3</span>
-                        <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Erik de Wit</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+</div>
+<?php endforeach; ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class="group-history-block pull-left">
-        <div class="group-history-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #FFFACD;">
-                    <th>Week 26</th>
-                    <th>Week 27</th>
-                    <th>Week 28</th>
-                    <th>Week 29</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="group-history-block pull-left">
-        <div class="group-free-days-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #FFFACD;">
-                    <th>
-                        Open
-                        <a href="#" class="show-tooltip no-action" data-original-title="Openstaande saldo"><i class="icon-info-sign"></i></a>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <span>2</span>
-                        <a href="#" class="no-action pull-right">
-                            <i class="icon-edit"></i>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span>1</span>
-                        <a href="#" class="no-action pull-right">
-                            <i class="icon-edit"></i>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span>3</span>
-                        <a href="#" class="no-action pull-right">
-                            <i class="icon-edit"></i>
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="group-overview-block pull-left">
-        <div class="group-overview-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #FFFACD;">
-                    <th class="group-user-name">Groep Marketing</th>
-                    <th class="group-user-worked">Gewerkte uren</th>
-                    <th class="group-user-used-free-days">Vrije uren</th>
-                    <th class="group-user-overtime">Overuren</th>
-                    <th class="group-user-doctor-days">Ziekte/buitengew</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>Suzanne de Goede</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>Harmen van der Meulen</td>
-                    <td>
-                        <span>71</span>
-                        <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
-                    </td>
-                    <td>
-                        <span>14</span>
-                        <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
-                    </td>
-                    <td>
-                        <span>0</span>
-                        <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
-                    </td>
-                    <td>
-                        <span>3</span>
-                        <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Erik de Wit</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>

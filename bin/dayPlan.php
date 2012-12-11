@@ -22,27 +22,45 @@ $application = new Zend_Application(
 
 $application->bootstrap();
 
-$modelGroup    = new Application_Model_Group();
-$modelPlanning = new Application_Model_Planning();
-$modelUser     = new Application_Model_User();
-$userPlan      = new Application_Model_Db_User_Planning();
 
-$groups = $modelGroup->getAllGroups();
+if (1) {
+    $currentDate = new My_DateTime();
+    $date = $currentDate->format('Y-m-d');
+    $currentDate->modify('-1 day');
+    $prevDate = $currentDate->format('Y-m-d');
+    calculateDayHours($date,$prevDate);
+} else {
+    for ($i = 0; $i < 100 ; $i++) {
+        $currentDate = new My_DateTime();
+        $currentDate->modify('- ' . $i .' day');
+        $date = $currentDate->format('Y-m-d');
+        $currentDate->modify('- ' . $i +1 . ' day');
+        $prevDate = $currentDate->format('Y-m-d');
+        calculateDayHours($date,$prevDate);
+    }
+    //  var_dump($groups[$key]['users']);
+}
 
-$currentDate = new My_DateTime();
-$date = $currentDate->format('Y-m-d');
-
-foreach ($groups as $key => $group) {
-    $groupId = $group['id'];
-    $groups[$key] = $group;
-    $groups[$key]['users'] = $modelUser->getAllUsersByGroup($groupId);
-    if (!empty($groups[$key]['users'])) {
-        foreach ($groups[$key]['users'] as $keyUser => $user) {
-            $modelPlanning->createNewDayUserPlanByGroup($user['user_id'], $groupId, $date);
+function calculateDayHours($date,$prevDate) {
+    $modelGroup    = new Application_Model_Group();
+    $modelPlanning = new Application_Model_Planning();
+    $modelHistory  = new Application_Model_History();
+    $modelUser     = new Application_Model_User();
+    $userPlan      = new Application_Model_Db_User_Planning();
+    $groups = $modelGroup->getAllGroups();
+    //$date = "2012-11-29";
+    foreach ($groups as $key => $group) {
+        $groupId = $group['id'];
+        $groups[$key] = $group;
+        //TODO need replace on users from history
+        $groups[$key]['users'] = $modelUser->getAllUsersByGroup($groupId);
+        if (!empty($groups[$key]['users'])) {
+            foreach ($groups[$key]['users'] as $keyUser => $user) {
+                $modelPlanning->createNewDayUserPlanByGroup($user['user_id'], $groupId, $date);
+                $modelHistory->addDayDataToHistory($user['user_id'], $groupId, $prevDate);
+            }
         }
     }
-
-  //  var_dump($groups[$key]['users']);
 }
 
 

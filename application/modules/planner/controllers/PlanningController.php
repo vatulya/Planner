@@ -42,12 +42,13 @@ class Planner_PlanningController extends My_Controller_Action
         $this->view->prevWeekYear = My_DateTime::getPrevYearWeek($year,$week);
 
         $historyDateWeekYear = My_DateTime::getNumHistoryWeeks($year, $week);
-        $groups = $this->_modelGroup->getAllGroups();
+        $groups = $this->_modelGroup->getAllGroupsFromHistory($year, $week);
+        //$groups = $this->_modelGroup->getAllGroups();
 
         foreach ($groups as $key => $group) {
             $groupId = $group['id'];
             $groups[$key] = $group;
-            $groups[$key]['users'] = $this->_modelUser->getAllUsersByGroup($groupId);
+            $groups[$key]['users'] = $this->_modelUser->getAllUsersFromHistory($groupId, $year, $week);
             if (!empty($groups[$key]['users'])) {
                 foreach ($groups[$key]['users'] as $keyUser => $user) {
                     $user = $this->_getUserData($user, $groupId, $year, $week);
@@ -63,8 +64,8 @@ class Planner_PlanningController extends My_Controller_Action
 
     protected function _getUserData($user, $groupId, $year, $week)
     {
-        $user['history'] = $this->_getHistory($user['user_id'], $groupId, $year, $week);
-        $user['weekPlan'] = $this->_modelPlanning->getUserWeekPlanByGroup($user['user_id'], $groupId,  $year, $week, $this->_me['id']);
+        $user['history'] = $this->_getHistory($user['id'], $groupId, $year, $week);
+        $user['weekPlan'] = $this->_modelPlanning->getUserWeekPlanByGroup($user['id'], $groupId,  $year, $week, $this->_me['id']);
         return $user;
     }
 
@@ -116,9 +117,10 @@ class Planner_PlanningController extends My_Controller_Action
     protected function _getHistory($userId, $groupId, $fromYear, $fromWeek, $weeksCount = self::HISTORY_WEEK_NUM)
     {
         $history = array();
+        $modelHistory = new Application_Model_History();
         $historyWeeks = My_DateTime::getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount);
         foreach ($historyWeeks as $week => $year) {
-            $history[$week] = $this->_modelPlanning->getWeekHistory($userId, $groupId, $year, $week);
+            $history[$week] = $modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
         }
         return $history;
     }

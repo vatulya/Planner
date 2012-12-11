@@ -214,3 +214,15 @@ CREATE TABLE `parameters` (
   PRIMARY KEY (id)
 )
 ;
+CREATE TABLE `user_history` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NOT NULL,
+  `group_id` INT(11) NOT NULL,
+  `week` INT(11) NOT NULL,
+  `work_hours` TIME DEFAULT NULL,
+  `overtime_hours` TIME DEFAULT NULL,
+  `ill_hours` TIME DEFAULT NULL,
+  `vacation_hours` TIME DEFAULT NULL,
+  `free_hours` TIME DEFAULT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8

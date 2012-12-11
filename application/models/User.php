@@ -68,6 +68,30 @@ class Application_Model_User extends Application_Model_Abstract
         return $users;
     }
 
+    public function getAllUsersFromHistory($groupId, $year, $week)
+    {
+        $historyDateInterval = My_DateTime::getWeekHistoryDateInterval($year, $week);
+        $modelPlanning = new Application_Model_Db_User_Planning();
+        $usersNormalized = array();
+        $users = $modelPlanning->getUsersByDateInterval($groupId, $historyDateInterval['start'], $historyDateInterval['end']);
+        foreach ($users as $user) {
+            $user = $this->_filterHiddenFields($user);
+            $usersNormalized[$user['id']] = $user;
+            //$usersNormalized[$user['id']] = $this->getUserById($user['id']);
+        }
+        $currentDate = new My_DateTime();
+        $currentDate = $currentDate->getTimestamp();
+        $endWeek = My_DateTime::getTimestampNextWeekByYearWeek($year, $week);
+        if ($endWeek > $currentDate) {
+            $modelUser = new Application_Model_User();
+            $users = $modelUser->getAllUsersByGroup($groupId);
+            foreach ($users as $user) {
+                $usersNormalized[$user['id']] = $user;
+            }
+        }
+        return $usersNormalized;
+    }
+
     public function userCheck($userId, $check)
     {
         $now = new DateTime();

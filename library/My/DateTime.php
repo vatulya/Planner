@@ -94,6 +94,17 @@ class My_DateTime extends DateTime
         return $weekYear;
     }
 
+    static public function getTimestampNextWeekByYearWeek($year, $week)
+    {
+        try {
+        $date = new My_DateTime($year . 'W' . sprintf("%02d", $week));
+        $date->modify('+1 week');
+        return $date->getTimestamp();
+        } catch (Exception $e) {
+
+        }
+    }
+
     static public function getPrevYearWeek($year, $week)
     {
         $date = new My_DateTime($year . 'W' . sprintf("%02d", $week));
@@ -114,6 +125,15 @@ class My_DateTime extends DateTime
     {
         $weekDays = array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
         return $weekDays;
+    }
+
+    public static function getWeekHistoryDateInterval($year, $week)
+    {
+        $date = new DateTime($year . 'W' . sprintf("%02d", $week));
+        $historyDateInterval['start'] =  $date->format('Y-m-d');
+        $date->modify('+6 day');
+        $historyDateInterval['end'] = $date->format('Y-m-d');
+        return $historyDateInterval;
     }
 
     public static function getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount = self::HISTORY_WEEK_NUM)

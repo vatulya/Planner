@@ -32,7 +32,33 @@
     <?php foreach($this->users as $week => $row): ?>
     <tr>
         <?php foreach($row['history'] as $week => $workTime): ?>
-        <td><div class="show-tooltip"  title="zz<?php // echo  $title ?>" ><?php echo $workTime; ?></div></td>
+            <?php
+            $title = 'Week' . $week . '</br>';
+            if (!empty($workTime['work_hours'])) {
+                $title .= "Gewerkte uren: " . $workTime['work_hours'] . '</br>';
+            }
+            if (!empty($workTime['work_hours'])) {
+                $title .= "Vrije uren: " . $workTime['vacation_hours'] . '</br>';
+            }
+            if (!empty($workTime['work_hours'])) {
+                $title .= "Overuren: " . $workTime['overtime_hours'] . '</br>';
+            }
+            if (!empty($workTime['work_hours'])) {
+                $title .= "Ziekte/buitengew: " . $workTime['missing_hours'] . '</br>';
+            }
+            if (!empty($workTime['work_hours'])) {
+                $title .= "Total: " . $workTime['total'];
+            }
+            ?>
+        <td><div class="show-tooltip"  title="<?php  echo  $title ?>" >
+            <?php
+                if (empty($workTime['total'])) {
+                    echo "-";
+                } else {
+                    echo $workTime['total'];
+                }
+            ?>
+        </div></td>
         <?php endforeach; ?>
     </tr>
     <?php endforeach; ?>

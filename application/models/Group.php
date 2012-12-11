@@ -14,8 +14,36 @@ class Application_Model_Group extends Application_Model_Abstract
 
     public function getAllGroups()
     {
+        $groupsNormalized = array();
         $groups = $this->_modelDb->getAllGroups();
-        return $groups;
+        foreach ($groups as $group) {
+            $groupsNormalized[$group['id']] = $group;
+        }
+        return $groupsNormalized;
+    }
+
+    public function getAllGroupsFromHistory($year, $week)
+    {
+        $historyDateInterval = My_DateTime::getWeekHistoryDateInterval($year, $week);
+        $modelPlanning = new Application_Model_Db_User_Planning();
+        $groupsNormalized = array();
+        $groups = $modelPlanning->getGroupsByDateInterval($historyDateInterval['start'], $historyDateInterval['end']);
+        foreach ($groups as $group) {
+             $groupsNormalized[$group['id']] = $group;
+             //$groupsNormalized[$group['id']] = $this->getGroupById($group['id']);
+        }
+        $currentDate = new My_DateTime();
+        $currentDate = $currentDate->getTimestamp();
+        $endWeek = My_DateTime::getTimestampNextWeekByYearWeek($year, $week);
+        if ($endWeek > $currentDate) {
+            $modelGroup = new Application_Model_Group();
+            $groups = $modelGroup->getAllGroups();
+            foreach ($groups as $group) {
+                $groupsNormalized[$group['id']] = $group;
+                //$groupsNormalized[$group['id']] = $this->getGroupById($group['id']);
+            }
+        }
+        return $groupsNormalized;
     }
 
     public function getGroupById($groupId)

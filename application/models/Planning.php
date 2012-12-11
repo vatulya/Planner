@@ -68,7 +68,11 @@ class Application_Model_Planning extends Application_Model_Abstract
 
     private function _formatTime($time)
     {
-        $date = date_create($time);
+        try {
+            $date = date_create($time);
+        } catch (Exception $e) {
+            return $time;
+        }
         return date_format($date, 'H:i');
     }
 

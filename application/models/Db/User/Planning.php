@@ -79,4 +79,33 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         //TODO realize logic for update
         $this->_db->update(self::TABLE_NAME, $fields, array('id = ?' => $id));
     }
+
+    public function getUsersByDateInterval($groupId, $dateStart, $dateEnd)
+    {
+        $select = $this->_db->select()
+            ->from(array('up' => self::TABLE_NAME), array('id' => 'up.user_id'))
+            ->joinInner(array('u' => Application_Model_Db_Users::TABLE_NAME), 'up.user_id = u.id')
+            ->where('up.group_id = ?', $groupId)
+            ->where('up.date >= ?', $dateStart)
+            ->where('up.date <= ?', $dateEnd)
+            ->group('up.user_id')
+            ->order(array('u.full_name ASC'));
+        ;
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
+    public function getGroupsByDateInterval($dateStart, $dateEnd)
+    {
+        $select = $this->_db->select()
+            ->from(array('up' => self::TABLE_NAME), array('id' => 'up.group_id'))
+            ->joinInner(array('g' => Application_Model_Db_Groups::TABLE_NAME), 'up.group_id = g.id')
+            ->where('up.date >= ?', $dateStart)
+            ->where('up.date <= ?', $dateEnd)
+            ->group('up.group_id')
+            ->order(array('g.group_name ASC'));
+        ;
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
 }
