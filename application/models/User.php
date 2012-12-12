@@ -244,4 +244,28 @@ class Application_Model_User extends Application_Model_Abstract
         $modelUserParameters->setOpenFreeHours($userId, $newOpenFreeHours);
     }
 
+    public function getWorkHoursByDate($userId, $date)
+    {
+        $modelGroup = new Application_Model_Group();
+        $modelDbPlanning = new Application_Model_Db_User_Planning();
+
+        $groups = $modelGroup->getGroupsByUserId($userId);
+        $workHours = 0;
+        foreach ($groups as $group) {
+            $dayPlan = $modelDbPlanning->getUserDayPlanByGroup($userId, $group['id'], $date);
+            if ( ! empty($dayPlan) && $dayPlan['status1'] === Application_Model_Planning::STATUS_DAY_GREEN) {
+                // TODO: move this code to separate method
+                $start = new DateTime($dayPlan['time_start']);
+                $end   = new DateTime($dayPlan['time_end']);
+                $diff = $end->diff($start);
+                $workHours += $diff->format('%h'); // 8
+                $decimalMinutes = $diff->format('%i');
+                $decimalMinutes = $decimalMinutes / 60;
+                $workHours += $decimalMinutes; // 8.11111
+            }
+        }
+        $workHours = sprintf('%01.2f', $workHours); // 8.11
+        return $workHours;
+    }
+
 }

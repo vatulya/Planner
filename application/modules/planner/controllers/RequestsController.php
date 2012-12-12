@@ -62,9 +62,6 @@ class Planner_RequestsController extends My_Controller_Action
         if (count($check)) {
             $status = false;
         } else {
-            $modelPlanner = new Application_Model_Db_User_Planning();
-//            $workDays = $modelPlanner->getUserDayPlanByGroup($userId, , )
-            // TODO: Here need add check how much work hours need for selected dates. If more then user have then ERROR.
             $status = $modelRequests->saveRequest($userId, $selectedDates);
         }
 

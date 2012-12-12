@@ -28,8 +28,8 @@ class Application_Model_Request extends Application_Model_Abstract
         $requestedDates = My_DateTime::sortDates($requestedDates);
         $requestedDates = My_DateTime::toStringDates($requestedDates);
 
-        $userModelDb = new Application_Model_Db_Users();
-        $user = $userModelDb->getUserById($userId);
+        $userModel = new Application_Model_User();
+        $user = $userModel->getUserById($userId);
         if ( ! $user) {
             return $result;
         }
@@ -46,19 +46,28 @@ class Application_Model_Request extends Application_Model_Abstract
             $result = true;
             return $result;
         }
-        // TODO: here need add check correct requested dates
-        $result = $this->_modelDb->insert($user['id'], $requestedDates);
 
         $subOpenHours = 0;
         foreach ($requestedDates as $date) {
-            // TODO: Here need correct calculation work hours of requested dates and sub this hours from Open user hours
-            $subOpenHours += 8; // as default work hours
+            $subOpenHours += $userModel->getWorkHoursByDate($user['id'], $date);
         }
+        $openHours = null;
         if ($subOpenHours > 0) {
             $modelDbUserParameters = new Application_Model_Db_User_Parameters();
             $parameters = $modelDbUserParameters->getParametersByUserId($userId);
             $openHours = $parameters['open_free_hours'] - $subOpenHours;
-            $modelDbUserParameters->setOpenFreeHours($userId, $openHours);
+            if ($openHours < 0) {
+                // Error. Too much free days
+                $result = false;
+                return $result;
+            }
+        }
+
+        // TODO: here need add check correct requested dates
+        $result = $this->_modelDb->insert($user['id'], $requestedDates);
+
+        if ($openHours !== null) {
+            $modelDbUserParameters->setOpenFreeHours($user['id'], $openHours);
         }
 
         return $result;
@@ -89,9 +98,12 @@ class Application_Model_Request extends Application_Model_Abstract
                 // TODO: here need check how much work hours in this request and add this hours to user open hours.
                 $request = $this->_modelDb->getById($requestId);
                 $modelUserParameters = new Application_Model_Db_User_Parameters();
-                $parameters = $modelUserParameters->getParametersByUserId($request['user_id']);
-                $openFreeHours = $parameters['open_free_hours'] + 8; // as default
-                $modelUserParameters->setOpenFreeHours($request['user_id'], $openFreeHours);
+
+                $userModel = new Application_Model_User();
+                $subOpenHours = $userModel->getWorkHoursByDate($request['user_id'], $request['request_date']);
+                $modelDbUserParameters = new Application_Model_Db_User_Parameters();
+                $parameters = $modelDbUserParameters->getParametersByUserId($request['user_id']);
+                $modelUserParameters->setOpenFreeHours($request['user_id'], $parameters['open_free_hours'] + $subOpenHours);
             }
         }
         return $result;
