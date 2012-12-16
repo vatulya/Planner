@@ -36,34 +36,66 @@ class Application_Model_Planning extends Application_Model_Abstract
 
     public function getDayGroupUserPlanByDate($userId, $groupId, $dateFormat)
     {
-        $weekUserPlan = new Application_Model_Db_User_Planning();
-        $groupPlanning = new Application_Model_Group();
         $currentDate = new My_DateTime();
         $currentDate = $currentDate->getTimestamp();
         $date = new My_DateTime($dateFormat);
+        //Get from history or future(group plan) day plan
         if ($date->getTimestamp() >= $currentDate) {
-            $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $dateFormat);
-            if (!empty($weekGroupPlanning[0])) {
-                $weekGroupPlanning = $weekGroupPlanning[0];
-            }
-            $dayPlan = array();
-            $dayPlan['group_id'] = $groupId;
-            $dayPlan['user_id'] = $userId;
-            $dayPlan['date'] = $dateFormat;
-            $dayPlan['editable'] = $this->_getEditableDay($userId, $groupId);
-            if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
-                $dayPlan['status1'] = self::STATUS_DAY_WHITE;
-            } else {
-                $dayPlan['status1'] = self::STATUS_DAY_GREEN;
-                $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
-                $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
-                $dayPlan['total_time'] = $weekGroupPlanning['total_time'];
-            }
+            $dayPlan = $this->_getUserDayPlanFromGroupPlan($userId, $groupId, $dateFormat);
             return $this->_setStatusByRules($dayPlan);
         }  else {
-            $dayPlan = $weekUserPlan->getUserDayPlanByGroup($userId, $groupId, $dateFormat);
+            $dayPlan = $this->getUserDayPlanFromPlanning($userId, $groupId, $dateFormat);
             return $this->_setStatusByRules($dayPlan);
         }
+    }
+
+    public function getUserDayPlanFromPlanning($userId, $groupId, $dateFormat)
+    {
+        $weekUserPlan = new Application_Model_Db_User_Planning();
+        $dayPlan = $weekUserPlan->getUserDayPlanByGroup($userId, $groupId, $dateFormat);
+        if(!empty($dayPlan['time_start']) && !empty($dayPlan['time_end'])) {
+            $workSeconds = Application_Model_Day::getWorkHoursByMarkers(
+                $dayPlan['time_start'],
+                $dayPlan['time_end'],
+                $dayPlan['pause_start'],
+                $dayPlan['pause_end']
+            );
+            $dayPlan['total_time'] =  Application_Model_Day::TimeToDecimal($workSeconds);
+        }
+        return $dayPlan;
+    }
+
+    private function _getUserDayPlanFromGroupPlan($userId, $groupId, $dateFormat)
+    {
+        $groupPlanning = new Application_Model_Group();
+        $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $dateFormat);
+        if (!empty($weekGroupPlanning[0])) {
+            $weekGroupPlanning = $weekGroupPlanning[0];
+        }
+        $dayPlan = array();
+        $dayPlan['group_id'] = $groupId;
+        $dayPlan['user_id'] = $userId;
+        $dayPlan['date'] = $dateFormat;
+        $dayPlan['editable'] = $this->_getEditableDay($userId, $groupId);
+        if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
+            $dayPlan['status1'] = self::STATUS_DAY_WHITE;
+        } else {
+            $group = new Application_Model_Group();
+            $groupSettings = $group->getGroupSettings($groupId);
+            $dayPlan['status1'] = self::STATUS_DAY_GREEN;
+            $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
+            $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
+            $dayPlan['pause_start'] = $groupSettings['pause_start'];
+            $dayPlan['pause_end']   = $groupSettings['pause_end'];
+            $workSeconds = Application_Model_Day::getWorkHoursByMarkers(
+                $dayPlan['time_start'],
+                $dayPlan['time_end'],
+                $dayPlan['pause_start'],
+                $dayPlan['pause_end']
+            );
+            $dayPlan['total_time'] =  Application_Model_Day::TimeToDecimal($workSeconds);
+        }
+        return $dayPlan;
     }
 
     private function _formatTime($time)
@@ -92,6 +124,7 @@ class Application_Model_Planning extends Application_Model_Abstract
     public function createNewDayUserPlanByGroup($userId, $groupId, $date)
     {
         $groupPlanning = new Application_Model_Group();
+        $group = new Application_Model_Group();
         $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $date);
         if (!empty($weekGroupPlanning[0])) {
             $weekGroupPlanning = $weekGroupPlanning[0];
@@ -103,9 +136,12 @@ class Application_Model_Planning extends Application_Model_Abstract
         if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
             $dayPlan['status1'] = self::STATUS_DAY_WHITE;
         } else {
+            $groupSettings = $group->getGroupSettings($groupId);
             $dayPlan['status1'] = self::STATUS_DAY_GREEN;
-            $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
-            $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
+            $dayPlan['time_start']  = $weekGroupPlanning['time_start'];
+            $dayPlan['time_end']    = $weekGroupPlanning['time_end'];
+            $dayPlan['pause_start'] = $groupSettings['pause_start'];
+            $dayPlan['pause_end']   = $groupSettings['pause_end'];
         }
         $planning = new Application_Model_Db_User_Planning();
         $planning->createNewDayUserPlanByGroup($dayPlan);
@@ -116,7 +152,7 @@ class Application_Model_Planning extends Application_Model_Abstract
         if(!empty($result)) {
             $status = new Application_Model_Status();
             $userRequest = new Application_Model_Db_User_Requests();
-            $userMissing = new Application_Model_Db_User_Missing();
+            $userMissing = new Application_Model_Missing();
             $approveUserDayRequest = $userRequest->getAllByUserId($result['user_id'], Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $result['date']);
             $missingUserDayStatuses = $userMissing->getUserDayMissingPlanByDate($result['user_id'], $result['date']);
             if ($result['status1'] == self::STATUS_DAY_GREEN) {
@@ -128,13 +164,13 @@ class Application_Model_Planning extends Application_Model_Abstract
                     if (!empty($result['time_start']) && !empty($result['time_end'])) {
                         $result['time_start'] = $this->_formatTime($result['time_start']);
                         $result['time_end'] = $this->_formatTime($result['time_end']);
-                        $result['total_time'] = $this->_formatTime($result['total_time']);
+                        $result['total_time'] = $result['total_time'];
                     }
                     if (!empty($missingUserDayStatuses)) {
                         $result['status2'] = $status->getDataById($missingUserDayStatuses['status']);
                         $result['time_start2'] = $this->_formatTime($missingUserDayStatuses['time_start']);
                         $result['time_end2'] = $this->_formatTime($missingUserDayStatuses['time_end']);
-                        $result['total_time2'] = $this->_formatTime($missingUserDayStatuses['total_time']);
+                        $result['total_time2'] = $missingUserDayStatuses['total_time'];
                     }  else {
                         $result['status2'] = "";
                     }
@@ -146,7 +182,7 @@ class Application_Model_Planning extends Application_Model_Abstract
                 if (!empty($overtime)) {
                     $result['time_start2'] = $this->_formatTime($overtime['time_start']) ;
                     $result['time_end2']   = $this->_formatTime($overtime['time_end']);
-                    $result['total_time2'] = $this->_formatTime($overtime['total_time']);
+                    $result['total_time2'] = $overtime['total_time'];
                     $result['status2'] = $status->getDataById(self::STATUS_DAY_OVERTIME);
                 }
             }
@@ -230,7 +266,16 @@ class Application_Model_Planning extends Application_Model_Abstract
     public function getUserDayOvertimeByDate($userId, $groupId, $date)
     {
         $modelOvertime = new Application_Model_Db_User_Overtime();
-        return $modelOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
+        $overTime = $modelOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
+        if(!empty($overTime['time_start']) && !empty($overTime['time_end'])) {
+            $workSeconds = Application_Model_Day::getWorkHoursByMarkers(
+                $overTime['time_start'],
+                $overTime['time_end'],
+                "00:00:00","00:00:00"
+            );
+            $overTime['total_time'] =  Application_Model_Day::TimeToDecimal($workSeconds);
+        }
+        return $overTime;
     }
 
     public function getWeekHistory($userId, $groupId, $year, $week)

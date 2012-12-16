@@ -23,7 +23,7 @@ $application = new Zend_Application(
 $application->bootstrap();
 
 
-if (1) {
+if (0) {
     $currentDate = new My_DateTime();
     $date = $currentDate->format('Y-m-d');
     $currentDate->modify('-1 day');

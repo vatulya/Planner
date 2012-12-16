@@ -95,7 +95,7 @@ form.form-mini {
 .day-status-color-traingler {
     width: 0;
     height: 0;
-    border-left: 91px solid transparent;
+    border-left: 90px solid transparent;
 }
 .group-color-variation.active {
     margin: 1px 1px;
@@ -231,4 +231,5 @@ form.form-mini {
 .request-details-status {font-size: 16px; font-weight: bold;}
 .request-details-textarea {width: 510px;}
 
-.group-user-name {width: 35%;}
+.group-user-name {width: 155px;}
+.week-table-user-day {width: 90px;}

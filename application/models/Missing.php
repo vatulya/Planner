@@ -12,6 +12,14 @@ class Application_Model_Missing extends Application_Model_Abstract
     public function getUserDayMissingPlanByDate($userId, $date)
     {
         $missings = $this->_modelDb->getUserDayMissingPlanByDate($userId, $date);
+        if(!empty($missings['time_start']) && !empty($missings['time_end'])) {
+            $workSeconds = Application_Model_Day::getWorkHoursByMarkers(
+                $missings['time_start'],
+                $missings['time_end'],
+                "00:00:00","00:00:00"
+            );
+            $missings['total_time'] =  Application_Model_Day::TimeToDecimal($workSeconds);
+        }
         return $missings;
     }
 

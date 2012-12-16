@@ -15,8 +15,7 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
     {
         $select = $this->_db->select()
             ->from(array('uh' => self::TABLE_NAME),
-                array("*",
-                    "total" => "TIMEDIFF(uh.work_hours, uh.missing_hours)"))
+                array("*"))
             ->where('uh.user_id = ?', $userId)
             ->where('uh.group_id = ?', $groupId)
             ->where('uh.week = ?', $week)
@@ -29,8 +28,6 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
 
     public function addUserWeekData($dayHistoryData)
     {
-        echo "<pre>"    ;
-        var_dump($dayHistoryData);
         $select = $this->_db->select()
             ->from(array('uh' => self::TABLE_NAME), array('*'))
             ->where('uh.user_id = ?', $dayHistoryData['user_id'])
@@ -52,10 +49,10 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
              $this->_db->query(
                  "UPDATE " . self::TABLE_NAME
                   . " SET
-                        work_hours     = ADDTIME(work_hours, '"     . $dayHistoryData['work_hours'] . "'),
-                        overtime_hours = ADDTIME(overtime_hours, '" . $dayHistoryData['overtime_hours'] . "'),
-                        vacation_hours = ADDTIME(vacation_hours, '" . $dayHistoryData['vacation_hours'] . "'),
-                        missing_hours  = ADDTIME(missing_hours, '"  . $dayHistoryData['missing_hours'] . "')
+                        work_hours     = work_hours + '"     . $dayHistoryData['work_hours'] . "',
+                        overtime_hours = overtime_hours + '" . $dayHistoryData['overtime_hours'] . "',
+                        vacation_hours = vacation_hours + '" . $dayHistoryData['vacation_hours'] . "',
+                        missing_hours  = missing_hours + '"  . $dayHistoryData['missing_hours'] . "'
                   WHERE
                         user_id      = " . $dayHistoryData['user_id'] . "
                         AND group_id = " . $dayHistoryData['group_id'] . "

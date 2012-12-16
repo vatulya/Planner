@@ -158,4 +158,15 @@ class My_DateTime extends DateTime
         //$historyWeeks = array_reverse($historyWeeks, true);
         return  $historyWeeks;
     }
+
+    public static function timeToNum($time)
+    {
+        try {
+            $dateTime  = new My_DateTime($time);
+        } catch (Exception $e) {
+            return 0;
+        }
+        return Application_Model_Day::TimeToDecimal($dateTime->getTimestamp());
+    }
+
 }
