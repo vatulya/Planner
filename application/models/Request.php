@@ -49,7 +49,10 @@ class Application_Model_Request extends Application_Model_Abstract
 
         $subOpenHours = 0;
         foreach ($requestedDates as $date) {
-            $subOpenHours += $userModel->getWorkHoursByDate($user['id'], $date);
+            $day = Application_Model_Day::factory($date, $user);
+            $workHours = $day->getWorkHours();
+            $workHours = Application_Model_Day::TimeToDecimal($workHours);
+            $subOpenHours += (int)$userModel->getWorkHoursByDate($user['id'], $date);
         }
         $openHours = null;
         if ($subOpenHours > 0) {

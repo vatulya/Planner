@@ -38,7 +38,7 @@ class Planner_CheckingController extends My_Controller_Action
 
     public function indexAction()
     {
-        $date = new DateTime();
+        $date = new My_DateTime();
         $users = $this->_modelUser->getAllUsers($date);
         $groups = $this->_modelGroup->getAllGroups();
         foreach ($groups as $key => $group) {

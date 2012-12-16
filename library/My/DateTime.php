@@ -3,6 +3,14 @@ class My_DateTime extends DateTime
 {
     const HISTORY_WEEK_NUM = 4;
 
+    static public function diffInSeconds(My_DateTime $start, My_DateTime $end)
+    {
+        $start = $start->getTimestamp();
+        $end   = $end->getTimestamp();
+        $diff = $end - $start;
+        return $diff;
+    }
+
     static public function normalizeDate($dates)
     {
         if ( ! is_array($dates)) {
