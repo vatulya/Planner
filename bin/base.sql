@@ -169,8 +169,8 @@ CREATE TABLE `group_holidays` (
 
 CREATE TABLE `user_parameters` (
   user_id INT NOT NULL,
-  open_free_hours DECIMAL(5,2) NOT NULL DEFAULT 0,
-  used_free_hours INT NOT NULL DEFAULT 0,
+  total_free_time INT NOT NULL DEFAULT 0,
+  allowed_free_time INT NOT NULL DEFAULT 0,
   regular_work_hours INT NOT NULL DEFAULT 40,
   PRIMARY KEY (user_id)
 )
@@ -210,7 +210,7 @@ CREATE TABLE `user_overtime` (
 
 CREATE TABLE `parameters` (
   id INT NOT NULL DEFAULT 1, -- this field just reserved and not used
-  default_open_free_hours INT NOT NULL,
+  default_total_free_hours INT NOT NULL DEFAULT 216,
   PRIMARY KEY (id)
 )
 ;

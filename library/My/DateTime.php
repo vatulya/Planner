@@ -3,6 +3,33 @@ class My_DateTime extends DateTime
 {
     const HISTORY_WEEK_NUM = 4;
 
+    static public function isToday($date)
+    {
+        if ( ! $date instanceof My_DateTime) {
+            $date = new My_DateTime($date);
+        }
+        $today = new My_DateTime();
+        if ($today->format('Y-m-d') == $date->format('Y-m-d')) {
+            return true;
+        }
+        return false;
+    }
+
+    static public  function TimeToDecimal($seconds)
+    {
+        // OLD logic :) just for fun
+//        $minutes = floor($seconds / 60);       // 8000 / 60  = 133 minutes
+//        $hours   = floor($minutes / 60);       // 133  / 60  = 2 hours
+//        $seconds = (int)($seconds % $minutes); // 8000 % 133 = 20 seconds
+//        $minutes = (int)($minutes % 60);       // 133  % 60  = 13 minutes
+//        $decimalMinutes = $minutes / 60;       // 13   / 60  = 0.22
+//        $decimalHours = $hours + $decimalMinutes; // 2 + 0.22 = 2.22 (8000 seconds = 2.22 hours
+        // NEW logic
+        $hours = $seconds / 3600; // 2.222222
+        $hours = sprintf('%01.2f', $hours); // 2.22
+        return $hours;
+    }
+
     static public function diffInSeconds(My_DateTime $start, My_DateTime $end)
     {
         $start = $start->getTimestamp();
@@ -158,15 +185,4 @@ class My_DateTime extends DateTime
         //$historyWeeks = array_reverse($historyWeeks, true);
         return  $historyWeeks;
     }
-
-    public static function timeToNum($time)
-    {
-        try {
-            $dateTime  = new My_DateTime($time);
-        } catch (Exception $e) {
-            return 0;
-        }
-        return Application_Model_Day::TimeToDecimal($dateTime->getTimestamp());
-    }
-
 }

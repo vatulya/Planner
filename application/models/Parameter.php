@@ -9,34 +9,55 @@ class Application_Model_Parameter extends Application_Model_Abstract
         $this->_modelDb = new Application_Model_Db_Parameters();
     }
 
-    public function getDefaultOpenFreeHours()
+    public function getDefaultWorkHours()
     {
-        $value = $this->_modelDb->getDefaultOpenFreeHours();
+        return 40; // this is as default now
+    }
+
+    public function getDefaultTotalFreeHours()
+    {
+        $value = $this->_modelDb->getDefaultTotalFreeHours();
         return $value;
     }
 
-    public function setDefaultOpenFreeHours($value)
+    public function setDefaultTotalFreeHours($value)
     {
-        $oldValue = $this->getDefaultOpenFreeHours();
-        $result = $this->_modelDb->setDefaultOpenFreeHours($value);
-        // RECALCULATE ALL USERS OPEN FREE HOURS. maybe this code is wrong. Need ask customer.
-        $this->recalculateAllUsersOpenFreeHours($oldValue);
+        $oldValue = $this->getDefaultTotalFreeHours();
+        $result = $this->_modelDb->setDefaultTotalFreeHours($value);
+        // RECALCULATE ALL USERS TOTAL FREE HOURS. maybe this code is wrong. Need ask customer.
+        $deltaPercentage = $this->getDefaultTotalFreeHours() / $oldValue; // 108 / 216 = 0.5
+        $this->recalculateAllUsersTotalFreeTime($deltaPercentage);
         return $result;
     }
 
-    public function recalculateAllUsersOpenFreeHours($oldValue)
+    public function recalculateAllUsersTotalFreeTime($deltaPercentage, $userId = 0)
     {
-        $newValue = $this->getDefaultOpenFreeHours();
-        $deltaPercentage = $newValue / $oldValue;
-        $modelUser = new Application_Model_User();
-        $users = $modelUser->getAllUsers();
-        foreach ($users as $user) {
-            $parameters = $modelUser->getParametersByUserId($user['id']);
-            $newOpenFreeHours = $parameters['open_free_hours'];
-            $newOpenFreeHours = $newOpenFreeHours * $deltaPercentage; // 216 * 0.8 = 172.8
-            $newOpenFreeHours = sprintf('%01.2f', $newOpenFreeHours);
-            $modelUserParameters = new Application_Model_Db_User_Parameters();
-            $modelUserParameters->setOpenFreeHours($user['id'], $newOpenFreeHours);
+        $modelUser           = new Application_Model_User();
+        $modelUserParameters = new Application_Model_Db_User_Parameters();
+
+        if ($userId > 0) {
+            $users = array($userId);
+        } else {
+            $users = $modelUser->getAllUsers();
         }
+
+        foreach ($users as $user) {
+            $userId = $user['id'];
+            $parameters = $modelUser->getParametersByUserId($userId);
+
+            if ($parameters['regular_work_hours'] == 40) {
+                $modelUserParameters->setTotalFreeTime($userId, $this->getDefaultTotalFreeHours() * 3600); // just set Default total free hours
+            } else {
+                $newTotalFreeTime = $parameters['total_free_time'];
+                $newTotalFreeTime = $newTotalFreeTime * $deltaPercentage; // 216 * 0.8 = 172.8
+                $modelUserParameters->setTotalFreeTime($userId, $newTotalFreeTime);
+            }
+
+            $newAllowedFreeTime = $parameters['allowed_free_time'];
+            $newAllowedFreeTime = $newAllowedFreeTime * $deltaPercentage; // 216 * 0.8 = 172.8
+            $modelUserParameters->setAllowedFreeTime($userId, $newAllowedFreeTime);
+        }
+        return true;
     }
+
 }

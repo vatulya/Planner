@@ -23,9 +23,9 @@
    data-status="<?php echo $this->userDayData['status1']['id']; ?>" >
    <?php if ( empty($this->userDayData['status2'])): ?>
         <?php if ( !empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])): ?>
-            <div class="underflow-container week-table-user-day editable show-tooltip"  title="<?php echo  $title ?>" > <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?></div>
+            <div class="underflow-container editable show-tooltip"  title="<?php echo  $title ?>" > <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?></div>
         <?php else: ?>
-            <div class="underflow-container week-table-user-day editable show-tooltip"  title="<?php echo  $title ?>"></div>
+            <div class="underflow-container editable show-tooltip"  title="<?php echo  $title ?>"></div>
         <?php endif; ?>
     <?php else: ?>
         <div class="day-status-color-traingler show-tooltip"  title="<?php echo  $title ?>" style="border-bottom: 28px solid #<?php echo $this->userDayData['status2']['color_hex']; ?>;"></div>

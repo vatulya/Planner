@@ -395,12 +395,12 @@
             }
         },
 
-        saveDefaultOpenFreeHours: function() {
+        saveDefaultTotalFreeHours: function() {
             var data = {};
-            data.default_open_free_hours = $('#default_open_free_hours').val();
+            data.default_total_free_hours = $('#default_total_free_hours').val();
             data.format = 'json';
             $.ajax({
-                url: '/group-settings/save-default-open-free-hours',
+                url: '/group-settings/save-default-total-free-hours',
                 data: data,
                 success: function(response) {
                     response = response.response;
@@ -453,8 +453,8 @@
         $('#submit-group-holidays').on('click', function(e) {
             GroupSettings.submitGroupHolidays();
         });
-        $('.save-default-open-free-hours').on('click', function(e) {
-            GroupSettings.saveDefaultOpenFreeHours();
+        $('.save-default-total-free-hours').on('click', function(e) {
+            GroupSettings.saveDefaultTotalFreeHours();
         });
 
         GroupSettings.init();

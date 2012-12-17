@@ -15,7 +15,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'save-group-holidays'                => array('json'),
         'delete-group-holidays'              => array('json'),
         'save-alert-over-limit'              => array('json'),
-        'save-default-open-free-hours'       => array('json'),
+        'save-default-total-free-hours'      => array('json'),
     );
 
     /**
@@ -46,12 +46,12 @@ class Planner_GroupSettingsController extends My_Controller_Action
         }
         $generalHolidays      = $this->_modelGroup->getGeneralHolidays();
         $modelParameters      = new Application_Model_Parameter();
-        $defaultOpenFreeHours = $modelParameters->getDefaultOpenFreeHours();
+        $defaultTotalFreeHours = $modelParameters->getDefaultTotalFreeHours();
         $assign = array(
-            'generalGroup'         => $generalGroup,
-            'groups'               => $groups,
-            'generalHolidays'      => $generalHolidays,
-            'defaultOpenFreeHours' => $defaultOpenFreeHours,
+            'generalGroup'          => $generalGroup,
+            'groups'                => $groups,
+            'generalHolidays'       => $generalHolidays,
+            'defaultTotalFreeHours' => $defaultTotalFreeHours,
         );
         $this->view->assign($assign);
     }
@@ -227,11 +227,11 @@ class Planner_GroupSettingsController extends My_Controller_Action
         }
     }
 
-    public function saveDefaultOpenFreeHoursAction()
+    public function saveDefaultTotalFreeHoursAction()
     {
-        $value = $this->_getParam('default_open_free_hours', 216);
+        $value = $this->_getParam('default_total_free_hours', 216);
         $modelParameter = new Application_Model_Parameter();
-        $status = $modelParameter->setDefaultOpenFreeHours($value);
+        $status = $modelParameter->setDefaultTotalFreeHours($value);
         if ($status) {
             $this->_response(1, '', array());
         } else {

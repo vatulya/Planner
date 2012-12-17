@@ -215,35 +215,6 @@ class Application_Model_User extends Application_Model_Abstract
         return $result;
     }
 
-    public function saveRegularWorkHours($userId, $hours)
-    {
-        $result = false;
-        if ($hours > 0 && $hours <= 40) {
-            $modelUserParameters = new Application_Model_Db_User_Parameters();
-            $userParametersOld = $modelUserParameters->getParametersByUserId($userId);
-            $result = $modelUserParameters->setRegularWorkHours($userId, $hours);
-            if ($result) {
-                $this->recalculateOpenFreeHours($userId, $userParametersOld['regular_work_hours'], $hours);
-            }
-        }
-        return $result;
-    }
-
-    public function recalculateOpenFreeHours($userId, $oldHours, $newHours)
-    {
-        $modelUserParameters = new Application_Model_Db_User_Parameters();
-        if ($newHours == 40) {
-            $modelParameters = new Application_Model_Db_Parameters();
-            $newOpenFreeHours = $modelParameters->getParameter('default_open_free_hours');
-        } else {
-            $userParametersOld = $modelUserParameters->getParametersByUserId($userId);
-            $deltaPercentage = $newHours / $oldHours;
-            $newOpenFreeHours = $userParametersOld['open_free_hours'] * $deltaPercentage;
-            $newOpenFreeHours = sprintf('%01.2f', $newOpenFreeHours);
-        }
-        $modelUserParameters->setOpenFreeHours($userId, $newOpenFreeHours);
-    }
-
     public function getWorkHoursByDate($userId, $date)
     {
         $modelGroup = new Application_Model_Group();
@@ -266,6 +237,74 @@ class Application_Model_User extends Application_Model_Abstract
         }
         $workHours = sprintf('%01.2f', $workHours); // 8.11
         return $workHours;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function getAllowedFreeTime($userId)
+    {
+        $parameters = $this->getParametersByUserId($userId);
+        return $parameters['allowed_free_time'];
+    }
+
+    /**
+     * DEPRECATED
+     * This method can be used ONLY when Module_Day will correct work with History dates
+     * @param $userId
+     * @return mixed
+     */
+    public function calculateAllowedFreeTime($userId)
+    {
+        $modelRequest      = new Application_Model_Request();
+        $approvedRequests  = $modelRequest->getRequestsByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED);
+        $userTotalFreeTime = $this->getTotalFreeTime($userId);
+        $approvedTime      = 0; // in secs
+        foreach ($approvedRequests as $request) {
+            $day = Application_Model_Day::factory($request['request_date'], $userId);
+            $approvedTime += $day->getWorkHours();
+        }
+        $userAllowedFreeTime = $userTotalFreeTime - $approvedTime;
+        $modelDbUserParameters = new Application_Model_Db_User_Parameters();
+        $modelDbUserParameters->setAllowedFreeTime($userId, $userAllowedFreeTime);
+        return $userAllowedFreeTime;
+    }
+
+    public function getTotalFreeTime($userId)
+    {
+        $parameters = $this->getParametersByUserId($userId);
+        return $parameters['total_free_time'];
+    }
+
+    public function saveRegularWorkHours($userId, $hours)
+    {
+        $result = false;
+        $modelParameters = new Application_Model_Parameter();
+        if ($hours > 0 && $hours <= $modelParameters->getDefaultWorkHours() && $userId > 0) {
+            $modelUserParameters = new Application_Model_Db_User_Parameters();
+            $userParametersOld   = $modelUserParameters->getParametersByUserId($userId);
+
+            $result = $modelUserParameters->setRegularWorkHours($userId, $hours);
+            if ($result) {
+                $userParametersNew = $modelUserParameters->getParametersByUserId($userId);
+                $deltaPercentage = $userParametersNew['regular_work_hours'] / $userParametersOld['regular_work_hours']; // 20 / 40 = 0.5
+                $modelParameters->recalculateAllUsersTotalFreeTime($deltaPercentage, $userId);
+            }
+        }
+        return $result;
     }
 
 }

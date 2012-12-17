@@ -48,9 +48,9 @@ class Planner_OpenRequestsController extends My_Controller_Action
         foreach ($groups as $key => $group) {
             $users = $this->_modelUser->getAllUsersByGroup($group['id']);
             $group['users'] = $users;
-            foreach ($group['users'] as $key => $user) {
+            foreach ($group['users'] as $userKey => $user) {
                 $user['requests'] = $modelRequest->getRequestsByUserId($user['id']);
-                $group['users'][$key] = $user;
+                $group['users'][$userKey] = $user;
             }
             $groups[$key] = $group;
         }

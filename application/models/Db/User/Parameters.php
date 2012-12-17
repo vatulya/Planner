@@ -6,35 +6,39 @@ class Application_Model_Db_User_Parameters extends Application_Model_Db_Abstract
 
     public function getParametersByUserId($userId)
     {
+        $this->setUserDefaultParameters($userId);
         $select = $this->_db->select()
             ->from(array('up' => self::TABLE_NAME))
             ->where('up.user_id = ?', $userId);
         $result = $this->_db->fetchRow($select);
-
-        if (empty($result)) {
-            // no parameters? need check
-            $selectCheck = $this->_db->select()
-                ->from(array('u' => Application_Model_Db_Users::TABLE_NAME))
-                ->where('u.id = ?', $userId);
-            $check = $this->_db->fetchRow($selectCheck);
-            if ($check) {
-                // Yes. User exists, but without any parameters. This is wrong. Need create default settings
-                $this->setUserDefaultParameters($userId);
-                $result = $this->_db->fetchRow($select);
-            }
-        }
-
         return $result;
     }
 
     public function setUserDefaultParameters($userId)
     {
+        $modelDbParameters = new Application_Model_Db_Parameters();
+        $defaultTotalFreeTime = $modelDbParameters->getDefaultTotalFreeHours() * 3600;
         $default = array(
-            'user_id' => $userId,
-            'used_free_hours' => 'NULL', // use default field value
+            ':user_id'            => $userId,
+            ':total_free_time'    => $defaultTotalFreeTime,
+            ':allowed_free_time'  => $defaultTotalFreeTime,
+            ':regular_work_hours' => 40,
         );
-        $result = $this->_db->insert(self::TABLE_NAME, $default);
-        return $result;
+        $default = array(
+            $userId,
+            $defaultTotalFreeTime,
+            $defaultTotalFreeTime,
+            40,
+        );
+        $query = '
+            INSERT IGNORE INTO user_parameters SET
+                user_id = ?,
+                total_free_time = ?,
+                allowed_free_time = ?,
+                regular_work_hours = ?
+        ';
+        $this->_db->query($query, $default);
+        return true;
     }
 
     public function setRegularWorkHours($userId, $hours)
@@ -57,21 +61,39 @@ class Application_Model_Db_User_Parameters extends Application_Model_Db_Abstract
         return $result;
     }
 
-    public function setOpenFreeHours($userId, $hours)
+    public function setAllowedFreeTime($userId, $seconds)
     {
-        $hours = sprintf('%01.2f', $hours);
         $data = array(
-            'open_free_hours' => $hours,
+            'allowed_free_time' => $seconds,
         );
         $where = array(
             'user_id = ?' => $userId,
         );
         $select = $check = $this->_db->select()
-            ->from(self::TABLE_NAME, 'open_free_hours')
+            ->from(self::TABLE_NAME, 'allowed_free_time')
             ->where('user_id = ?', $userId);
-        $openFreeHours = $this->_db->fetchOne($select);
-        $openFreeHours = sprintf('%01.2f', $openFreeHours);
-        if ($openFreeHours == $hours) {
+        $allowedFreeTime = (int)$this->_db->fetchOne($select);
+        if ($allowedFreeTime == $seconds) {
+            $result = 1;
+        } else {
+            $result = $this->_db->update(self::TABLE_NAME, $data, $where);
+        }
+        return $result;
+    }
+
+    public function setTotalFreeTime($userId, $seconds)
+    {
+        $data = array(
+            'total_free_time' => $seconds,
+        );
+        $where = array(
+            'user_id = ?' => $userId,
+        );
+        $select = $check = $this->_db->select()
+            ->from(self::TABLE_NAME, 'total_free_time')
+            ->where('user_id = ?', $userId);
+        $allowedFreeTime = (int)$this->_db->fetchOne($select);
+        if ($allowedFreeTime == $seconds) {
             $result = 1;
         } else {
             $result = $this->_db->update(self::TABLE_NAME, $data, $where);

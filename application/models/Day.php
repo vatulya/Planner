@@ -6,6 +6,8 @@ class Application_Model_Day
 
     protected $_date;
 
+    protected $_isHistory = false; // TODO: need finish this logic and take data from history tables
+
     static protected $_holidays;
 
     static protected $_groupsPlanning;
@@ -84,25 +86,10 @@ class Application_Model_Day
         return ($this->_workHours > 0);
     }
 
-    public function getWorkHours()
+    public function getWorkTime()
     {
         if ( ! isset($this->_workHours)) { $this->_fillWorkHours(); }
         return $this->_workHours;
-    }
-
-    static function TimeToDecimal($seconds)
-    {
-        // OLD logic :) just for fun
-//        $minutes = floor($seconds / 60);       // 8000 / 60  = 133 minutes
-//        $hours   = floor($minutes / 60);       // 133  / 60  = 2 hours
-//        $seconds = (int)($seconds % $minutes); // 8000 % 133 = 20 seconds
-//        $minutes = (int)($minutes % 60);       // 133  % 60  = 13 minutes
-//        $decimalMinutes = $minutes / 60;       // 13   / 60  = 0.22
-//        $decimalHours = $hours + $decimalMinutes; // 2 + 0.22 = 2.22 (8000 seconds = 2.22 hours
-        // NEW logic
-        $hours = $seconds / 3600; // 2.222222
-        $hours = sprintf('%01.2f', $hours); // 2.22
-        return $hours;
     }
 
     protected function _fillWorkHours()

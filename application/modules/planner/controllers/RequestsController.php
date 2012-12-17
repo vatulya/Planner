@@ -42,11 +42,22 @@ class Planner_RequestsController extends My_Controller_Action
     {
         $userId = $this->_getParam('user');
         $userParameters = $this->_modelUser->getParametersByUserId($userId);
+        $userAllowedFreeTime = $this->_modelUser->getAllowedFreeTime($userId);
         $userRequests = $this->_modelRequest->getRequestsByUserId($userId);
+        $openRequestsWorkTime = 0;
+        foreach ($userRequests[Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN] as $request) {
+            $day = Application_Model_Day::factory($request['request_date'], $userId);
+            $openRequestsWorkTime += (int)$day->getWorkTime();
+        }
+        $userPreAllowedFreeTime  = $userAllowedFreeTime - $openRequestsWorkTime;
+        $userPreAllowedFreeHours = My_DateTime::TimeToDecimal($userPreAllowedFreeTime);
+        $userPreUsedFreeHours    = My_DateTime::TimeToDecimal($userParameters['total_free_time'] - $userPreAllowedFreeTime);
         $blocked = $this->_getBlockedDatesByUserId($userId);
         $assign = array(
-            'userRequests' => $userRequests,
-            'blocked'      => $blocked,
+            'userRequests'       => $userRequests,
+            'blocked'            => $blocked,
+            'preAllowedFreeHours' => $userPreAllowedFreeHours,
+            'preUsedFreeHours'    => $userPreUsedFreeHours,
         );
         $this->view->me['parameters'] = $userParameters;
         $this->view->assign($assign);

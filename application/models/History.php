@@ -18,12 +18,12 @@ class Application_Model_History extends Application_Model_Abstract
     {
         $currentDate = new My_DateTime($date);
         $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
-        $dayPlan = $this->_modelPlanning->getUserDayPlanFromPlanning($userId, $groupId, $date);
+        $dayPlan = $this->_modelDbPlanning->getUserDayPlanByGroup($userId, $groupId, $date);
         if (empty($dayPlan['status1'])) {
             // return false;
         }
         $missingUserDay = $this->_modelMissing->getUserDayMissingPlanByDate($userId, $date);
-        $overtime = $this->_modelPlanning->getUserDayOvertimeByDate($userId, $groupId, $date);
+        $overtime = $this->_modelOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
         $approveUserDayRequest = $this->_modelRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
         $userHistoryData = array();
         $userHistoryData['user_id'] = $userId;
@@ -45,7 +45,7 @@ class Application_Model_History extends Application_Model_Abstract
             }
         }
         if (!empty($overtime)) {
-            $userHistoryData['overtime_hours'] =  $overtime['total_time'];
+            $userHistoryData['overtime_hours'] = $overtime['total_time'];
         }
         $this->_modelHistory->addUserWeekData($userHistoryData);
 
@@ -56,12 +56,23 @@ class Application_Model_History extends Application_Model_Abstract
         $history = $this->_modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
         //$keys = array(, "overtime_hours", "vacation_hours", "missing_hours");
         if (!empty($history)) {
-            $history["work_hours"]     = $history["work_hours"];
-            $history["overtime_hours"] = $history["overtime_hours"];
-            $history["vacation_hours"] = $history["vacation_hours"];
-            $history["missing_hours"]  = $history["missing_hours"];
-            $history["total"]  = $history["work_hours"] - $history["missing_hours"] + $history["overtime_hours"];
+            $history["work_hours"]     = $this->_formatTime($history["work_hours"]);
+            $history["overtime_hours"] = $this->_formatTime($history["overtime_hours"]);
+            $history["vacation_hours"] = $this->_formatTime($history["vacation_hours"]);
+            $history["missing_hours"]  = $this->_formatTime($history["missing_hours"]);
+            $history["total"]  = $this->_formatTime($history["total"]);
         }
         return $history;
+    }
+
+    public function getUsersByWeekYear($userId, $groupId, $week, $year)
+    {
+
+    }
+
+    private function _formatTime($time)
+    {
+        return preg_replace("/:00$/","",$time);
+        //return substr($time, -3, 3);
     }
 }
