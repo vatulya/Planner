@@ -18,34 +18,31 @@ class Application_Model_History extends Application_Model_Abstract
     {
         $currentDate = new My_DateTime($date);
         $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
-        $dayPlan = $this->_modelDbPlanning->getUserDayPlanByGroup($userId, $groupId, $date);
-        if (empty($dayPlan['status1'])) {
-            // return false;
-        }
+        $dayPlan = $this->_modelPlanning->getUserDayPlanFromPlanning($userId, $groupId, $date);
         $missingUserDay = $this->_modelMissing->getUserDayMissingPlanByDate($userId, $date);
-        $overtime = $this->_modelOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
+        $overtime = $this->_modelPlanning->getUserDayOvertimeByDate($userId, $groupId, $date);
         $approveUserDayRequest = $this->_modelRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
         $userHistoryData = array();
         $userHistoryData['user_id'] = $userId;
         $userHistoryData['group_id'] = $groupId;
         $userHistoryData['week'] = $dateWeekYear['week'];
         $userHistoryData['year'] = $dateWeekYear['year'];
-        $userHistoryData['work_hours'] = 0;
-        $userHistoryData['overtime_hours']  = 0;
-        $userHistoryData['vacation_hours']  = 0;
-        $userHistoryData['missing_hours']   = 0;
+        $userHistoryData['work_time'] = 0;
+        $userHistoryData['overtime_time']  = 0;
+        $userHistoryData['vacation_time']  = 0;
+        $userHistoryData['missing_time']   = 0;
         if ($dayPlan['status1'] === Application_Model_Planning::STATUS_DAY_GREEN && !empty($dayPlan['total_time'])) {
             if (!empty($approveUserDayRequest)) {
-                $userHistoryData['vacation_hours'] = $dayPlan['total_time'];
+                $userHistoryData['vacation_time'] = $dayPlan['total_time'];
             } else {
-                $userHistoryData['work_hours'] = $dayPlan['total_time'];
+                $userHistoryData['work_time'] = $dayPlan['total_time'];
             }
             if (!empty($missingUserDay['status'])) {
-                $userHistoryData['missing_hours'] = $missingUserDay['total_time'];
+                $userHistoryData['missing_time'] = $missingUserDay['total_time'];
             }
         }
         if (!empty($overtime)) {
-            $userHistoryData['overtime_hours'] = $overtime['total_time'];
+            $userHistoryData['overtime_time'] =  $overtime['total_time'];
         }
         $this->_modelHistory->addUserWeekData($userHistoryData);
 
@@ -56,23 +53,12 @@ class Application_Model_History extends Application_Model_Abstract
         $history = $this->_modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
         //$keys = array(, "overtime_hours", "vacation_hours", "missing_hours");
         if (!empty($history)) {
-            $history["work_hours"]     = $this->_formatTime($history["work_hours"]);
-            $history["overtime_hours"] = $this->_formatTime($history["overtime_hours"]);
-            $history["vacation_hours"] = $this->_formatTime($history["vacation_hours"]);
-            $history["missing_hours"]  = $this->_formatTime($history["missing_hours"]);
-            $history["total"]  = $this->_formatTime($history["total"]);
+            $history["work_hours"]     = My_DateTime::TimeToDecimal($history["work_time"]);
+            $history["overtime_hours"] = My_DateTime::TimeToDecimal($history["overtime_time"]);
+            $history["vacation_hours"] = My_DateTime::TimeToDecimal($history["vacation_time"]);
+            $history["missing_hours"]  = My_DateTime::TimeToDecimal($history["missing_time"]);
+            $history["total"]  = My_DateTime::TimeToDecimal($history["work_time"] - $history["missing_time"] + $history["overtime_time"]);
         }
         return $history;
-    }
-
-    public function getUsersByWeekYear($userId, $groupId, $week, $year)
-    {
-
-    }
-
-    private function _formatTime($time)
-    {
-        return preg_replace("/:00$/","",$time);
-        //return substr($time, -3, 3);
     }
 }
