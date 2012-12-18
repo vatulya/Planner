@@ -3,6 +3,14 @@ class My_DateTime extends DateTime
 {
     const HISTORY_WEEK_NUM = 4;
 
+    static public function factory($date)
+    {
+        if ( ! $date instanceof My_DateTime) {
+            $date = new My_DateTime($date);
+        }
+        return $date;
+    }
+
     static public function isToday($date)
     {
         if ( ! $date instanceof My_DateTime) {
@@ -30,12 +38,37 @@ class My_DateTime extends DateTime
         return $hours;
     }
 
-    static public function diffInSeconds(My_DateTime $start, My_DateTime $end)
+    static public function diffInSeconds($start, $end)
     {
+        $start = My_DateTime::factory($start);
+        $end   = My_DateTime::factory($end);
+
         $start = $start->getTimestamp();
         $end   = $end->getTimestamp();
+
         $diff = $end - $start;
         return $diff;
+    }
+
+    static public function compare($a, $b)
+    {
+        $a = My_DateTime::factory($a)->getTimestamp();
+        $b = My_DateTime::factory($b)->getTimestamp();
+        $result = 0;
+        switch (true) {
+            case ($a > $b):
+                $result = 1;
+                break;
+
+            case ($a < $b):
+                $result = -1;
+                break;
+
+            default:
+                $result = 0;
+                break;
+        }
+        return $result;
     }
 
     static public function normalizeDate($dates)
@@ -185,4 +218,5 @@ class My_DateTime extends DateTime
         //$historyWeeks = array_reverse($historyWeeks, true);
         return  $historyWeeks;
     }
+
 }

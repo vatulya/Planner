@@ -124,10 +124,18 @@
                     </div>
                 </div>
             </td>
-            <td class="show-tooltip" data-original-title="09:00 - 18:00<?php // echo $user['time_work']['start'] . ' - ' . $user['time_work']['end']; ?>" data-placement="top">
-                <div class="underflow-container editable">
+            <?php
+                $timeWork = ''; // holiday
+                if ( ! empty($user['time_work'])) {
+                    $start = My_DateTime::factory($user['time_work']['time_start']);
+                    $end   = My_DateTime::factory($user['time_work']['time_end']);
+                    $timeWork = $start->format('H:m') . ' - ' . $end->format('H:m');
+                }
+            ?>
+            <td class="show-tooltip" data-original-title="<?php echo $timeWork; ?>" data-placement="top">
+                <div class="underflow-container">
                     <div class="underflow">
-                        09:00 - 18:00<?php // echo $user['time_work']['start'] . ' - ' . $user['time_work']['end']; ?>
+                        <?php echo $timeWork; ?>
                     </div>
                 </div>
             </td>

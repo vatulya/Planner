@@ -102,7 +102,14 @@ class Application_Model_Group extends Application_Model_Abstract
     public function getGroupPlanning($groupId, $weekType = null, $day = null)
     {
         $groupPlannings = new Application_Model_Db_Group_Plannings();
-        $planning = $groupPlannings->getGroupPlanning($groupId, $weekType, $day);
+        $planning = $groupPlannings->getGroupPlanning($groupId, 0, $weekType, $day);
+        return $planning;
+    }
+
+        public function getSpecialUserPlanning($groupId, $userId, $weekType = null, $day = null)
+    {
+        $groupPlannings = new Application_Model_Db_Group_Plannings();
+        $planning = $groupPlannings->getGroupPlanning($groupId, $userId, $weekType, $day);
         return $planning;
     }
 
@@ -114,24 +121,38 @@ class Application_Model_Group extends Application_Model_Abstract
         return $this->getGroupPlanning($groupId, $weekType, $dateWeekYear['day']);
     }
 
-    public function saveGroupPlanning($groupId, array $planning, array $pause)
+    public function saveGroupPlanning($groupId, array $planning)
     {
         $result = false;
         if (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
             $group = $this->_modelDb->getGroupById($groupId);
             if ($group) {
-                $pause = $this->_preparePause($pause);
                 $planning = $this->_preparePlanning($planning);
                 $groupPlannings = new Application_Model_Db_Group_Plannings();
-                $result = $groupPlannings->saveGroupPlanning($groupId, $planning);
-                if ($result) {
-                    $groupSettings = new Application_Model_Db_Group_Settings();
-                    if ( ! empty($pause['pause_start']) && ! empty($pause['pause_end'])) {
-                        $result = $groupSettings->saveGroupPause($groupId, $pause['pause_start'], $pause['pause_end']);
-                    } else {
-                        $result = $groupSettings->deleteGroupPause($groupId);
-                    }
+                $result = $groupPlannings->saveGroupPlanning($groupId, 0, $planning);
+            }
+        }
+        return $result;
+    }
+
+    public function saveUserPlanning($groupId, $userId, array $planning)
+    {
+        $result = false;
+        if (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
+            $modelUser = new Application_Model_User();
+            $group = $this->_modelDb->getGroupById($groupId);
+            $users = $modelUser->getAllUsersByGroup($groupId);
+            $user = null;
+            foreach ($users as $u) {
+                if ($u['id'] == $userId) {
+                    $user = $u;
+                    break;
                 }
+            }
+            if ($group && $user) {
+                $planning = $this->_preparePlanning($planning);
+                $groupPlannings = new Application_Model_Db_Group_Plannings();
+                $result = $groupPlannings->saveGroupPlanning($group['id'], $user['id'], $planning);
             }
         }
         return $result;
@@ -279,12 +300,15 @@ class Application_Model_Group extends Application_Model_Abstract
     {
         $prepared = array();
         foreach ($planning as $key => $day) {
-            if (empty($day['time_start']['hour']) || empty($day['time_end']['hour'])) {
-                continue;
-            }
-            try { $timeStart = new DateTime((int)$day['time_start']['hour'] . ':' . (int)$day['time_start']['min']); } catch (Exception $e) { $timeStart = ''; }
-            try { $timeEnd = new DateTime((int)$day['time_end']['hour'] . ':' . (int)$day['time_end']['min']); } catch (Exception $e) { $timeEnd = ''; }
-            if ( ! $timeStart || ! $timeEnd || $timeStart >= $timeEnd) {
+            try {
+                if (empty($day['time_start']['hour'])) {
+                    continue; // this is not work day
+                }
+                $timeStart   = My_DateTime::factory($day['time_start']['hour']       . ':' . (int)$day['time_start']['min']);
+                $timeEnd     = My_DateTime::factory($day['time_end']['hour']         . ':' . (int)$day['time_end']['min']);
+                $pauseStart  = My_DateTime::factory((int)$day['pause_start']['hour'] . ':' . (int)$day['pause_start']['min']);
+                $pauseEnd    = My_DateTime::factory((int)$day['pause_end']['hour']   . ':' . (int)$day['pause_end']['min']);
+            } catch (Exception $e) {
                 continue; // wrong time
             }
             $day['day_number'] = intval($day['day_number']);
@@ -294,11 +318,18 @@ class Application_Model_Group extends Application_Model_Abstract
             if ($day['week_type'] != Application_Model_Db_Group_Plannings::WEEK_TYPE_ODD && $day['week_type'] != Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN) {
                 continue; // wrong week type
             }
+            $enabled = 1;
+            if (isset($day['enabled'])) {
+                $enabled = (bool)$day['enabled'];
+            }
             $preparedDay = array(
-                'week_type'  => $day['week_type'],
-                'day_number' => $day['day_number'],
-                'time_start' => $timeStart->format('H:i:s'),
-                'time_end'   => $timeEnd->format('H:i:s'),
+                'week_type'   => $day['week_type'],
+                'day_number'  => $day['day_number'],
+                'time_start'  => $timeStart->format('H:i:s'),
+                'time_end'    => $timeEnd->format('H:i:s'),
+                'pause_start' => $pauseStart->format('H:i:s'),
+                'pause_end'   => $pauseEnd->format('H:i:s'),
+                'enabled'     => $enabled,
             );
             $prepared[$key] = $preparedDay;
         }

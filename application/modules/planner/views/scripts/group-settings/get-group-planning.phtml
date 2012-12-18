@@ -1,37 +1,5 @@
 <?php if ( ! empty($this->group)): ?>
     <div class="group-planning">
-        <div class="span5">
-            <form class="form-inline">
-                <?php
-                $start = $this->groupSettings['pause_start'];
-                $end   = $this->groupSettings['pause_end'];
-                if ( ! empty($start) && ! empty($end)) {
-                    $startTime = new DateTime($start);
-                    $startHourValue = $startTime->format('H');
-                    $startMinValue  = $startTime->format('i');
-                    $endTime = new DateTime($end);
-                    $endHourValue = $endTime->format('H');
-                    $endMinValue  = $endTime->format('i');
-                } else {
-                    $startHourValue = '';
-                    $startMinValue  = '';
-                    $endHourValue = '';
-                    $endMinValue  = '';
-                }
-                ?>
-                <div class="pause-time">
-                    Pause time:
-                    <input type="text" value="<?php echo $startHourValue; ?>" class="pause-hour set-time-hour start-hour"><?php
-                    ?>:<?php
-                    ?><input type="text" value="<?php echo $startMinValue; ?>" class="pause-min set-time-min start-min">
-                    till
-                    <input type="text" value="<?php echo $endHourValue; ?>" class="pause-hour set-time-hour end-hour"><?php
-                    ?>:<?php
-                    ?><input type="text" value="<?php echo $endMinValue; ?>" class="pause-min set-time-min end-min">
-                </div>
-            </form>
-        </div>
-
         <table class="table table-bordered group-planning-weeks">
             <thead>
             <tr>
@@ -60,39 +28,65 @@
             </thead>
             <tbody>
             <!-- START ODD WEEK -->
-            <tr>
+            <tr class="odd-week-row">
                 <?php foreach ($this->weekDays['odd'] as $key => $day): ?>
                 <td>
-                    <?php if ($day['day_number'] == 1): ?>
-                    <span class="week-type label">Odd week</span>
-                    <?php endif; ?>
                     <form class="form-inline form-group-planning-day" data-week-type="odd" data-day-number="<?php echo $day['day_number']; ?>">
                         <?php
                         if ( ! empty($this->groupPlanning[$key])) {
                             $data = $this->groupPlanning[$key];
+
                             $startTime = new DateTime($data['time_start']);
                             $startHourValue = $startTime->format('H');
                             $startMinValue  = $startTime->format('i');
+
                             $endTime = new DateTime($data['time_end']);
                             $endHourValue = $endTime->format('H');
                             $endMinValue  = $endTime->format('i');
+
+                            $pauseStartTime = new DateTime($data['pause_start']);
+                            $pauseStartHourValue = $pauseStartTime->format('H');
+                            $pauseStartMinValue  = $pauseStartTime->format('i');
+
+                            $PauseEndTime = new DateTime($data['pause_end']);
+                            $pauseEndHourValue = $PauseEndTime->format('H');
+                            $pauseEndMinValue  = $PauseEndTime->format('i');
                         } else {
                             $startHourValue = '';
                             $startMinValue  = '';
                             $endHourValue = '';
                             $endMinValue  = '';
+                            $pauseStartHourValue = '';
+                            $pauseStartMinValue  = '';
+                            $pauseEndHourValue = '';
+                            $pauseEndMinValue  = '';
                         }
                         ?>
-                        <div class="pull-left">
-                            <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
+                        <div class="work-time">
+                            <div class="input-time">
+                                <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
+                                ?>:<?php
+                                ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
+                            </div>
+                            <div class="separator">Work</div>
+                            <div class="input-time">
+                                <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
+                                ?>:<?php
+                                ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
+                            </div>
                         </div>
-                        -
-                        <div class="pull-right">
-                            <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
+                        <div class="pause-time">
+                            <div class="input-time">
+                                <input type="text" value="<?php echo $pauseStartHourValue; ?>" class="pause-hour set-time-hour start-hour"><?php
+                                ?>:<?php
+                                ?><input type="text" value="<?php echo $pauseStartMinValue; ?>" class="pause-min set-time-min start-min">
+                            </div>
+                            <div class="separator">Pause</div>
+                            <div class="input-time">
+                                <input type="text" value="<?php echo $pauseEndHourValue; ?>" class="pause-hour set-time-hour end-hour"><?php
+                                ?>:<?php
+                                ?><input type="text" value="<?php echo $pauseEndMinValue; ?>" class="pause-min set-time-min end-min">
+                            </div>
                         </div>
                     </form>
                 </td>
@@ -100,39 +94,65 @@
             </tr>
             <!-- END ODD WEEK -->
             <!-- STERT EVEN WEEK -->
-            <tr>
+            <tr class="even-week-row">
                 <?php foreach ($this->weekDays['even'] as $key => $day): ?>
                 <td>
-                    <?php if ($day['day_number'] == 1): ?>
-                    <span class="week-type label label-inverse">Even week</span>
-                    <?php endif; ?>
                     <form class="form-inline form-group-planning-day" data-week-type="even" data-day-number="<?php echo $day['day_number']; ?>">
                         <?php
                         if ( ! empty($this->groupPlanning[$key])) {
                             $data = $this->groupPlanning[$key];
+
                             $startTime = new DateTime($data['time_start']);
                             $startHourValue = $startTime->format('H');
                             $startMinValue  = $startTime->format('i');
+
                             $endTime = new DateTime($data['time_end']);
                             $endHourValue = $endTime->format('H');
                             $endMinValue  = $endTime->format('i');
+
+                            $pauseStartTime = new DateTime($data['pause_start']);
+                            $pauseStartHourValue = $pauseStartTime->format('H');
+                            $pauseStartMinValue  = $pauseStartTime->format('i');
+
+                            $PauseEndTime = new DateTime($data['pause_end']);
+                            $pauseEndHourValue = $PauseEndTime->format('H');
+                            $pauseEndMinValue  = $PauseEndTime->format('i');
                         } else {
                             $startHourValue = '';
                             $startMinValue  = '';
                             $endHourValue = '';
                             $endMinValue  = '';
+                            $pauseStartHourValue = '';
+                            $pauseStartMinValue  = '';
+                            $pauseEndHourValue = '';
+                            $pauseEndMinValue  = '';
                         }
                         ?>
-                        <div class="pull-left">
-                            <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
+                        <div class="work-time">
+                            <div class="input-time">
+                                <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
+                                ?>:<?php
+                                ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
+                            </div>
+                            <div class="separator">Work</div>
+                            <div class="input-time">
+                                <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
+                                ?>:<?php
+                                ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
+                            </div>
                         </div>
-                        -
-                        <div class="pull-right">
-                            <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
+                        <div class="pause-time">
+                            <div class="input-time">
+                                <input type="text" value="<?php echo $pauseStartHourValue; ?>" class="pause-hour set-time-hour start-hour"><?php
+                                ?>:<?php
+                                ?><input type="text" value="<?php echo $pauseStartMinValue; ?>" class="pause-min set-time-min start-min">
+                            </div>
+                            <div class="separator">Pause</div>
+                            <div class="input-time">
+                                <input type="text" value="<?php echo $pauseEndHourValue; ?>" class="pause-hour set-time-hour end-hour"><?php
+                                ?>:<?php
+                                ?><input type="text" value="<?php echo $pauseEndMinValue; ?>" class="pause-min set-time-min end-min">
+                            </div>
                         </div>
                     </form>
                 </td>
@@ -141,11 +161,29 @@
             <!-- END EVEN WEEK -->
             </tbody>
         </table>
+
+        <div class="week-types">
+            <span class="week-type label label-week-type-odd">Odd week</span>
+            <span class="week-type label label-inverse label-week-type-even">Even week</span>
+        </div>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-success group-planning-save">Save</button>
             <span class="alert alert-error" style="display: none;">Error!</span>
         </div>
     </div>
+
+    <?php if ( ! empty($this->users)): ?>
+
+        <?php foreach ($this->users as $user): ?>
+            <?php $this->user = $user; ?>
+            <?php echo $this->render('group-settings/_blocks/user_planning.phtml'); ?>
+        <?php endforeach; ?>
+
+    <?php else: ?>
+        No Users in this group.
+    <?php endif; ?>
+
 <?php else : ?>
     <span class="alert alert-error">Error! Wrong group ID!</span>
 <?php endif; ?>

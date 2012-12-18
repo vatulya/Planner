@@ -163,7 +163,7 @@
                 success: function(response) {
                     groupPlanningBody.html(response);
                     groupPlanningSelect.blur();
-//                    GroupSettings.initGroupPlanningForm(); ??? i don't know what is it :)
+                    GroupSettings.initGroupPlanningForm();
                 },
                 error: function(response) {
                     groupPlanningBody.html('<span class="alert alert-error">Error! Something wrong.</span>');
@@ -171,8 +171,33 @@
             });
         },
 
+        initGroupPlanningForm: function()
+        {
+            groupPlanningBody.find('.user-planning .week-day').each(function(i, el) {
+                el = $(el);
+                var enable = el.find('.enable-day');
+                if (enable.length) {
+                    GroupSettings.toggleUserDayEnable(enable);
+                }
+            });
+        },
+
+        toggleUserDayEnable: function(enableEl)
+        {
+            enableEl = $(enableEl);
+            var weekDay = enableEl.parents('.week-day');
+            if (weekDay.length) {
+                if (enableEl.is(':checked')) {
+                    weekDay.addClass('user-day-enabled');
+                } else {
+                    weekDay.removeClass('user-day-enabled');
+                }
+            }
+        },
+
         saveGroupPlanning: function() {
 //            GroupSettings.blockFormGroupPlanning();
+            var container = $('.group-planning');
             var option = $('option:selected', groupPlanningSelect);
             if (option.val() < 1) {
                 return false;
@@ -180,8 +205,7 @@
             var data = {
                 format: 'json',
                 group: option.val(),
-                group_planning: GroupSettings.getGroupPlanning(),
-                group_pause: GroupSettings.getGroupPause()
+                group_planning: GroupSettings.getGroupPlanning()
             };
             $.ajax({
                 url: '/group-settings/save-group-planning',
@@ -190,21 +214,52 @@
 //                    GroupSettings.unblockFormGroupPlanning();
                     response = response.response;
                     if (response.status) {
-                        GroupSettings.showPlanningAlert('success', 'Success');
+                        GroupSettings.showPlanningAlert(container, 'success', 'Success');
                         GroupSettings.selectGroupPlanning();
                     } else {
-                        GroupSettings.showPlanningAlert('error', 'Error!');
+                        GroupSettings.showPlanningAlert(container, 'error', 'Error!');
                     }
                 },
                 error: function(response) {
 //                    GroupSettings.unblockFormGroupPlanning();
-                    GroupSettings.showPlanningAlert('error', 'Error!');
+                    GroupSettings.showPlanningAlert(container, 'error', 'Error!');
                 }
             });
         },
 
-        showPlanningAlert: function(status, message) {
-            var alert = groupPlanningBody.find('.alert');
+        saveUserPlanning: function(el) {
+            el = $(el);
+            var container = $('#' + el.data('container'));
+            if ( ! container.length) {
+                return;
+            }
+            var data = {
+                format: 'json',
+                group: container.data('group'),
+                user: container.data('user'),
+                user_planning: GroupSettings.getUserPlanning(container)
+            };
+            $.ajax({
+                url: '/group-settings/save-user-planning',
+                data: data,
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        GroupSettings.showPlanningAlert(container, 'success', 'Success');
+                        GroupSettings.selectGroupPlanning();
+                    } else {
+                        GroupSettings.showPlanningAlert(container, 'error', 'Error!');
+                    }
+                },
+                error: function(response) {
+//                    GroupSettings.unblockFormGroupPlanning();
+                    GroupSettings.showPlanningAlert(container, 'error', 'Error!');
+                }
+            });
+        },
+
+        showPlanningAlert: function(container, status, message) {
+            var alert = container.find('.alert');
             alert.removeClass('alert-success').removeClass('alert-error');
             alert.addClass('alert-' + status);
             alert.html(message);
@@ -223,12 +278,20 @@
                     day_number: el.data('day-number'),
                     week_type: el.data('week-type'),
                     time_start: {
-                        hour: el.find('.start-hour').val(),
-                        min: el.find('.start-min').val()
+                        hour: el.find('.work-time .start-hour').val(),
+                        min: el.find('.work-time .start-min').val()
                     },
                     time_end: {
-                        hour: el.find('.end-hour').val(),
-                        min: el.find('.end-min').val()
+                        hour: el.find('.work-time .end-hour').val(),
+                        min: el.find('.work-time .end-min').val()
+                    },
+                    pause_start: {
+                        hour: el.find('.pause-time .start-hour').val(),
+                        min: el.find('.pause-time .start-min').val()
+                    },
+                    pause_end: {
+                        hour: el.find('.pause-time .end-hour').val(),
+                        min: el.find('.pause-time .end-min').val()
                     }
                 }
                 data[day.week_type + '-' + day.day_number] = day;
@@ -236,21 +299,33 @@
             return data;
         },
 
-        getGroupPause: function() {
+        getUserPlanning: function(container) {
             var data = {};
-            var container = $('.pause-time');
-            if (container.length) {
-                data = {
+            container.find('.form-user-planning-day').each(function(i, el) {
+                el = $(el);
+                var day = {
+                    day_number: el.data('day-number'),
+                    week_type: el.data('week-type'),
+                    enabled: el.find('.enable-day').is(':checked') * 1,
+                    time_start: {
+                        hour: el.find('.work-time .start-hour').val(),
+                        min: el.find('.work-time .start-min').val()
+                    },
+                    time_end: {
+                        hour: el.find('.work-time .end-hour').val(),
+                        min: el.find('.work-time .end-min').val()
+                    },
                     pause_start: {
-                        hour: container.find('.start-hour').val(),
-                        min: container.find('.start-min').val()
+                        hour: el.find('.pause-time .start-hour').val(),
+                        min: el.find('.pause-time .start-min').val()
                     },
                     pause_end: {
-                        hour: container.find('.end-hour').val(),
-                        min: container.find('.end-min').val()
+                        hour: el.find('.pause-time .end-hour').val(),
+                        min: el.find('.pause-time .end-min').val()
                     }
-                };
-            }
+                }
+                data[day.week_type + '-' + day.day_number] = day;
+            });
             return data;
         },
 
@@ -435,8 +510,14 @@
         $(document.body).on('change', '#group-planning', function(e) {
             GroupSettings.selectGroupPlanning();
         });
+        $(document.body).on('change', '.enable-day', function(e) {
+            GroupSettings.toggleUserDayEnable(e.currentTarget);
+        });
         $(document.body).on('click', '.group-planning-save', function(e) {
             GroupSettings.saveGroupPlanning();
+        });
+        $(document.body).on('click', '.user-planning-save', function(e) {
+            GroupSettings.saveUserPlanning(e.currentTarget);
         });
         $(document.body).on('click', '.create-group-exception, .edit-group-exception', function(e) {
             GroupSettings.showEditExceptionsPopup(e.currentTarget);

@@ -101,29 +101,49 @@ form.form-mini {
     margin: 1px 1px;
     border: 3px solid #cd5c5c;
 }
-.pause-time {
-    font-weight: bold;
+.even-week-row {
+    background-color: #333;
+}
+.odd-week-row {
+    background-color: #999;
+}
+.even-week-row .separator, .odd-week-row .separator {
+    color: #fff;
+}
+.separator, .input-time {
+    float: left;
+    display: inline;
+}
+.separator {
+    font-size: 10px;
+    width: 35px;
+    height: 20px;
+    border-bottom: #808080 1px solid;
+    margin: 0px 5px;
 }
 .set-time-hour, .set-time-min {
     width: 16px;
+}
+.user-planning-header {
+    background-color: #ffa;
 }
 .group-work-days-planning .header {
     border-top: 1px solid #808080;
     margin-top: 10px;
     padding-top: 5px;
 }
-.group-planning-weeks tbody form {
+.group-planning-weeks tbody form, .user-planning-weeks tbody form {
     margin: 0px;
 }
-.group-planning-weeks tbody td {
+.group-planning-weeks tbody td, .user-planning-weeks tbody td {
     padding: 2px;
     text-align: center;
 }
-.group-planning-weeks .week-type {
-    position: absolute;
-    margin-left: -120px;
-    margin-top: 3px;
-    padding: 5px 7px;
+.user-planning-weeks .week-day .pause-time, .user-planning-weeks .week-day .work-time {
+    visibility: hidden;
+}
+.user-planning-weeks .week-day.user-day-enabled .pause-time, .user-planning-weeks .week-day.user-day-enabled .work-time {
+    visibility: visible;
 }
 .request-show-comment {
     cursor: pointer;

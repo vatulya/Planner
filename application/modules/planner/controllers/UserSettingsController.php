@@ -41,10 +41,12 @@ class Planner_UserSettingsController extends My_Controller_Action
     {
         $modelGroup = new Application_Model_Group();
         $users = $this->_modelUser->getAllUsers();
+        $today = new My_DateTime();
         foreach ($users as $key => $user) {
-            $user['groups'] = $modelGroup->getGroupsByUserId($user['id']);
-            $user['parameters'] = $this->_modelUser->getParametersByUserId($user['id']);
-//            $user['time_work']['start']; $user['time_work']['end'];
+            $day = Application_Model_Day::factory($today, $user);
+            $user['groups']       = $modelGroup->getGroupsByUserId($user['id']);
+            $user['parameters']   = $this->_modelUser->getParametersByUserId($user['id']);
+            $user['time_work']    = $day->getWorkPlanning();
             $user['admin_groups'] = $modelGroup->getUserGroupsAdmin($user);
             $users[$key] = $user;
         }
