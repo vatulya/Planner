@@ -64,4 +64,11 @@ class Application_Model_History extends Application_Model_Abstract
     {
         $this->_modelHistory->updateUserWeekData($userId, $groupId, $week, $year);
     }
+
+    public function updateHistoryWeekHour($userId, $groupId, $field, $value, $year, $week)
+    {
+        //TODO check valid field
+        $value = $value * 60 * 60;
+        return $this->_modelHistory->updateHistoryWeekHour($userId, $groupId, $field, $value, $year, $week);
+    }
 }

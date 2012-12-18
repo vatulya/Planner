@@ -5,7 +5,8 @@ class Planner_OverviewController extends My_Controller_Action
     const HISTORY_WEEK_NUM = 4;
 
     public $ajaxable = array(
-        'index' => array('html'),
+        'index'     => array('html'),
+        'update-history-hour' => array('json'),
     );
 
     /**
@@ -13,11 +14,13 @@ class Planner_OverviewController extends My_Controller_Action
      */
     protected $_modelUser;
     protected $_modelGroup;
+    protected $_modelHistory;
 
     public function init()
     {
         $this->view->me = $this->_me = $this->_helper->CurrentUser();
         $this->_modelUser = new Application_Model_User();
+        $this->_modelHistory = new Application_Model_History();
 
         if ( ! $this->_getParam('user')) {
             $this->_setParam('user', $this->_me['id']);
@@ -96,5 +99,25 @@ class Planner_OverviewController extends My_Controller_Action
     }
 
 
+    public function updateHistoryHourAction()
+    {
+        $status  = false;
+        if ($this->_me['role'] == Application_Model_Auth::ROLE_SUPER_ADMIN) {
+            $field  = $this->_getParam('field');
+            $value  = $this->_getParam('value');
+            $userId  = $this->_getParam('user');
+            $groupId  = $this->_getParam('group');
+            $year  = $this->_getParam('year');
+            $week  = $this->_getParam('week');
+            if ($value > 0) {
+                $status = $this->_modelHistory->updateHistoryWeekHour($userId, $groupId, $field, $value, $year, $week);
+            }
+        }
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', "No valid time");
+        }
+    }
 
 }

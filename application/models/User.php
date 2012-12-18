@@ -77,6 +77,7 @@ class Application_Model_User extends Application_Model_Abstract
         foreach ($users as $user) {
             $user = $this->_filterHiddenFields($user);
             $usersNormalized[$user['id']] = $user;
+            $usersNormalized[$user['id']]['user_id'] = $user['id'];
             //$usersNormalized[$user['id']] = $this->getUserById($user['id']);
         }
         $currentDate = new My_DateTime();

@@ -32,6 +32,7 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
         if (empty($checkExistWeekData)) {
             $this->_db->insert(self::TABLE_NAME,$dayHistoryData);
         } else {
+            //TODO make quote for data or use native metod update
              $this->_db->query(
                  "UPDATE " . self::TABLE_NAME
                   . " SET
@@ -48,8 +49,24 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
         }
     }
 
-    public function updateUserWeekData($userId, $groupId, $week, $year)
+    public function updateHistoryWeekHour($userId, $groupId, $field, $value, $year, $week)
     {
+        $checkExistWeekData = $this->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
+        if (empty($checkExistWeekData)) {
+            //TODO if need make update future time
+            //$this->_db->insert(self::TABLE_NAME,$dayHistoryData);
+        } else {
+            $data = array($field => $value);
+            $where = array(
+                'user_id = ?'  => $userId,
+                'group_id = ?' => $groupId,
+                'week = ?'     => $week,
+                'year = ?'     => $year,
+            );
 
+            $result = $this->_db->update(self::TABLE_NAME, $data, $where);
+            return $result;
+        }
+        return true;
     }
 }

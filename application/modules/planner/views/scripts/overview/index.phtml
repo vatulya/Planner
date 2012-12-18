@@ -80,9 +80,15 @@
                                 <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
                                     <td>
                                         <span><?php echo 0 ?></span>
-                                        <a href="#" class="no-action pull-right">
-                                            <i class="icon-edit"></i>
-                                        </a>
+                                        <a href="#" class="no-action pull-right underflow-container editable"
+                                           data-field-title="Openstaande saldo"
+                                           data-field-name="free_time"
+                                           data-field-value="<?php echo $user['weekHours']['work_hours']; ?>"
+                                           data-field-group="<?php echo $this->group['id']; ?>"
+                                           data-field-user="<?php echo $user['user_id']; ?>"
+                                           data-field-week="<?php echo $this->week; ?>"
+                                           data-field-year="<?php echo $this->year; ?>"
+                                                ><i class="icon-edit"></i></a>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -130,19 +136,51 @@
                             </td>
                             <td>
                                 <span><?php echo $user['weekHours']['work_hours']  ?></span>
-                                <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
+                                <a href="#" class="no-action pull-right underflow-container editable"
+                                   data-field-title="Gewerkte uren"
+                                   data-field-name="work_time"
+                                   data-field-value="<?php echo $user['weekHours']['work_hours']; ?>"
+                                   data-field-group="<?php echo $this->group['id']; ?>"
+                                   data-field-user="<?php echo $user['user_id']; ?>"
+                                   data-field-week="<?php echo $this->week; ?>"
+                                   data-field-year="<?php echo $this->year; ?>"
+                                ><i class="icon-edit"></i></a>
                             </td>
                             <td>
                                 <span><?php echo $user['weekHours']['vacation_hours']  ?></span>
-                                <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
+                                <a href="#" class="no-action pull-right underflow-container editable"
+                                   data-field-title="Vrije uren"
+                                   data-field-name="vacation_time"
+                                   data-field-value="<?php echo $user['weekHours']['vacation_hours']; ?>"
+                                   data-field-group="<?php echo $this->group['id']; ?>"
+                                   data-field-user="<?php echo $user['user_id']; ?>"
+                                   data-field-week="<?php echo $this->week; ?>"
+                                   data-field-year="<?php echo $this->year; ?>"
+                                        ><i class="icon-edit"></i></a>
                             </td>
                             <td>
                                 <span><?php echo $user['weekHours']['overtime_hours']  ?></span>
-                                <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
+                                <a href="#" class="no-action pull-right underflow-container editable"
+                                   data-field-title="Overuren"
+                                   data-field-name="overtime_time"
+                                   data-field-value="<?php echo $user['weekHours']['overtime_hours']; ?>"
+                                   data-field-group="<?php echo $this->group['id']; ?>"
+                                   data-field-user="<?php echo $user['user_id']; ?>"
+                                   data-field-week="<?php echo $this->week; ?>"
+                                   data-field-year="<?php echo $this->year; ?>"
+                                        ><i class="icon-edit"></i></a>
                             </td>
                             <td>
                                 <span><?php echo $user['weekHours']['missing_hours']  ?></span>
-                                <a href="#" class="no-action pull-right"><i class="icon-edit"></i></a>
+                                <a href="#" class="no-action pull-right underflow-container editable"
+                                   data-field-title="Ziekte/buitengew"
+                                   data-field-name="missing_time"
+                                   data-field-value="<?php echo $user['weekHours']['missing_hours']; ?>"
+                                   data-field-group="<?php echo $this->group['id']; ?>"
+                                   data-field-user="<?php echo $user['user_id']; ?>"
+                                   data-field-week="<?php echo $this->week; ?>"
+                                   data-field-year="<?php echo $this->year; ?>"
+                                        ><i class="icon-edit"></i></a>
                             </td>
 
 
@@ -158,4 +196,14 @@
 </div>
 <?php endforeach; ?>
 
+</div>
+
+<!-- DEFAULT EDIT POPOVER -->
+<div id="popover-edit-field-html" style="display: none;">
+    <div class="popover-container" data-user="" data-group="" data-week="" data-year="" >
+        <div class="input-append">
+            <input type="text" name="" value="" class="input-edit-field for-focus">
+            <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
+        </div>
+    </div>
 </div>
