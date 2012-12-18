@@ -13,49 +13,26 @@ class Application_Model_Day
     static protected $_groupsPlanning;
 
     /**
-     * @var array
-     * format OLD FULL VERSION:
-     * array(
-     *     'user' => $this->_user,
-     *     'date' => $this->_date,
-     *     'groups' => array(
-     *         %group_id% => $group,
-     *     ),
-     *     'planning' => array(
-     *         'groups' => array(
-     *             %group_id% => $groupPlanning,
-     *         ),
-     *         'user' => array(
-     *             %group_id% => $useGroupPlanning,
-     *         ),
-     *         'result' => $planning,
-     *     ),
-     *     'request' => $request,
-     *     'holidays' => array(
-     *         'groups' => array(
-     *             %group_id% => $holiday,
-     *         ),
-     *         'global' => $holiday,
-     *     )
-     * );
-     *
-     * format:
-     * array(
-     *     'work_hours' => 8
-     * )
+     * For fill this value please use method _fillWorkTime()
+     * @var int Work time in seconds
      */
-    protected $_data = null;
-
     protected $_workHours = null;
+
+    /**
+     * For fill this value please use method _fillWorkTime()
+     * @var array Planned work time start and end
+     */
+    protected $_workPlanning = null;
 
     /**
      * @param string $date
      * @param string|int|array $user Here you can set user ID or user data array
-     * @return Application_Model_Day
+     * @return Application_Model_Day|Application_Model_History_Day
      */
     static public function factory($date, $user)
     {
-        return new self($date, $user);
+        $day = new self($date, $user);
+        return $day;
     }
 
     /**
@@ -82,48 +59,71 @@ class Application_Model_Day
 
     public function isWorkday()
     {
-        if ( ! isset($this->_workHours)) { $this->_fillWorkHours(); }
+        if ( ! isset($this->_workHours)) { $this->_fillWorkTime(); }
         return ($this->_workHours > 0);
     }
 
     public function getWorkTime()
     {
-        if ( ! isset($this->_workHours)) { $this->_fillWorkHours(); }
+        if ( ! isset($this->_workHours)) { $this->_fillWorkTime(); }
         return $this->_workHours;
     }
 
-    protected function _fillWorkHours()
+    public function getWorkPlanning()
+    {
+        if ( ! isset($this->_workPlanning)) { $this->_fillWorkTime(); }
+        return $this->_workPlanning;
+    }
+
+    protected function _fillWorkTime()
     {
         if ($this->isHoliday()) {
             $this->_workHours = 0;
+            $this->_workPlanning = array();
             return true;
         }
 
+        $workPlanning = array();
         $groupsPlanning = self::getGroupsPlanning($this->_date);
         $groups         = $this->_modelGroup->getGroupsByUserId($this->_user['id']);
         foreach ($groups as $group) {
             $groupId = $group['id'];
             if (isset($groupsPlanning[$groupId])) {
-                $workStart  = $groupsPlanning[$groupId]['time_start'];
-                $workEnd    = $groupsPlanning[$groupId]['time_end'];
+                $workStart  = My_DateTime::factory($groupsPlanning[$groupId]['time_start']);
+                $workEnd    = My_DateTime::factory($groupsPlanning[$groupId]['time_end']);
 //                $pauseStart = $groupsPlanning[$groupId]['time_end'];
 //                $pauseEnd = $groupsPlanning[$groupId]['time_end'];
                 $pauseStart = null;
                 $pauseEnd   = null;
-                $workSeconds = self::getWorkHoursByMarkers($workStart, $workEnd, $pauseStart, $pauseEnd);
+
+                $workSeconds = Application_Model_Day::getWorkHoursByMarkers($workStart, $workEnd, $pauseStart, $pauseEnd);
+
                 $this->_workHours += $workSeconds;
+
+                if (empty($workPlanning['time_start'])) {
+                    $workPlanning['time_start'] = $workStart;
+                } elseif ( ! empty($workPlanning['time_start']) && My_DateTime::compare($workPlanning['time_start'], $workStart) === 1) {
+                    $workPlanning['time_start'] = $workStart;
+                }
+                if (empty($workPlanning['time_end'])) {
+                    $workPlanning['time_end'] = $workEnd;
+                } elseif ( ! empty($workPlanning['time_end']) && My_DateTime::compare($workPlanning['time_end'], $workEnd) === 1) {
+                    $workPlanning['time_end'] = $workEnd;
+                }
             }
         }
 
+        if ( ! empty($workPlanning)) {
+            $workPlanning['time_start'] = $workPlanning['time_start']->format('H:i:s');
+            $workPlanning['time_end']   = $workPlanning['time_end']->format('H:i:s');
+        }
+
+        $this->_workPlanning = $workPlanning;
         return true;
     }
 
     static public function getWorkHoursByMarkers($workStart, $workEnd, $pauseStart, $pauseEnd)
     {
-        $workStart  = new My_DateTime($workStart);
-        $workEnd    = new My_DateTime($workEnd);
-        $pauseStart = new My_DateTime($pauseStart);
-        $pauseEnd   = new My_DateTime($pauseEnd);
         $work  = My_DateTime::diffInSeconds($workStart, $workEnd);
         $pause = My_DateTime::diffInSeconds($pauseStart, $pauseEnd);
         $workSeconds = $work - $pause;
