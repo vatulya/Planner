@@ -10,6 +10,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'save-group-form'                    => array('json'),
         'delete-group'                       => array('json'),
         'save-group-planning'                => array('json'),
+        'save-user-planning'                 => array('json'),
         'save-group-setting-max-free-people' => array('json'),
         'save-group-exceptions'              => array('json'),
         'save-group-holidays'                => array('json'),
@@ -113,6 +114,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
     {
         $groupId = $this->_getParam('group');
         if ($groupId && ($group = $this->_modelGroup->getGroupById($groupId))) {
+            $groupId = $group['id'];
             $planning = $this->_modelGroup->getGroupPlanning($groupId);
             $planningTmp = array();
             foreach ($planning as $row) {
@@ -120,10 +122,29 @@ class Planner_GroupSettingsController extends My_Controller_Action
                 $planningTmp[$key] = $row;
             }
             $planning = $planningTmp;
-            $this->view->weekDays = self::getWeekDays();
-            $this->view->group = $group;
-            $this->view->groupPlanning = $planning;
-            $this->view->groupSettings = $this->_modelGroup->getGroupSettings($groupId);
+
+            $modelUser = new Application_Model_User();
+            $usersPlanning = array();
+            $users = $modelUser->getAllUsersByGroup($groupId);
+            foreach ($users as $user) {
+                $userPlanning = $this->_modelGroup->getSpecialUserPlanning($groupId, $user['id']);
+                $planningTmp = array();
+                foreach ($userPlanning as $row) {
+                    $key = $row['week_type'] . '-' . $row['day_number'];
+                    $planningTmp[$key] = $row;
+                }
+                $usersPlanning[$user['id']] = $planningTmp;
+            }
+
+            $assign = array(
+                'weekDays'      => self::getWeekDays(),
+                'group'         => $group,
+                'users'         => $users,
+                'usersPlanning' => $usersPlanning,
+                'groupPlanning' => $planning,
+                'groupSettings' => $this->_modelGroup->getGroupSettings($groupId),
+            );
+            $this->view->assign($assign);
         }
         $this->_helper->layout->disableLayout();
     }
@@ -157,7 +178,17 @@ class Planner_GroupSettingsController extends My_Controller_Action
 
     public function saveGroupPlanningAction()
     {
-        $status = $this->_modelGroup->saveGroupPlanning($this->_getParam('group'), $this->_getParam('group_planning', array()), $this->_getParam('group_pause', array()));
+        $status = $this->_modelGroup->saveGroupPlanning($this->_getParam('group'), $this->_getParam('group_planning', array()));
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function saveUserPlanningAction()
+    {
+        $status = $this->_modelGroup->saveUserPlanning($this->_getParam('group'), $this->_getParam('user'), $this->_getParam('user_planning', array()));
         if ($status) {
             $this->_response(1, '', array());
         } else {

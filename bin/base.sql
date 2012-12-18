@@ -123,12 +123,17 @@ INSERT INTO `status`(`id`,`description`,`color`,`color_hex`,`editable`,`edit_typ
 CREATE TABLE `group_plannings` (
   id INT NOT NULL AUTO_INCREMENT,
   group_id INT NOT NULL,
+  user_id INT NOT NULL DEFAULT 0,
   week_type ENUM('odd', 'even') NOT NULL,
   day_number INT NOT NULL,
   time_start TIME NOT NULL DEFAULT '00:00:00',
   time_end TIME NOT NULL DEFAULT '00:00:00',
+  pause_start TIME NOT NULL DEFAULT '00:00:00',
+  pause_end TIME NOT NULL DEFAULT '00:00:00',
+  enabled TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (id),
-  UNIQUE (group_id, week_type, day_number),
+  UNIQUE (group_id, user_id, week_type, day_number),
+  INDEX (user_id),
   INDEX (group_id)
 )
 ;
