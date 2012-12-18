@@ -45,7 +45,6 @@ class Application_Model_History extends Application_Model_Abstract
             $userHistoryData['overtime_time'] =  $overtime['total_time'];
         }
         $this->_modelHistory->addUserWeekData($userHistoryData);
-
     }
 
     public function getUserWeekDataByWeekYear($userId, $groupId, $week, $year)
@@ -60,5 +59,9 @@ class Application_Model_History extends Application_Model_Abstract
             $history["total"]  = My_DateTime::TimeToDecimal($history["work_time"] - $history["missing_time"] + $history["overtime_time"]);
         }
         return $history;
+    }
+    public function updateUserWeekData($userId, $groupId, $week, $year)
+    {
+        $this->_modelHistory->updateUserWeekData($userId, $groupId, $week, $year);
     }
 }

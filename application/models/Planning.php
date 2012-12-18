@@ -93,7 +93,7 @@ class Application_Model_Planning extends Application_Model_Abstract
                 $dayPlan['pause_start'],
                 $dayPlan['pause_end']
             );
-            $dayPlan['total_time'] =  My_DateTime::TimeToDecimal($workSeconds);
+            $dayPlan['total_time'] =  $workSeconds;
         }
         return $dayPlan;
     }
@@ -164,13 +164,13 @@ class Application_Model_Planning extends Application_Model_Abstract
                     if (!empty($result['time_start']) && !empty($result['time_end'])) {
                         $result['time_start'] = $this->_formatTime($result['time_start']);
                         $result['time_end'] = $this->_formatTime($result['time_end']);
-                        $result['total_time'] = $result['total_time'];
+                        $result['total_time'] = My_DateTime::TimeToDecimal($result['total_time']);
                     }
                     if (!empty($missingUserDayStatuses)) {
                         $result['status2'] = $status->getDataById($missingUserDayStatuses['status']);
                         $result['time_start2'] = $this->_formatTime($missingUserDayStatuses['time_start']);
                         $result['time_end2'] = $this->_formatTime($missingUserDayStatuses['time_end']);
-                        $result['total_time2'] = $missingUserDayStatuses['total_time'];
+                        $result['total_time2'] =  My_DateTime::TimeToDecimal($missingUserDayStatuses['total_time']);
                     }  else {
                         $result['status2'] = "";
                     }
@@ -182,7 +182,7 @@ class Application_Model_Planning extends Application_Model_Abstract
                 if (!empty($overtime)) {
                     $result['time_start2'] = $this->_formatTime($overtime['time_start']) ;
                     $result['time_end2']   = $this->_formatTime($overtime['time_end']);
-                    $result['total_time2'] = $overtime['total_time'];
+                    $result['total_time2'] =  My_DateTime::TimeToDecimal($overtime['total_time']);
                     $result['status2'] = $status->getDataById(self::STATUS_DAY_OVERTIME);
                 }
             }
