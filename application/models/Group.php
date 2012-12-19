@@ -99,10 +99,15 @@ class Application_Model_Group extends Application_Model_Abstract
         return true;
     }
 
-    public function getGroupPlanning($groupId, $weekType = null, $day = null)
+    public function getGroupPlanning($groupId, $userId = 0,  $weekType = null, $day = null)
     {
         $groupPlannings = new Application_Model_Db_Group_Plannings();
-        $planning = $groupPlannings->getGroupPlanning($groupId, 0, $weekType, $day);
+        //Try get user in group plan
+        $planning = $groupPlannings->getGroupPlanning($groupId, $userId, $weekType, $day);
+        if (empty($planning)) {
+            //Get group plan
+            $planning = $groupPlannings->getGroupPlanning($groupId, 0, $weekType, $day);
+        }
         return $planning;
     }
 
@@ -113,12 +118,12 @@ class Application_Model_Group extends Application_Model_Abstract
         return $planning;
     }
 
-    public function getGroupPlanningByDate($groupId, $date)
+    public function getGroupPlanningByDate($groupId, $userId, $date)
     {
         $currentDate = new My_DateTime($date);
         $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
         $weekType = My_DateTime::getEvenWeek($dateWeekYear['week']);
-        return $this->getGroupPlanning($groupId, $weekType, $dateWeekYear['day']);
+        return $this->getGroupPlanning($groupId, $userId, $weekType, $dateWeekYear['day']);
     }
 
     public function saveGroupPlanning($groupId, array $planning)
@@ -285,7 +290,7 @@ class Application_Model_Group extends Application_Model_Abstract
         $weekType = $date->format('W');
         $weekType = ( $weekType % 2 ) > 0 ? Application_Model_Db_Group_Plannings::WEEK_TYPE_ODD : Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN;
         $day = $date->format('N');
-        $planning = $modelDbGroupPlanning->getGroupPlanning($groupId, $weekType, $day);
+        $planning = $modelDbGroupPlanning->getGroupPlanning($groupId, 0, $weekType, $day);
         return (bool)$planning;
     }
 

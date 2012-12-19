@@ -68,7 +68,7 @@ class Application_Model_Planning extends Application_Model_Abstract
     private function _getUserDayPlanFromGroupPlan($userId, $groupId, $dateFormat)
     {
         $groupPlanning = new Application_Model_Group();
-        $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $dateFormat);
+        $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $userId, $dateFormat);
         if (!empty($weekGroupPlanning[0])) {
             $weekGroupPlanning = $weekGroupPlanning[0];
         }
@@ -125,7 +125,7 @@ class Application_Model_Planning extends Application_Model_Abstract
     {
         $groupPlanning = new Application_Model_Group();
         $group = new Application_Model_Group();
-        $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $date);
+        $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $userId, $date);
         if (!empty($weekGroupPlanning[0])) {
             $weekGroupPlanning = $weekGroupPlanning[0];
         }

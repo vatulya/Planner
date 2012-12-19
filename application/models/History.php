@@ -50,12 +50,15 @@ class Application_Model_History extends Application_Model_Abstract
     public function getUserWeekDataByWeekYear($userId, $groupId, $week, $year)
     {
         $history = $this->_modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
+        $userParameter = new Application_Model_Db_User_Parameters();
+        $userParameters = $userParameter->getParametersByUserId($userId);
         //$keys = array(, "overtime_hours", "vacation_hours", "missing_hours");
         if (!empty($history)) {
             $history["work_hours"]     = My_DateTime::TimeToDecimal($history["work_time"]);
             $history["overtime_hours"] = My_DateTime::TimeToDecimal($history["overtime_time"]);
             $history["vacation_hours"] = My_DateTime::TimeToDecimal($history["vacation_time"]);
             $history["missing_hours"]  = My_DateTime::TimeToDecimal($history["missing_time"]);
+            $history["free_hours"]     = My_DateTime::TimeToDecimal($userParameters['allowed_free_time']);
             $history["total"]  = My_DateTime::TimeToDecimal($history["work_time"] - $history["missing_time"] + $history["overtime_time"]);
         }
         return $history;

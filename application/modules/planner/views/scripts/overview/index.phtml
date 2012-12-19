@@ -79,16 +79,17 @@
                                 <?php $this->user = $user; ?>
                                 <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
                                     <td>
-                                        <span><?php echo 0 ?></span>
-                                        <a href="#" class="no-action pull-right underflow-container editable"
+                                        <div class="">
+                                        <span><?php echo $user['weekHours']['free_hours']; ?></span>
+                                        <a href="#" class="no-action  underflow-container editable"
                                            data-field-title="Openstaande saldo"
                                            data-field-name="free_time"
-                                           data-field-value="<?php echo $user['weekHours']['work_hours']; ?>"
+                                           data-field-value="<?php echo $user['weekHours']['free_hours']; ?>"
                                            data-field-group="<?php echo $this->group['id']; ?>"
                                            data-field-user="<?php echo $user['user_id']; ?>"
                                            data-field-week="<?php echo $this->week; ?>"
                                            data-field-year="<?php echo $this->year; ?>"
-                                                ><i class="icon-edit"></i></a>
+                                                ><i class="icon-edit"></i></a>   </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

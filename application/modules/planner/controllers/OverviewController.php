@@ -109,8 +109,13 @@ class Planner_OverviewController extends My_Controller_Action
             $groupId  = $this->_getParam('group');
             $year  = $this->_getParam('year');
             $week  = $this->_getParam('week');
-            if ($value > 0) {
-                $status = $this->_modelHistory->updateHistoryWeekHour($userId, $groupId, $field, $value, $year, $week);
+            if ($value >= 0 ) {
+                if ($field == 'free_time') {
+                    $parameter = new Application_Model_Db_User_Parameters();
+                    $status = $parameter->setAllowedFreeTime($userId, $value * 3600);
+                } else {
+                    $status = $this->_modelHistory->updateHistoryWeekHour($userId, $groupId, $field, $value, $year, $week);
+                }
             }
         }
         if ($status) {
