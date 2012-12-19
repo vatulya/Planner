@@ -14,6 +14,16 @@ class Application_Model_Db_Group_Exceptions extends Application_Model_Db_Abstrac
         return $result;
     }
 
+    public function checkExceptionByDate($groupId, $date)
+    {
+        $select = $this->_db->select()
+            ->from(array('ge' => self::TABLE_NAME))
+            ->where('ge.group_id = ?', $groupId)
+            ->where('ge.exception_date = ?', $date);
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
     public function editGroupExceptions($groupId, array $oldSelectedDates, array $selectedDates, $maxFreePeople)
     {
         foreach ($oldSelectedDates as $date) {

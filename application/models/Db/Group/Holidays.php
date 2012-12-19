@@ -14,6 +14,15 @@ class Application_Model_Db_Group_Holidays extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function checkHolidayByDate($date)
+    {
+        $select = $this->_db->select()
+            ->from(array('gh' => self::TABLE_NAME))
+            ->where('gh.holiday_date = ?', $date);
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
     public function insertGroupHoliday($groupId, $date, $name)
     {
         try {

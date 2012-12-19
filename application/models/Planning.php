@@ -77,16 +77,19 @@ class Application_Model_Planning extends Application_Model_Abstract
         $dayPlan['user_id'] = $userId;
         $dayPlan['date'] = $dateFormat;
         $dayPlan['editable'] = $this->_getEditableDay($userId, $groupId);
-        if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
+        $groupExceptions = new Application_Model_Db_Group_Exceptions();
+        $groupForDateException = $groupExceptions->checkExceptionByDate($groupId, $dateFormat);
+        $holidays = new Application_Model_Db_Group_Holidays();
+        $holidayForDate = $holidays->checkHolidayByDate($dateFormat);
+        if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])
+            || !empty($groupForDateException) || !empty($holidayForDate)) {
             $dayPlan['status1'] = self::STATUS_DAY_WHITE;
         } else {
-            $group = new Application_Model_Group();
-            $groupSettings = $group->getGroupSettings($groupId);
             $dayPlan['status1'] = self::STATUS_DAY_GREEN;
-            $dayPlan['time_start'] = $weekGroupPlanning['time_start'];
-            $dayPlan['time_end'] = $weekGroupPlanning['time_end'];
-            $dayPlan['pause_start'] = $groupSettings['pause_start'];
-            $dayPlan['pause_end']   = $groupSettings['pause_end'];
+            $dayPlan['time_start']  = $weekGroupPlanning['time_start'];
+            $dayPlan['time_end']    = $weekGroupPlanning['time_end'];
+            $dayPlan['pause_start'] = $weekGroupPlanning['pause_start'];
+            $dayPlan['pause_end']   = $weekGroupPlanning['pause_end'];
             $workSeconds = Application_Model_Day::getWorkHoursByMarkers(
                 $dayPlan['time_start'],
                 $dayPlan['time_end'],
@@ -123,6 +126,7 @@ class Application_Model_Planning extends Application_Model_Abstract
 
     public function createNewDayUserPlanByGroup($userId, $groupId, $date)
     {
+        //TODO use  _getUserDayPlanFromGroupPlan and allow needed fields
         $groupPlanning = new Application_Model_Group();
         $group = new Application_Model_Group();
         $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $userId, $date);
@@ -133,15 +137,18 @@ class Application_Model_Planning extends Application_Model_Abstract
         $dayPlan['group_id'] = $groupId;
         $dayPlan['user_id'] = $userId;
         $dayPlan['date'] = $date;
-        if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])) {
+        $groupExceptions = new Application_Model_Db_Group_Exceptions();
+        $groupForDateException = $groupExceptions->checkExceptionByDate($groupId, $dateFormat);
+        $holidays = new Application_Model_Db_Group_Holidays();
+        $holidayForDate = $holidays->checkHolidayByDate($dateFormat);
+        if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])
+            || !empty($groupForDateException) || !empty($holidayForDate)) {
             $dayPlan['status1'] = self::STATUS_DAY_WHITE;
         } else {
-            $groupSettings = $group->getGroupSettings($groupId);
-            $dayPlan['status1'] = self::STATUS_DAY_GREEN;
             $dayPlan['time_start']  = $weekGroupPlanning['time_start'];
             $dayPlan['time_end']    = $weekGroupPlanning['time_end'];
-            $dayPlan['pause_start'] = $groupSettings['pause_start'];
-            $dayPlan['pause_end']   = $groupSettings['pause_end'];
+            $dayPlan['pause_start'] = $weekGroupPlanning['pause_start'];
+            $dayPlan['pause_end']   = $weekGroupPlanning['pause_end'];
         }
         $planning = new Application_Model_Db_User_Planning();
         $planning->createNewDayUserPlanByGroup($dayPlan);
