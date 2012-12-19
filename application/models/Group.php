@@ -285,7 +285,7 @@ class Application_Model_Group extends Application_Model_Abstract
         $weekType = $date->format('W');
         $weekType = ( $weekType % 2 ) > 0 ? Application_Model_Db_Group_Plannings::WEEK_TYPE_ODD : Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN;
         $day = $date->format('N');
-        $planning = $modelDbGroupPlanning->getGroupPlanning($groupId, $weekType, $day);
+        $planning = $modelDbGroupPlanning->getGroupPlanning($groupId, 0, $weekType, $day);
         return (bool)$planning;
     }
 
