@@ -1,8 +1,12 @@
 (function (window, document, $) {
+    var modal = $('.modal-year-total'),
+        modalEditH3 = modal.find('.header--year-total'),
+        modalBody = modal.find('.modal-body-year-total');
 
     var Overview = {
 
         init: function() {
+
         },
         getEditFieldPopoverHtml: function(el) {
             var html = '';
@@ -118,6 +122,43 @@
             data.year = container.data('year');
             data.week = container.data('week');
             return data;
+        },
+
+        showYearTotals: function(el) {
+            el = $(el);
+            modalEditH3.show();
+            modalBody.html('Loading...');
+            modal.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {},
+                success: function(response) {
+                    modalBody.html(response);
+                    Overview.initTotalAjaxForm();
+                },
+                error: function(response) {
+                    modalBody.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        initTotalAjaxForm: function() {
+            var formEl = $('#form-edit-day');
+            $('#form-edit-day').ajaxForm({
+                data: {format: 'json'},
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        //document.Form.showSuccess(formEl);
+                        window.location.reload();
+                    } else {
+                        document.Form.showErrors(formEl);
+                    }
+                },
+                error: function() {
+                    document.Form.showErrors(formEl);
+                }
+            });
         }
 
     };
@@ -125,7 +166,9 @@
     $(function() {
 
         Overview.init();
-
+        $(document.body).on('click', '.year-total', function(e) {
+            Overview.showYearTotals(e.currentTarget);
+        });
         $(document.body).on('click', '.editable', function(e) {
             Overview.editField(e.currentTarget);
         });

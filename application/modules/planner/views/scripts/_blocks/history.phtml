@@ -5,7 +5,7 @@
     $emptyRow            = '';
     foreach ($this->historyDateWeekYear as $week => $year) {
         $headerWeeks         .= '<th>
-            <a href="' . $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $year, 'week' => $week), 'planner', true). '" class="get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $week . '">
+            <a href="' . $this->url(array('controller' =>  $this->historyBlockController, 'action' => 'index', 'year' => $year, 'week' => $week), 'planner', true). '" class="get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $week . '">
                 Week ' . $week . '
             </a>
         </th>';

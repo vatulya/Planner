@@ -204,6 +204,16 @@ class My_DateTime extends DateTime
         return $historyDateInterval;
     }
 
+    public static function getYearDateInterval($year)
+    {
+        $date = new DateTime($year."-01-01");
+        $historyDateInterval['start'] =  $date->format('Y-m-d');
+        $date->modify('+1 year');
+        $date->modify('-1 day');
+        $historyDateInterval['end'] = $date->format('Y-m-d');
+        return $historyDateInterval;
+    }
+
     public static function getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount = self::HISTORY_WEEK_NUM)
     {
         $historyWeeks = array();

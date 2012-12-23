@@ -49,7 +49,12 @@ class Application_Model_History extends Application_Model_Abstract
 
     public function getUserWeekDataByWeekYear($userId, $groupId, $week, $year)
     {
-        $history = $this->_modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
+        if ($groupId === false && $week === false) {
+            $history = $this->_modelHistory->getUserHistoryDataByYear($userId, $year);
+        } else {
+            $history = $this->_modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
+        }
+
         $userParameter = new Application_Model_Db_User_Parameters();
         $userParameters = $userParameter->getParametersByUserId($userId);
         //$keys = array(, "overtime_hours", "vacation_hours", "missing_hours");

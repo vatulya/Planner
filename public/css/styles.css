@@ -79,7 +79,7 @@ form.form-mini {
 }
 
 .day-status-color {
-    width: 120px;
+    width: 110px;
     font-size: 12px;
     margin: 3px;
     border: 1px solid gray;
@@ -254,3 +254,15 @@ form.form-mini {
 .group-user-name {width: 155px;}
 
 .week-table-user-day {width: 90px;}
+
+.modal-body-year-total {
+    max-height: 500px;
+    width: 500px;
+    padding: 15px;
+}
+
+.modal-year-total {
+    width: 700px;
+    margin: -300px 0 0 -350px;
+}
+

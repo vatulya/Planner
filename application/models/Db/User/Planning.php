@@ -21,8 +21,6 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         return $result;
     }
 
-
-
     public function createNewDayUserPlanByGroup($dayPlan)
     {
         try {
@@ -82,12 +80,13 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         $select = $this->_db->select()
             ->from(array('up' => self::TABLE_NAME), array('id' => 'up.user_id'))
             ->joinInner(array('u' => Application_Model_Db_Users::TABLE_NAME), 'up.user_id = u.id')
-            ->where('up.group_id = ?', $groupId)
             ->where('up.date >= ?', $dateStart)
             ->where('up.date <= ?', $dateEnd)
             ->group('up.user_id')
             ->order(array('u.full_name ASC'));
-        ;
+        if ($groupId !== false) {
+            $select->where('up.group_id = ?', $groupId);
+        }
         $result = $this->_db->fetchAll($select);
         return $result;
     }

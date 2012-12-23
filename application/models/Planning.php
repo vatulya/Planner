@@ -138,13 +138,14 @@ class Application_Model_Planning extends Application_Model_Abstract
         $dayPlan['user_id'] = $userId;
         $dayPlan['date'] = $date;
         $groupExceptions = new Application_Model_Db_Group_Exceptions();
-        $groupForDateException = $groupExceptions->checkExceptionByDate($groupId, $dateFormat);
+        $groupForDateException = $groupExceptions->checkExceptionByDate($groupId, $date);
         $holidays = new Application_Model_Db_Group_Holidays();
-        $holidayForDate = $holidays->checkHolidayByDate($dateFormat);
+        $holidayForDate = $holidays->checkHolidayByDate($date);
         if(empty($weekGroupPlanning['time_start']) || empty($weekGroupPlanning['time_end'])
             || !empty($groupForDateException) || !empty($holidayForDate)) {
             $dayPlan['status1'] = self::STATUS_DAY_WHITE;
         } else {
+            $dayPlan['status1'] = self::STATUS_DAY_GREEN;
             $dayPlan['time_start']  = $weekGroupPlanning['time_start'];
             $dayPlan['time_end']    = $weekGroupPlanning['time_end'];
             $dayPlan['pause_start'] = $weekGroupPlanning['pause_start'];
@@ -179,7 +180,15 @@ class Application_Model_Planning extends Application_Model_Abstract
                         $result['time_end2'] = $this->_formatTime($missingUserDayStatuses['time_end']);
                         $result['total_time2'] =  My_DateTime::TimeToDecimal($missingUserDayStatuses['total_time']);
                     }  else {
-                        $result['status2'] = "";
+                        $overtime = $this->getUserDayOvertimeByDate($result['user_id'], $result['group_id'], $result['date']);
+                        if (!empty($overtime)) {
+                            $result['time_start2'] = $this->_formatTime($overtime['time_start']) ;
+                            $result['time_end2']   = $this->_formatTime($overtime['time_end']);
+                            $result['total_time2'] =  My_DateTime::TimeToDecimal($overtime['total_time']);
+                            $result['status2'] = $status->getDataById(self::STATUS_DAY_OVERTIME);
+                        } else {
+                            $result['status2'] = "";
+                        }
                     }
                 }
             } else {

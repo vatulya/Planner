@@ -6,7 +6,9 @@ class Planner_OverviewController extends My_Controller_Action
 
     public $ajaxable = array(
         'index'     => array('html'),
+        'export'     => array('html'),
         'update-history-hour' => array('json'),
+        'get-year-totals' => array('html'),
     );
 
     /**
@@ -79,6 +81,24 @@ class Planner_OverviewController extends My_Controller_Action
         $this->view->groups              = $groups;
     }
 
+    public function exportAction()
+    {
+        $filename = '/usr/home/dementy/dem.xls';
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+
+        $this->getResponse()->setRawHeader( "Content-Type: application/vnd.ms-excel; charset=UTF-8" )
+            ->setRawHeader( "Content-Disposition: attachment; filename=excel.xls" )
+            ->setRawHeader( "Content-Transfer-Encoding: binary" )
+            ->setRawHeader( "Expires: 0" )
+            ->setRawHeader( "Cache-Control: must-revalidate, post-check=0, pre-check=0" )
+            ->setRawHeader( "Pragma: public" )
+            ->setRawHeader( "Content-Length: " . filesize( $filename ) )
+            ->sendResponse();
+
+        readfile( $filename );
+    }
+
     protected function _getUserData($user, $groupId, $year, $week)
     {
         $user['history'] = $this->_getHistory($user['id'], $groupId, $year, $week);
@@ -123,6 +143,21 @@ class Planner_OverviewController extends My_Controller_Action
         } else {
             $this->_response(0, 'Error!', "No valid time");
         }
+    }
+
+
+    public function getYearTotalsAction()
+    {
+        $year  = $this->_getParam('year');
+        $users = $this->_modelUser->getAllUsersForYear($year);
+        if (!empty($users)) {
+            foreach ($users as $keyUser => $user) {
+                $users[$keyUser]['weekHours'] = $this->_modelHistory->getUserWeekDataByWeekYear($user['id'], false, false, $year);
+            }
+        }
+        $this->view->users = $users;
+        $this->view->prevYear = $year - 1;
+        $this->view->year = $year;
     }
 
 }

@@ -1,11 +1,15 @@
 <?php $this->headScript()->appendFile('/js/overview.js'); ?>
 
 <div class="span12 group-overview-container">
-    <!--div class="group-overview-header">
-        <div class="year-total pull-left">
-            <a href="#" class="show-tooltip no-action" data-original-title="09:00 - 18:00">
-                <span class="param-name">Year totals:</span>
-                <span class="">2</span>
+    <div class="group-overview-header">
+        <div class="pull-left">
+            <a href="<?php echo $this->url(
+                array(
+                    'controller' => 'overview',
+                    'action' => 'get-year-totals',
+                    'year' => $this->year
+                ), 'planner', true); ?>" class="show-tooltip no-action year-total" data-original-title="Show totals <?php echo $this->year; ?> year">
+                <span class="param-name">Year totals</span>
             </a>
         </div>
         <div class="export-button pull-right">
@@ -13,7 +17,7 @@
                 Export
             </button>
         </div>
-    </div-->
+    </div>
 
 <?php foreach ($this->groups as $group): ?>
 <?php $this->group = $group; ?>
@@ -43,7 +47,9 @@
             <?php endif; ?>
                 <div class="history-container-scrollable">
                     <div class="history-container">
-                        <?php echo $this->render('_blocks/history.phtml'); ?>
+                        <?php
+                        $this->historyBlockController = 'overview';
+                        echo $this->render('_blocks/history.phtml'); ?>
                     </div>
                 </div>
         </span>
@@ -55,143 +61,7 @@
                 data-week="<?php echo $this->weekTasks['week']; ?>"
                 data-userId="<?php echo $this->group['id']; ?>"
                 >
-
-            <div class="group-history-block pull-left">
-                <div class="div-row">&nbsp;</div>
-                <div class="group-free-days-table">
-                    <table class="history table table-bordered table-condensed table-striped">
-                        <thead>
-                        <tr class="week-table-header" >
-                            <th>&nbsp;</th>
-                        </tr>
-                        <tr  class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
-                            <th>
-                                Open
-                                <a href="#" class="show-tooltip no-action" data-original-title="Openstaande saldo"><i class="icon-info-sign"></i></a>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($this->users)): ?>
-                                <tr><td >&nbsp;  </td></tr>
-                            <?php else: ?>
-                            <?php foreach ($this->users as $user): ?>
-                                <?php $this->user = $user; ?>
-                                <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
-                                    <td>
-                                        <div class="">
-                                        <span><?php echo $user['weekHours']['free_hours']; ?></span>
-                                        <a href="#" class="no-action  underflow-container editable"
-                                           data-field-title="Openstaande saldo"
-                                           data-field-name="free_time"
-                                           data-field-value="<?php echo $user['weekHours']['free_hours']; ?>"
-                                           data-field-group="<?php echo $this->group['id']; ?>"
-                                           data-field-user="<?php echo $user['user_id']; ?>"
-                                           data-field-week="<?php echo $this->week; ?>"
-                                           data-field-year="<?php echo $this->year; ?>"
-                                                ><i class="icon-edit"></i></a>   </div>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-       <div class="group-overview-block pull-left">
-           <div class="div-row">&nbsp;</div>
-            <table class="history table table-bordered table-condensed table-striped">
-
-                <thead>
-                <tr class="week-table-header" >
-                    <th  colspan="4"   ></th>
-                    <!--th  style="background-color: #<?php echo $this->group['color'];?>" -->
-                    <th>
-                        <a href="#" class="bootstrab-tooltip no-action get-week-details" >
-                            Week <?php echo $this->week; ?>
-                        </a>
-                    </th>
-                </tr>
-                    <tr class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
-                        <th class="group-user-name" ><?php echo $this->group['group_name']; ?></th>
-                        <th class="group-user-worked">Gewerkte uren</th>
-                        <th class="group-user-used-free-days">Vrije uren</th>
-                        <th class="group-user-overtime">Overuren</th>
-                        <th class="group-user-doctor-days">Ziekte/buitengew</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php if (empty($this->users)): ?>
-                <td colspan="7" class="user-not-found">
-                    No users in this group
-                </td>
-                    <?php else: ?>
-                    <?php foreach ($this->users as $user): ?>
-                        <?php $this->user = $user; ?>
-                        <?php //echo $this->render('planning/_blocks/week_user_plan.phtml'); ?>
-                        <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
-                            <td class="user-title" >
-                                <div><?php echo "<nobr>" . $user['full_name'] . "</nobr>"; ?> </div>
-                            </td>
-                            <td>
-                                <span><?php echo $user['weekHours']['work_hours']  ?></span>
-                                <a href="#" class="no-action pull-right underflow-container editable"
-                                   data-field-title="Gewerkte uren"
-                                   data-field-name="work_time"
-                                   data-field-value="<?php echo $user['weekHours']['work_hours']; ?>"
-                                   data-field-group="<?php echo $this->group['id']; ?>"
-                                   data-field-user="<?php echo $user['user_id']; ?>"
-                                   data-field-week="<?php echo $this->week; ?>"
-                                   data-field-year="<?php echo $this->year; ?>"
-                                ><i class="icon-edit"></i></a>
-                            </td>
-                            <td>
-                                <span><?php echo $user['weekHours']['vacation_hours']  ?></span>
-                                <a href="#" class="no-action pull-right underflow-container editable"
-                                   data-field-title="Vrije uren"
-                                   data-field-name="vacation_time"
-                                   data-field-value="<?php echo $user['weekHours']['vacation_hours']; ?>"
-                                   data-field-group="<?php echo $this->group['id']; ?>"
-                                   data-field-user="<?php echo $user['user_id']; ?>"
-                                   data-field-week="<?php echo $this->week; ?>"
-                                   data-field-year="<?php echo $this->year; ?>"
-                                        ><i class="icon-edit"></i></a>
-                            </td>
-                            <td>
-                                <span><?php echo $user['weekHours']['overtime_hours']  ?></span>
-                                <a href="#" class="no-action pull-right underflow-container editable"
-                                   data-field-title="Overuren"
-                                   data-field-name="overtime_time"
-                                   data-field-value="<?php echo $user['weekHours']['overtime_hours']; ?>"
-                                   data-field-group="<?php echo $this->group['id']; ?>"
-                                   data-field-user="<?php echo $user['user_id']; ?>"
-                                   data-field-week="<?php echo $this->week; ?>"
-                                   data-field-year="<?php echo $this->year; ?>"
-                                        ><i class="icon-edit"></i></a>
-                            </td>
-                            <td>
-                                <span><?php echo $user['weekHours']['missing_hours']  ?></span>
-                                <a href="#" class="no-action pull-right underflow-container editable"
-                                   data-field-title="Ziekte/buitengew"
-                                   data-field-name="missing_time"
-                                   data-field-value="<?php echo $user['weekHours']['missing_hours']; ?>"
-                                   data-field-group="<?php echo $this->group['id']; ?>"
-                                   data-field-user="<?php echo $user['user_id']; ?>"
-                                   data-field-week="<?php echo $this->week; ?>"
-                                   data-field-year="<?php echo $this->year; ?>"
-                                        ><i class="icon-edit"></i></a>
-                            </td>
-
-
-                        </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
+         <?php echo $this->render('overview/_blocks/overview-user-row.phtml'); ?>
     </span>
     </div>
 </div>
@@ -206,5 +76,16 @@
             <input type="text" name="" value="" class="input-edit-field for-focus">
             <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
         </div>
+    </div>
+</div>
+
+<!-- Summarize year data popup -->
+<div class="modal hide fade modal-year-total">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3 class="header-year-total">Year Totals : <span class="tmpl-group-name"></span></h3>
+    </div>
+    <div class="modal-body-year-total">
+
     </div>
 </div>

@@ -22,6 +22,24 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function getUserHistoryDataByYear($userId, $year)
+    {
+        $select = $this->_db->select()
+            ->from(array('uh' => self::TABLE_NAME),
+                array(
+                    'work_time' => 'SUM(work_time)',
+                    'overtime_time' => 'SUM(overtime_time)',
+                    'vacation_time' => 'SUM(vacation_time)',
+                    'missing_time' => 'SUM(missing_time)',
+                )
+            )
+            ->where('uh.user_id = ?', $userId)
+            ->where('uh.year = ?', $year)
+            ->group('uh.user_id');
+        $result = $this->_db->fetchRow($select);
+        return $result;
+    }
+
     public function addUserWeekData($dayHistoryData)
     {
         $checkExistWeekData = $this->getUserWeekDataByWeekYear(

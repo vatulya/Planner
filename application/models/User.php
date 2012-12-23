@@ -93,6 +93,18 @@ class Application_Model_User extends Application_Model_Abstract
         return $usersNormalized;
     }
 
+    public function getAllUsersForYear($year)
+    {
+        $modelPlanning = new Application_Model_Db_User_Planning();
+        $yearDateInterval = My_DateTime::getYearDateInterval($year);
+        $users = $modelPlanning->getUsersByDateInterval(false, $yearDateInterval['start'], $yearDateInterval['end']);
+        foreach ($users as $key => $user) {
+            $user = $this->_filterHiddenFields($user);
+            $users[$key] = $user;
+        }
+        return $users;
+    }
+
     public function userCheck($userId, $check)
     {
         $now = new DateTime();

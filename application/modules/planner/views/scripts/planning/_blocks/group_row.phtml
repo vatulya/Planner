@@ -26,7 +26,9 @@
             </a>
                 <div class="history-container-scrollable">
                     <div class="history-container">
-                        <?php echo $this->render('_blocks/history.phtml'); ?>
+                        <?php
+                        $this->historyBlockController = 'planning';
+                        echo $this->render('_blocks/history.phtml'); ?>
                     </div>
                 </div>
         </span>
