@@ -294,6 +294,15 @@ class Application_Model_Planning extends Application_Model_Abstract
         return $overTime;
     }
 
+    public function checkExistDay($date)
+    {
+        $day = $this->_modelDb->checkExistDay($date);
+        if (empty($day)) {
+            return true;
+        }
+        return false;
+    }
+
     public function getWeekHistory($userId, $groupId, $year, $week)
     {
         $workTime = $this->getUserWorkTimeByGroup($userId, $groupId, $year, $week);

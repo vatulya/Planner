@@ -221,8 +221,8 @@ class My_DateTime extends DateTime
         for ($i = $weeksCount; $i > 0; $i-- ) {
             $historyDate = clone $start;
             $historyDate->modify('-' . $i . ' week');
-            $year = $historyDate->format('Y');
-            $week = $historyDate->format('W');
+            $year = strftime('%G', $historyDate->getTimestamp());
+            $week = strftime('%V', $historyDate->getTimestamp());
             $historyWeeks[$week] = $year;
         }
         //$historyWeeks = array_reverse($historyWeeks, true);

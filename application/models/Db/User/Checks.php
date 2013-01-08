@@ -49,4 +49,13 @@ class Application_Model_Db_User_Checks extends Application_Model_Db_Abstract
         return $allowed;
     }
 
+    public function getUserCheckTimeByIdDate($userId, $date)
+    {
+        $select = $this->_db->select()
+            ->from(array('uc' => self::TABLE_NAME), array('*'))
+            ->where('uc.user_id = ?', $userId)
+            ->where('uc.check_date = ?', $date);
+        $result = $this->_db->fetchRow($select);
+        return $result;
+    }
 }

@@ -6,12 +6,13 @@ class Application_Model_History extends Application_Model_Abstract
 
     public function __construct()
     {
-        $this->_modelPlanning = new Application_Model_Planning();
+        $this->_modelPlanning   = new Application_Model_Planning();
         $this->_modelDbPlanning = new Application_Model_Db_User_Planning();
-        $this->_modelMissing  = new Application_Model_Missing();
-        $this->_modelOvertime = new Application_Model_Db_User_Overtime();
-        $this->_modelRequest  = new Application_Model_Db_User_Requests();
-        $this->_modelHistory  = new Application_Model_Db_User_History();
+        $this->_modelMissing    = new Application_Model_Missing();
+        $this->_modelOvertime   = new Application_Model_Db_User_Overtime();
+        $this->_modelRequest    = new Application_Model_Db_User_Requests();
+        $this->_modelHistory    = new Application_Model_Db_User_History();
+        $this->_modelChecks     = new Application_Model_Db_User_Checks();
     }
 
     public function addDayDataToHistory($userId, $groupId, $date)
@@ -20,7 +21,7 @@ class Application_Model_History extends Application_Model_Abstract
         $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
         $dayPlan = $this->_modelPlanning->getUserDayPlanFromPlanning($userId, $groupId, $date);
         $missingUserDay = $this->_modelMissing->getUserDayMissingPlanByDate($userId, $date);
-        $overtime = $this->_modelPlanning->getUserDayOvertimeByDate($userId, $groupId, $date);
+
         $approveUserDayRequest = $this->_modelRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
         $userHistoryData = array();
         $userHistoryData['user_id'] = $userId;
@@ -41,6 +42,28 @@ class Application_Model_History extends Application_Model_Abstract
                 $userHistoryData['missing_time'] = $missingUserDay['total_time'];
             }
         }
+
+        $checks = $this->_modelChecks->getUserCheckTimeByIdDate($userId, $date);
+        $fullDay = Application_Model_Day::factory($date, $userId);
+        $fullUserDayPlan = $fullDay->getWorkPlanning();
+        // Check overtime after work time
+        if ( !empty($checks["check_out"]) && !empty($fullUserDayPlan['time_end']) &&  !empty($dayPlan['time_end'] ) &&
+            $fullUserDayPlan['time_end'] == $dayPlan['time_end'] &&
+            My_DateTime::compare($checks["check_out"], $fullUserDayPlan['time_end']) === 1) {
+            $overtimeData = array(
+                'user_id'    => $userId,
+                'group_id'   => $groupId,
+                'date'       => $date,
+                'time_end2'   => $checks["check_out"]
+            );
+            if (My_DateTime::compare($checks["check_in"], $fullUserDayPlan['time_end']) === 1) {
+                 $overtimeData['time_start2'] = $checks['check_in'];
+            } else {
+                 $overtimeData['time_start2'] = $fullUserDayPlan['time_end'];
+            }
+            $this->_modelPlanning->saveUserOvertimeDay($overtimeData);
+        }
+        $overtime = $this->_modelPlanning->getUserDayOvertimeByDate($userId, $groupId, $date);
         if (!empty($overtime)) {
             $userHistoryData['overtime_time'] =  $overtime['total_time'];
         }

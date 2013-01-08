@@ -28,9 +28,14 @@ if (1) {
     $date = $currentDate->format('Y-m-d');
     $currentDate->modify('-1 day');
     $prevDate = $currentDate->format('Y-m-d');
+    //Check start history fill once
+    $modelPlanning = new Application_Model_Planning();
+    if (!$modelPlanning->checkExistDay($date)) {
+        exit();
+    }
     calculateDayHours($date,$prevDate);
 } else {
-    for ($i = 0; $i < 100 ; $i++) {
+    for ($i = 0; $i < 200 ; $i++) {
         $currentDate = new My_DateTime();
         $currentDate->modify('- ' . $i .' day');
         $date = $currentDate->format('Y-m-d');
@@ -40,6 +45,8 @@ if (1) {
     }
     //  var_dump($groups[$key]['users']);
 }
+
+
 
 function calculateDayHours($date,$prevDate) {
     $modelGroup    = new Application_Model_Group();

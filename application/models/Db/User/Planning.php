@@ -21,6 +21,15 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function checkExistDay($date)
+    {
+        $select = $this->_db->select()
+            ->from(array('up' => self::TABLE_NAME), array('*'))
+            ->where('up.date = ?', $date);
+        $result = $this->_db->fetchOne($select);
+        return $result;
+    }
+
     public function createNewDayUserPlanByGroup($dayPlan)
     {
         try {
