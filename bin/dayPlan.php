@@ -10,7 +10,7 @@ set_include_path(implode(PATH_SEPARATOR, array(
 
 date_default_timezone_set('Europe/Amsterdam');
 
-defined('APPLICATION_ENV') || define('APPLICATION_ENV', (isset($argv[1]) ? $argv[1] : 'production'));
+defined('APPLICATION_ENV') || define('APPLICATION_ENV',  'production');
 
 /** Zend_Application */
 require_once 'Zend/Application.php';
@@ -22,28 +22,33 @@ $application = new Zend_Application(
 
 $application->bootstrap();
 
-
-if (1) {
+$modelPlanning = new Application_Model_Planning();
+if (empty($argv[1])) {
     $currentDate = new My_DateTime();
     $date = $currentDate->format('Y-m-d');
     $currentDate->modify('-1 day');
     $prevDate = $currentDate->format('Y-m-d');
     //Check start history fill once
-    $modelPlanning = new Application_Model_Planning();
     if (!$modelPlanning->checkExistDay($date)) {
+        echo 'This day : ' . $date . " - already in history\n";
         exit();
     }
     calculateDayHours($date,$prevDate);
 } else {
-    for ($i = 0; $i < 200 ; $i++) {
+    $numPrevDays = $argv[1];
+    echo "Start script for last : " . $numPrevDays . " days \n";
+    for ($i = 0; $i < $numPrevDays ; $i++) {
         $currentDate = new My_DateTime();
         $currentDate->modify('- ' . $i .' day');
         $date = $currentDate->format('Y-m-d');
         $currentDate->modify('- ' . $i +1 . ' day');
         $prevDate = $currentDate->format('Y-m-d');
+        if (!$modelPlanning->checkExistDay($date)) {
+            echo 'This day : ' . $date . " - already in history\n";
+            continue;
+        }
         calculateDayHours($date,$prevDate);
     }
-    //  var_dump($groups[$key]['users']);
 }
 
 
@@ -69,10 +74,3 @@ function calculateDayHours($date,$prevDate) {
         }
     }
 }
-
-
-
-
-
-
-//var_dump($modelGroup->getAllGroups());
