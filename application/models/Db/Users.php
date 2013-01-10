@@ -6,6 +6,7 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
     const TABLE_NAME = 'users';
 
     protected $_allowedSaveFields = array(
+        'email',
         'full_name', 'address', 'phone',
         'emergency_phone', 'emergency_full_name', 'birthday', 'owner',
     );
