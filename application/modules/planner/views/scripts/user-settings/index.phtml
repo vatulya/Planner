@@ -134,7 +134,7 @@
                 if ( ! empty($user['time_work'])) {
                     $start = My_DateTime::factory($user['time_work']['time_start']);
                     $end   = My_DateTime::factory($user['time_work']['time_end']);
-                    $timeWork = $start->format('H:m') . ' - ' . $end->format('H:m');
+                    $timeWork = $start->format('H:i') . ' - ' . $end->format('H:i');
                 }
             ?>
             <td class="show-tooltip" data-original-title="<?php echo $timeWork; ?>" data-placement="top">
