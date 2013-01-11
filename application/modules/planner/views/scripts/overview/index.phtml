@@ -13,9 +13,15 @@
             </a>
         </div>
         <div class="export-button pull-right">
-            <button class="btn btn-small">
-                Export
-            </button>
+            <a href="<?php echo $this->url(
+                array(
+                    'controller' => 'overview',
+                    'action' => 'export',
+                    'year' => $this->year,
+                    'week' => $this->week,
+                ), 'planner', true); ?>" class="show-tooltip" data-original-title="Export <?php echo $this->year; ?> year <?php echo $this->week; ?> week">
+                <span class="param-name">Export</span>
+            </a>
         </div>
     </div>
 

@@ -72,16 +72,39 @@ class Application_Model_History extends Application_Model_Abstract
 
     public function getUserWeekDataByWeekYear($userId, $groupId, $week, $year)
     {
+        //get summarize year data for user
         if ($groupId === false && $week === false) {
             $history = $this->_modelHistory->getUserHistoryDataByYear($userId, $year);
         } else {
+        //get week data for user
             $history = $this->_modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
         }
 
-        $userParameter = new Application_Model_Db_User_Parameters();
-        $userParameters = $userParameter->getParametersByUserId($userId);
-        //$keys = array(, "overtime_hours", "vacation_hours", "missing_hours");
+        $history = $this->_replaceAllTimeFieldToDecimal($history);
+        return $history;
+    }
+
+    public function getAllUsersWeekDataByWeekYear($week, $year)
+    {
+        $allUsersHistory = array();
+        $history = $this->_modelHistory->getUserWeekDataByWeekYear(false, false, $week, $year);
+        $user = new Application_Model_User;
+        $group = new Application_Model_Group;
+        foreach ($history as $userGroupRow) {
+            $userGroupRow = $this->_replaceAllTimeFieldToDecimal($userGroupRow);
+            $userGroupRow['user_id'] = $user->getUserById($userGroupRow['user_id']);
+            $userGroupRow['group_id'] = $group->getGroupById($userGroupRow['group_id']);
+            $allUsersHistory[] = $userGroupRow;
+        }
+        return $allUsersHistory;
+    }
+
+    private function _replaceAllTimeFieldToDecimal($history)
+    {
         if (!empty($history)) {
+            $userParameter = new Application_Model_Db_User_Parameters();
+            $userParameters = $userParameter->getParametersByUserId($history['user_id']);
+
             $history["work_hours"]     = My_DateTime::TimeToDecimal($history["work_time"]);
             $history["overtime_hours"] = My_DateTime::TimeToDecimal($history["overtime_time"]);
             $history["vacation_hours"] = My_DateTime::TimeToDecimal($history["vacation_time"]);
@@ -91,8 +114,10 @@ class Application_Model_History extends Application_Model_Abstract
         }
         return $history;
     }
+
     public function updateUserWeekData($userId, $groupId, $week, $year)
     {
+
         $this->_modelHistory->updateUserWeekData($userId, $groupId, $week, $year);
     }
 

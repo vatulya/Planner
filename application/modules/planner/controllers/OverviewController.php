@@ -2,8 +2,6 @@
 
 class Planner_OverviewController extends My_Controller_Action
 {
-    const HISTORY_WEEK_NUM = 4;
-
     public $ajaxable = array(
         'index'     => array('html'),
         'export'     => array('html'),
@@ -17,12 +15,14 @@ class Planner_OverviewController extends My_Controller_Action
     protected $_modelUser;
     protected $_modelGroup;
     protected $_modelHistory;
+    protected $_modelOverview;
 
     public function init()
     {
         $this->view->me = $this->_me = $this->_helper->CurrentUser();
         $this->_modelUser = new Application_Model_User();
         $this->_modelHistory = new Application_Model_History();
+        $this->_modelOverview = new Application_Model_Overview();
 
         if ( ! $this->_getParam('user')) {
             $this->_setParam('user', $this->_me['id']);
@@ -38,7 +38,6 @@ class Planner_OverviewController extends My_Controller_Action
         $this->_me      = $this->_helper->CurrentUser();
         $this->view->me = $this->_me = $this->_helper->CurrentUser();
         $this->_modelGroup    = new Application_Model_Group();
-        $this->_modelUser     = new Application_Model_User();
         $this->_modelPlanning = new Application_Model_Planning();
 
         $this->view->weekDays     =  $weekDays = My_DateTime::getWeekDays();
@@ -61,63 +60,36 @@ class Planner_OverviewController extends My_Controller_Action
         $this->view->prevWeekYear = My_DateTime::getPrevYearWeek($year,$week);
 
         $historyDateWeekYear = My_DateTime::getNumHistoryWeeks($year, $week);
-        $groups = $this->_modelGroup->getAllGroupsFromHistory($year, $week);
-        //$groups = $this->_modelGroup->getAllGroups();
+        $groupsUserData = $this->_modelOverview->getAllGroupAndUserWeekSummary($week, $year);
 
-        foreach ($groups as $key => $group) {
-            $groupId = $group['id'];
-            $groups[$key] = $group;
-            $groups[$key]['users'] = $this->_modelUser->getAllUsersFromHistory($groupId, $year, $week);
-            if (!empty($groups[$key]['users'])) {
-                foreach ($groups[$key]['users'] as $keyUser => $user) {
-                    $user = $this->_getUserData($user, $groupId, $year, $week);
-                    $groups[$key]['users'][$keyUser] = $user;
-                }
-            }
-        }
         $this->view->week                = $week;
         $this->view->year                = $year;
         $this->view->historyDateWeekYear = $historyDateWeekYear;
-        $this->view->groups              = $groups;
+        $this->view->groups              = $groupsUserData;
     }
 
     public function exportAction()
     {
-        $filename = '/usr/home/dementy/dem.xls';
+        $week  = $this->_getParam('week');
+        $year  = $this->_getParam('year');
+
+        $filename = $this->_modelOverview->getHistoryDataFile($week, $year);
+        $fullPath = EXPORT_PATH_DIR . '/' . $filename;
+
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender();
 
         $this->getResponse()->setRawHeader( "Content-Type: application/vnd.ms-excel; charset=UTF-8" )
-            ->setRawHeader( "Content-Disposition: attachment; filename=excel.xls" )
+            ->setRawHeader( "Content-Disposition: attachment; filename=" .  $filename)
             ->setRawHeader( "Content-Transfer-Encoding: binary" )
             ->setRawHeader( "Expires: 0" )
             ->setRawHeader( "Cache-Control: must-revalidate, post-check=0, pre-check=0" )
             ->setRawHeader( "Pragma: public" )
-            ->setRawHeader( "Content-Length: " . filesize( $filename ) )
+            ->setRawHeader( "Content-Length: " . filesize( $fullPath ) )
             ->sendResponse();
 
-        readfile( $filename );
+        readfile( $fullPath );
     }
-
-    protected function _getUserData($user, $groupId, $year, $week)
-    {
-        $user['history'] = $this->_getHistory($user['id'], $groupId, $year, $week);
-        $modelHistory = new Application_Model_History();
-        $user['weekHours'] = $modelHistory->getUserWeekDataByWeekYear($user['id'], $groupId, $week, $year);
-        return $user;
-    }
-
-    protected function _getHistory($userId, $groupId, $fromYear, $fromWeek, $weeksCount = self::HISTORY_WEEK_NUM)
-    {
-        $history = array();
-        $modelHistory = new Application_Model_History();
-        $historyWeeks = My_DateTime::getNumHistoryWeeks($fromYear, $fromWeek, $weeksCount);
-        foreach ($historyWeeks as $week => $year) {
-            $history[$week] = $modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
-        }
-        return $history;
-    }
-
 
     public function updateHistoryHourAction()
     {

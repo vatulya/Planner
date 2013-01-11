@@ -14,11 +14,15 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
         $select = $this->_db->select()
             ->from(array('uh' => self::TABLE_NAME),
                 array("*"))
-            ->where('uh.user_id = ?', $userId)
-            ->where('uh.group_id = ?', $groupId)
             ->where('uh.week = ?', $week)
             ->where('uh.year = ?', $year);
-        $result = $this->_db->fetchRow($select);
+        if ($userId !== false && $groupId !== false) {
+            $select->where('uh.user_id = ?', $userId)
+                   ->where('uh.group_id = ?', $groupId);
+            $result = $this->_db->fetchRow($select);
+        } else {
+            $result = $this->_db->fetchAll($select);
+        }
         return $result;
     }
 
@@ -27,6 +31,7 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
         $select = $this->_db->select()
             ->from(array('uh' => self::TABLE_NAME),
                 array(
+                    '*',
                     'work_time' => 'SUM(work_time)',
                     'overtime_time' => 'SUM(overtime_time)',
                     'vacation_time' => 'SUM(vacation_time)',
