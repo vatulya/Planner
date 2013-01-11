@@ -138,9 +138,9 @@ class Planner_UserSettingsController extends My_Controller_Action
                 }
             } else {
                 $data = $createForm->getMessages();
+                $data = array_filter($data);
             }
         }
-        $data = array_filter($data);
         if ($status) {
             $this->_response(1, '', $data);
         } else {

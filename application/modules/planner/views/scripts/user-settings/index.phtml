@@ -42,8 +42,13 @@
         $groups = implode(', ', $groups);
         $groupRoles = rtrim($groupRoles, ';');
         try {
-            $userBirthdayFormatted = new DateTime($user['birthday']);
-            $userBirthdayFormatted = $userBirthdayFormatted->format('d-m-Y');
+            if ( ! empty($user['birthday']) && $user['birthday'] != '0000-00-00') {
+                $userBirthdayFormatted = new DateTime($user['birthday']);
+                $userBirthdayFormatted = $userBirthdayFormatted->format('d-m-Y');
+            } else {
+                $userBirthdayFormatted = '';
+                $user['birthday'] = '';
+            }
         } catch (Exception $e) {$userBirthdayFormatted = $user['birthday'];}
         ?>
 
@@ -129,7 +134,7 @@
                 if ( ! empty($user['time_work'])) {
                     $start = My_DateTime::factory($user['time_work']['time_start']);
                     $end   = My_DateTime::factory($user['time_work']['time_end']);
-                    $timeWork = $start->format('H:m') . ' - ' . $end->format('H:m');
+                    $timeWork = $start->format('H:i') . ' - ' . $end->format('H:i');
                 }
             ?>
             <td class="show-tooltip" data-original-title="<?php echo $timeWork; ?>" data-placement="top">

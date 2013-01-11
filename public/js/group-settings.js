@@ -124,14 +124,14 @@
                 success: function(response) {
                     response = response.response;
                     if (response.status) {
-                        document.Form.showSuccess(formEl);
+                        window.Form.showSuccess(formEl);
                         window.location.reload();
                     } else {
-                        document.Form.showErrors(formEl);
+                        window.Form.showErrors(formEl);
                     }
                 },
                 error: function() {
-                    document.Form.showErrors(formEl);
+                    window.Form.showErrors(formEl);
                 }
             });
         },

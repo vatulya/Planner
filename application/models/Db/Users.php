@@ -6,6 +6,7 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
     const TABLE_NAME = 'users';
 
     protected $_allowedSaveFields = array(
+        'email',
         'full_name', 'address', 'phone',
         'emergency_phone', 'emergency_full_name', 'birthday', 'owner',
     );
@@ -101,6 +102,16 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
 
     public function insert(array $user)
     {
+        try {
+            if ( ! empty($date)) {
+                $date = new DateTime($user['birthday']);
+                $date = $date->format('Y-m-d');
+            } else {
+                $date = '0000-00-00';
+            }
+        } catch (Exception $e) {
+            $date = '0000-00-00';
+        }
         $data = array(
             'email'               => empty($user['email']) ? '' : $user['email'],
             'password'            => empty($user['password']) ? '' : $user['password'],
@@ -110,7 +121,7 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
             'phone'               => empty($user['phone']) ? '' : $user['phone'],
             'emergency_phone'     => empty($user['emergency_phone']) ? '' : $user['emergency_phone'],
             'emergency_full_name' => empty($user['emergency_full_name']) ? '' : $user['emergency_full_name'],
-            'birthday'            => empty($user['birthday']) ? '' : $user['birthday'],
+            'birthday'            => $date,
             'owner'               => empty($user['owner']) ? '' : $user['owner'],
             'created'             => date_create()->format('Y-m-d H:i:s'),
         );
