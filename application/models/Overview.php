@@ -90,6 +90,7 @@ class Application_Model_Overview extends Application_Model_Abstract
         $filename = 'week_' . $week . '_year_' . $year .'_history_data_export.csv';
         $fullPath = EXPORT_PATH_DIR . '/' . $filename;
         $this->writeFileCSV($groupsUserData, $fullPath);
+        chmod($fullPath, 0777);
         return $filename;
     }
 }
