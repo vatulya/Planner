@@ -6,6 +6,8 @@ class Planner_OverviewController extends My_Controller_Action
         'index'     => array('html'),
         'export'     => array('html'),
         'update-history-hour' => array('json'),
+        'delete-email' => array('json'),
+        'add-new-email' => array('json'),
         'get-year-totals' => array('html'),
     );
 
@@ -61,7 +63,9 @@ class Planner_OverviewController extends My_Controller_Action
 
         $historyDateWeekYear = My_DateTime::getNumHistoryWeeks($year, $week);
         $groupsUserData = $this->_modelOverview->getAllGroupAndUserWeekSummary($week, $year);
+        $subscribedEmail = new Application_Model_Db_User_Mail();
 
+        $this->view->emails              = $subscribedEmail->getListMail();
         $this->view->week                = $week;
         $this->view->year                = $year;
         $this->view->historyDateWeekYear = $historyDateWeekYear;
@@ -117,6 +121,36 @@ class Planner_OverviewController extends My_Controller_Action
         }
     }
 
+    public function deleteEmailAction()
+    {
+        $emailId = $this->_getParam('email', 0);
+        $status = false;
+        if ($emailId > 0) {
+            $userMail = new Application_Model_Db_User_Mail();
+            $status = $userMail->deleteEmailById($emailId);
+        }
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
+
+    public function addNewEmailAction()
+    {
+        $newEmail          = $this->_getParam('new_email', '');
+        $status = false;
+        //TODO maybe need add check for email format
+        if (!empty($newEmail)) {
+            $userMail = new Application_Model_Db_User_Mail();
+            $status = $userMail->saveEmail($newEmail);
+        }
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', array());
+        }
+    }
 
     public function getYearTotalsAction()
     {

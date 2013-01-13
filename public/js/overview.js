@@ -142,6 +142,61 @@
             });
         },
 
+        showAddEmailPopup: function(el) {
+            el = $(el);
+            var modal = $('#add-email-modal');
+            modal.modal();
+        },
+
+        deleteEmail: function(el) {
+            el = $(el);
+            var text = el.data('email');
+            text = 'Delete email "' + text + '" from automail list? Are you sure?';
+            if (confirm(text)) {
+                var data = {};
+                data.email = el.data('email-id');
+                data.format = 'json';
+                $.ajax({
+                    url: '/overview/delete-email',
+                    data: data,
+                    success: function(response) {
+                        response = response.response;
+                        if (response.status) {
+                            window.location.reload();
+                        } else {
+                            alert('Error! Something wrong.');
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error! Something wrong.');
+                    }
+                });
+            }
+        },
+
+        submitAddEmail: function() {
+            var modal, calendar, data;
+            modal             = $('#add-email-modal');
+            var data = {};
+            data.new_email = modal.find('.new_email').val();
+            data.format       = 'json';
+            $.ajax({
+                url: '/overview/add-new-email',
+                data: data,
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.location.reload();
+                    } else {
+                        alert('Error! Something wrong.');
+                    }
+                },
+                error: function(response) {
+                    alert('Error! Something wrong.');
+                }
+            });
+        },
+
         initTotalAjaxForm: function() {
             var formEl = $('#form-edit-day');
             $('#form-edit-day').ajaxForm({
@@ -174,6 +229,15 @@
         });
         $(document.body).on('click', '.submit-popover-edit-field', function(e) {
             Overview.saveField(e.currentTarget);
+        });
+        $(document.body).on('click', '.add-email', function(e) {
+            Overview.showAddEmailPopup(e.currentTarget);
+        });
+        $(document.body).on('click', '.remove-email', function(e) {
+            Overview.deleteEmail(e.currentTarget);
+        });
+        $('#submit-add-email').on('click', function(e) {
+            Overview.submitAddEmail();
         });
     });
 

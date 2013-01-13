@@ -73,6 +73,35 @@
 </div>
 <?php endforeach; ?>
 
+    <div class="span12 regular-holidays">
+        <table class="">
+            <tbody>
+            <tr>
+                <td>
+                    <button class="btn btn-mini btn-success add-email">
+                        <i class="icon-plus-sign icon-white"></i>
+                    </button>
+                    Auto email export list
+                    <a href="#" class="show-tooltip no-action" data-original-title="Subscribe email to every week report" ><i class="icon-info-sign"></i></a>:
+                </td>
+                <td style="width: 600px;">
+                    <?php foreach ($this->emails as $email): ?>
+                    <span class="label label-info">
+                        <?php echo $email['email']; ?>
+                        <a href="#" class="show-tooltip no-action remove-email" data-original-title="Remove" data-email-id="<?php echo $email['id']; ?>" data-email="<?php echo $email['email']; ?>">
+                            <i class="icon-remove icon-white"></i>
+                        </a>
+                    </span>
+                    <?php endforeach; ?>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="div-row">&nbsp;</div>
+    <div class="div-row">&nbsp;</div>
+    <div class="div-row">&nbsp;</div>
+    <div class="div-row">&nbsp;</div>
 </div>
 
 <!-- DEFAULT EDIT POPOVER -->
@@ -93,5 +122,21 @@
     </div>
     <div class="modal-body-year-total">
 
+    </div>
+</div>
+
+<!-- Add automail popup -->
+<div class="modal hide popup" id="add-email-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3>Add new email to Automail list</h3>
+    </div>
+    <div class="modal-body">
+        <div class="pull-left">
+            New email: <input type="text" name="email" value="" class="new_email">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" id='submit-add-email'>Save</button>
     </div>
 </div>

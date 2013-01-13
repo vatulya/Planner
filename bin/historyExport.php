@@ -38,7 +38,6 @@ $overview = new Application_Model_Overview();
 $filename = $overview->getHistoryDataFile($week, $year);
 $fullPath = EXPORT_PATH_DIR . '/' . $filename;
 
-$emails = array ('dementy@bintime.com' , 'vat@bintime.com');
 $subscribedEmail = new Application_Model_Db_User_Mail();
 $emails = $subscribedEmail->getListMail();
 
