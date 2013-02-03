@@ -13,6 +13,7 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
             ->from(array('gp' => self::TABLE_NAME), array('*', 'total_time' => 'TIMEDIFF(time_end,time_start)'))
             ->where('gp.group_id = ?', $groupId)
             ->where('gp.user_id = ?', $userId)
+            ->where('gp.enabled = ?', 1)
             ->order(array('gp.day_number ASC'));
         if ($weekType) {
             $select->where('gp.week_type = ?', $weekType);

@@ -70,14 +70,14 @@
             });
             $('.timepicker-start2').timepicker({
                 minuteStep: 10,
-                template: 'modal',
+                template: 'false',
                 showSeconds: false,
                 showMeridian: false,
                 defaultTime: 'value'
             });
             $('.timepicker-end2').timepicker({
                 minuteStep: 10,
-                template: 'modal',
+                template: 'false',
                 showSeconds: false,
                 showMeridian: false,
                 defaultTime: 'value'
@@ -89,6 +89,7 @@
             $('#time_start2').attr('value',  $('#time_start').attr('value'));
             $('#time_end2').attr('value',  $('#time_end').attr('value'));
         },
+
         changeSelectedColor: function(el) {
             el = $(el);
             $('.day-status-color').removeClass('active');

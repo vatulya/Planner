@@ -2,14 +2,25 @@
 <?php
     $title = @$this->userDayData['date'] . '</br>' . @$this->userDayData['status1']['description'];
     if (!empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])) {
-        $title .= ": " . $this->userDayData['time_start'] . "-" . $this->userDayData['time_end'] . " | Total:" . $this->userDayData['total_time'];
+        $title .= ": " . $this->userDayData['time_start'] . "-" . $this->userDayData['time_end'];
+    }
+    if (!empty($this->userDayData['pause_start']) && !empty($this->userDayData['pause_end'])) {
+        $title .= '</br>' . "Pause : " . $this->userDayData['pause_start'] . "-" . $this->userDayData['pause_end'];
     }
     if (!empty($this->userDayData['status2']['description'])) {
         $title .= "</br>" . $this->userDayData['status2']['description'];
         if (!empty($this->userDayData['time_start2']) && !empty($this->userDayData['time_end2'])) {
-            $title .= ": <nobr>" . $this->userDayData['time_start2'] . "-" . $this->userDayData['time_end2'] . "&nbsp;|&nbsp;Total&nbsp;" . $this->userDayData['total_time2'] . "</nobr>" ;
+            $title .= ": <nobr>" . $this->userDayData['time_start2'] . "-" . $this->userDayData['time_end2'] . "&nbsp;</nobr>" ;
         }
     }
+
+    $total = 0;
+    if (@$this->userDayData['total_time'] > 0) {
+        $total = @$this->userDayData['total_time'] - @$this->userDayData['total_time2'];
+    } elseif(@$this->userDayData['total_time2'] > 0)  {
+        $total = @$this->userDayData['total_time2'];
+    }
+    $title .= '</br>' . "Total : " . $total ;//. ;
 ?>
 <a href="<?php echo $this->url(
     array(

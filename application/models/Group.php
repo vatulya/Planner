@@ -104,7 +104,8 @@ class Application_Model_Group extends Application_Model_Abstract
         $groupPlannings = new Application_Model_Db_Group_Plannings();
         //Try get user in group plan
         $planning = $groupPlannings->getGroupPlanning($groupId, $userId, $weekType, $day);
-        if (empty($planning)) {
+        //Off, need clean logic set default common plan
+        if (0 && empty($planning)) {
             //Get group plan
             $planning = $groupPlannings->getGroupPlanning($groupId, 0, $weekType, $day);
         }

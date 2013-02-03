@@ -172,6 +172,8 @@ class Application_Model_Planning extends Application_Model_Abstract
                     if (!empty($result['time_start']) && !empty($result['time_end'])) {
                         $result['time_start'] = $this->_formatTime($result['time_start']);
                         $result['time_end'] = $this->_formatTime($result['time_end']);
+                        $result['pause_start'] = $this->_formatTime($result['pause_start']);
+                        $result['pause_end'] = $this->_formatTime($result['pause_end']);
                         $result['total_time'] = My_DateTime::TimeToDecimal($result['total_time']);
                     }
                     if (!empty($missingUserDayStatuses)) {
