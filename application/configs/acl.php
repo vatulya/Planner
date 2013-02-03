@@ -16,6 +16,7 @@ $acl->addRole($groupAdmin, $user);
 $acl->addRole($admin     , $groupAdmin);
 $acl->addRole($superAdmin, $admin);
 
+$acl->addResource(new Zend_Acl_Resource('calendar'));
 $acl->addResource(new Zend_Acl_Resource('planner'));
 $acl->addResource(new Zend_Acl_Resource('planner.auth'));
 $acl->addResource(new Zend_Acl_Resource('planner.checking'));
@@ -33,6 +34,7 @@ $acl->deny(null, null, null);
 
 //$acl->allow($guest, 'planner');
 $acl->allow($guest, 'planner.auth');
+$acl->allow($guest, 'calendar');
 
 $acl->allow($user, 'planner.checking');
 $acl->allow($user, 'planner.planning');
