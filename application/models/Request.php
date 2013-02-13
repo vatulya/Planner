@@ -97,9 +97,9 @@ class Application_Model_Request extends Application_Model_Abstract
                     $userParameters = $modelUser->getParametersByUserId($request['user_id']);
                     $day = Application_Model_Day::factory($request['request_date'], $request['user_id']);
                     $workTime = $day->getWorkTime();
-                    $newUserAllowedFreeTime = $userParameters['allowed_free_time'] - $workTime;
+                    $newUserAllowedFreeTime = $userParameters['used_free_time'] + $workTime;
                     $modelDbUserParameters = new Application_Model_Db_User_Parameters();
-                    $modelDbUserParameters->setAllowedFreeTime($request['user_id'], $newUserAllowedFreeTime);
+                    $modelDbUserParameters->setUsedFreeTime($request['user_id'], $newUserAllowedFreeTime);
                 }
             }
         }

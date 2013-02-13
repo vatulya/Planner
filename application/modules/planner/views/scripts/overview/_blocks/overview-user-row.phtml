@@ -24,9 +24,9 @@
                         <div class="">
                             <span><?php echo $user['weekHours']['free_hours']; ?></span>
                             <a href="#" class="no-action  underflow-container editable"
-                               data-field-title="Openstaande saldo"
+                               data-field-title="Set additional free hours (Now set additional: <?php echo $user['weekHours']['additional_hours']; ?> hours)"
                                data-field-name="free_time"
-                               data-field-value="<?php echo $user['weekHours']['free_hours']; ?>"
+                               data-field-value="<?php echo $user['weekHours']['additional_hours']; ?>"
                                data-field-group="<?php echo $this->group['id']; ?>"
                                data-field-user="<?php echo $user['user_id']; ?>"
                                data-field-week="<?php echo $this->week; ?>"

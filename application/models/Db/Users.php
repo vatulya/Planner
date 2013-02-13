@@ -8,7 +8,7 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
     protected $_allowedSaveFields = array(
         'email',
         'full_name', 'address', 'phone',
-        'emergency_phone', 'emergency_full_name', 'birthday', 'owner',
+        'emergency_phone', 'emergency_full_name', 'birthday', 'owner', 'regular_work_hours',
     );
 
     public function getUserByEmail($email, DateTime $checkingDate = null)

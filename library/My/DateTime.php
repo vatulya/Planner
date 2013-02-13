@@ -184,9 +184,9 @@ class My_DateTime extends DateTime
     static public function getEvenWeek($weekNumber)
     {
         if ($weekNumber  % 2 > 0) {
-            return 'even';
+            return 'odd';
         }
-        return 'odd';
+        return 'even';
     }
 
     public static function getWeekDays()

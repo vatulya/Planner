@@ -124,10 +124,10 @@ class Application_Model_User extends Application_Model_Abstract
 
 
 
-    public function getParametersByUserId($userId)
+    public function getParametersByUserId($userId, $year = '')
     {
         $modelUserParameters = new Application_Model_Db_User_Parameters();
-        $userParameters = $modelUserParameters->getParametersByUserId($userId);
+        $userParameters = $modelUserParameters->getParametersByUserId($userId, $year = '');
         return $userParameters;
     }
 
@@ -252,48 +252,22 @@ class Application_Model_User extends Application_Model_Abstract
         return $workHours;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public function getAllowedFreeTime($userId)
+    public function getUsedFreeTime($userId)
     {
         $parameters = $this->getParametersByUserId($userId);
-        return $parameters['allowed_free_time'];
+        return $parameters['used_free_time'];
     }
 
-    /**
-     * DEPRECATED
-     * This method can be used ONLY when Module_Day will correct work with History dates
-     * @param $userId
-     * @return mixed
-     */
-    public function calculateAllowedFreeTime($userId)
+    public function getAdditionalFreeTime($userId, $year)
     {
-        $modelRequest      = new Application_Model_Request();
-        $approvedRequests  = $modelRequest->getRequestsByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED);
-        $userTotalFreeTime = $this->getTotalFreeTime($userId);
-        $approvedTime      = 0; // in secs
-        foreach ($approvedRequests as $request) {
-            $day = Application_Model_Day::factory($request['request_date'], $userId);
-            $approvedTime += $day->getWorkHours();
-        }
-        $userAllowedFreeTime = $userTotalFreeTime - $approvedTime;
-        $modelDbUserParameters = new Application_Model_Db_User_Parameters();
-        $modelDbUserParameters->setAllowedFreeTime($userId, $userAllowedFreeTime);
-        return $userAllowedFreeTime;
+        $parameters = $this->getParametersByUserId($userId, $year);
+        return $parameters['additional_free_time'];
+    }
+
+    public function getAllowedFreeTime($userId, $year)
+    {
+        $parameters = $this->getParametersByUserId($userId, $year);
+        return $parameters['total_free_time'] - $parameters['used_free_time'] + $parameters['additional_free_time'];
     }
 
     public function getTotalFreeTime($userId)
@@ -302,22 +276,34 @@ class Application_Model_User extends Application_Model_Abstract
         return $parameters['total_free_time'];
     }
 
-    public function saveRegularWorkHours($userId, $hours)
+    public function saveRegularWorkHours($userId, $hours, $year)
     {
         $result = false;
         $modelParameters = new Application_Model_Parameter();
         if ($hours > 0 && $hours <= $modelParameters->getDefaultWorkHours() && $userId > 0) {
             $modelUserParameters = new Application_Model_Db_User_Parameters();
-            $userParametersOld   = $modelUserParameters->getParametersByUserId($userId);
-
-            $result = $modelUserParameters->setRegularWorkHours($userId, $hours);
-            if ($result) {
-                $userParametersNew = $modelUserParameters->getParametersByUserId($userId);
-                $deltaPercentage = $userParametersNew['regular_work_hours'] / $userParametersOld['regular_work_hours']; // 20 / 40 = 0.5
-                $modelParameters->recalculateAllUsersTotalFreeTime($deltaPercentage, $userId);
-            }
+            $result = $modelUserParameters->setRegularWorkHours($userId, $hours, $year);
         }
         return $result;
     }
 
+    public function addTotalFreeHoursForDayToAllUsers()
+    {
+        $parameters = new Application_Model_Parameter();
+        $defaultWorkHours = $parameters->getDefaultWorkHours(); //40
+        $defaultTotalFreeHours = $parameters->getDefaultTotalFreeHours(); //216
+        $users = $this->getAllUsers();
+        foreach ($users as $user) {
+            //$user = new Application_Model_User();
+            $currentTotalFreeTime = $this->getTotalFreeTime($user['id']);
+            $user = $this->getUserById($user['id']);
+            $dbParameters = new Application_Model_Db_User_Parameters();
+            //  default_total_free_hours / 365 * regular_work_hours / $defaultWorkHours = free_time_for_day
+            //  216 / 365 * 20 / 40 = 0.3 at one day
+            $newTotalFreeTime = $currentTotalFreeTime +  $defaultTotalFreeHours/365*$user['regular_work_hours']/$defaultWorkHours * 3600;
+            $dbParameters->setTotalFreeTime($user['id'], $newTotalFreeTime);
+        }
+
+        return true;
+    }
 }

@@ -231,3 +231,13 @@ CREATE TABLE `user_history` (
   `free_hours` TIME DEFAULT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8
+
+
+ALTER TABLE `user_parameters`
+ADD COLUMN `year` YEAR NULL AFTER `regular_work_hours`,
+ADD COLUMN `additional_free_time` INT(11) DEFAULT '0' NOT NULL AFTER `year`;
+DELETE  FROM user_parameters;
+ALTER TABLE `user_parameters` DROP PRIMARY KEY,     ADD PRIMARY KEY(`user_id`, `year`);
+ALTER TABLE `user_parameters`  CHANGE `allowed_free_time` `used_free_time` INT(11) DEFAULT '0' NOT NULL;
+ALTER TABLE `users`     ADD COLUMN `regular_work_hours` INT(3) DEFAULT '40' NOT NULL AFTER `updated`;
+ALTER TABLE `user_parameters` DROP COLUMN `regular_work_hours`;

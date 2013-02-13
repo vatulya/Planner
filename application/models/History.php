@@ -80,7 +80,7 @@ class Application_Model_History extends Application_Model_Abstract
             $history = $this->_modelHistory->getUserWeekDataByWeekYear($userId, $groupId, $week, $year);
         }
 
-        $history = $this->_replaceAllTimeFieldToDecimal($history);
+        $history = $this->_replaceAllTimeFieldToDecimal($history, $year);
         return $history;
     }
 
@@ -91,7 +91,7 @@ class Application_Model_History extends Application_Model_Abstract
         $user = new Application_Model_User;
         $group = new Application_Model_Group;
         foreach ($history as $userGroupRow) {
-            $userGroupRow = $this->_replaceAllTimeFieldToDecimal($userGroupRow);
+            $userGroupRow = $this->_replaceAllTimeFieldToDecimal($userGroupRow, $year);
             $userGroupRow['user_id'] = $user->getUserById($userGroupRow['user_id']);
             $userGroupRow['group_id'] = $group->getGroupById($userGroupRow['group_id']);
             $allUsersHistory[] = $userGroupRow;
@@ -99,17 +99,19 @@ class Application_Model_History extends Application_Model_Abstract
         return $allUsersHistory;
     }
 
-    private function _replaceAllTimeFieldToDecimal($history)
+    private function _replaceAllTimeFieldToDecimal($history, $year)
     {
         if (!empty($history)) {
-            $userParameter = new Application_Model_Db_User_Parameters();
-            $userParameters = $userParameter->getParametersByUserId($history['user_id']);
+            $userParameter = new Application_Model_User();
+            $userAllowedFreeTime = $userParameter->getAllowedFreeTime($history['user_id'], $year);
+            $userAdditionalFreeTime = $userParameter->getAdditionalFreeTime($history['user_id'], $year);
 
-            $history["work_hours"]     = My_DateTime::TimeToDecimal($history["work_time"]);
-            $history["overtime_hours"] = My_DateTime::TimeToDecimal($history["overtime_time"]);
-            $history["vacation_hours"] = My_DateTime::TimeToDecimal($history["vacation_time"]);
-            $history["missing_hours"]  = My_DateTime::TimeToDecimal($history["missing_time"]);
-            $history["free_hours"]     = My_DateTime::TimeToDecimal($userParameters['allowed_free_time']);
+            $history["work_hours"]       = My_DateTime::TimeToDecimal($history["work_time"]);
+            $history["overtime_hours"]   = My_DateTime::TimeToDecimal($history["overtime_time"]);
+            $history["vacation_hours"]   = My_DateTime::TimeToDecimal($history["vacation_time"]);
+            $history["missing_hours"]    = My_DateTime::TimeToDecimal($history["missing_time"]);
+            $history["free_hours"]       = My_DateTime::TimeToDecimal($userAllowedFreeTime);
+            $history["additional_hours"] = My_DateTime::TimeToDecimal($userAdditionalFreeTime);
             $history["total"]  = My_DateTime::TimeToDecimal($history["work_time"] - $history["missing_time"] + $history["overtime_time"]);
         }
         return $history;
