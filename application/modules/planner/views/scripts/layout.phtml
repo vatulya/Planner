@@ -38,7 +38,7 @@
                 </li>
                 <li <?php if ($this->activeMenu == 'requests'): ?>class="active"<?php endif; ?>>
                     <a href="<?php echo $this->url(array('controller' => 'requests'), 'planner', true) ?>">
-                        Vrij aanvraag
+                        Request
                     </a>
                 </li>
                 <?php if ($this->me['role'] >= Application_Model_Auth::ROLE_GROUP_ADMIN): ?>
@@ -51,7 +51,7 @@
                 <?php if ($this->me['role'] >= Application_Model_Auth::ROLE_ADMIN): ?>
                 <li <?php if ($this->activeMenu == 'group-settings'): ?>class="active"<?php endif; ?>>
                     <a href="<?php echo $this->url(array('controller' => 'group-settings'), 'planner', true) ?>">
-                        Settings groepen
+                        Settings groups
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'user-settings'): ?>class="active"<?php endif; ?>>
@@ -61,7 +61,7 @@
                 </li>
                 <li <?php if ($this->activeMenu == 'overview'): ?>class="active"<?php endif; ?>>
                     <a href="<?php echo $this->url(array('controller' => 'overview'), 'planner', true) ?>">
-                        Overzicht
+                        Overview
                     </a>
                 </li>
                 <li <?php if ($this->activeMenu == 'alerts'): ?>class="active"<?php endif; ?>>

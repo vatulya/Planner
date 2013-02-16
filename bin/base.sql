@@ -241,3 +241,5 @@ ALTER TABLE `user_parameters` DROP PRIMARY KEY,     ADD PRIMARY KEY(`user_id`, `
 ALTER TABLE `user_parameters`  CHANGE `allowed_free_time` `used_free_time` INT(11) DEFAULT '0' NOT NULL;
 ALTER TABLE `users`     ADD COLUMN `regular_work_hours` INT(3) DEFAULT '40' NOT NULL AFTER `updated`;
 ALTER TABLE `user_parameters` DROP COLUMN `regular_work_hours`;
+
+ALTER TABLE `planner`.`status`     ADD COLUMN `is_holiday` BINARY(1) DEFAULT '0' NOT NULL AFTER `edit_type`;

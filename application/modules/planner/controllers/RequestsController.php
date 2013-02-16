@@ -42,7 +42,11 @@ class Planner_RequestsController extends My_Controller_Action
     {
         $userId = $this->_getParam('user');
         $userParameters = $this->_modelUser->getParametersByUserId($userId);
-        $userAllowedFreeTime = $this->_modelUser->getAllowedFreeTime($userId);
+        if (empty($year)) {
+            $weekYear = My_DateTime::getWeekYear();
+            $year = $weekYear['year'];
+        }
+        $userAllowedFreeTime = $this->_modelUser->getAllowedFreeTime($userId, $year);
         $userRequests = $this->_modelRequest->getRequestsByUserId($userId);
         $openRequestsWorkTime = 0;
         foreach ($userRequests[Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN] as $request) {

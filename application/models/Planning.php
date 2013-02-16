@@ -209,6 +209,9 @@ class Application_Model_Planning extends Application_Model_Abstract
             $currentDateFormat = $date->format('Y-m-d');
             if ($result['date'] == $currentDateFormat) {
                 $result['editable'] = $this->_getEditableDay($result['user_id'], $result['group_id']);
+            } elseif (empty($result['editable'])) {
+                //user can't chang past data only admins.
+                $result['editable'] = $this->_getEditableDay(0, $result['group_id']);
             }
         } else {
             $result = $this->_setDefaultStatusForEmptyPlan();
@@ -308,18 +311,6 @@ class Application_Model_Planning extends Application_Model_Abstract
     public function getWeekHistory($userId, $groupId, $year, $week)
     {
         $workTime = $this->getUserWorkTimeByGroup($userId, $groupId, $year, $week);
-        return $workTime;
-
-
-        $status = new Application_Model_Status();
-/*         $workTime[Application_Model_Planning::STATUS_DAY_WHITE] =
-         $workTime[Application_Model_Planning::STATUS_DAY_GREEN]
-         $workTime[Application_Model_Planning::STATUS_DAY_YELLOW]
-         $workTime[Application_Model_Planning::STATUS_DAY_RED]
-         $workTime[Application_Model_Planning::STATUS_DAY_CYAN]
-         $workTime[Application_Model_Planning::STATUS_DAY_BLUE]
-         $workTime[Application_Model_Planning::STATUS_DAY_OVERTIME]*/
-
         return $workTime;
     }
 }

@@ -17,32 +17,25 @@ $this->selectedStatus2 = $selectedStatus2;
 ?>
 <?php echo $this->element->time_start; ?>
 <?php echo $this->element->time_end; ?>
-<?php if (0 && $selectedStatus1 != 1) ://white color status //switch off because broken logic?>
-<div><h3>Day Work Time</h3></div>
-<table>
-    <tr>
-        <td>
-            <label class="control-label" for="time_start">Time start</label>
-            <div class="input-append bootstrap-timepicker-component">
-                <?php echo $this->element->time_start->setAttrib('class', 'timepicker-start input-mini') ?>
-                <span class="add-on">
-                    <i class="icon-time"></i>
-                </span>
-            </div>
-        </td>
-        <td>
-            <label class="control-label" for="time_end">Time end</label>
-            <div class="input-append bootstrap-timepicker-component">
-                <?php echo $this->element->time_end->setAttrib('class', 'timepicker-end input-mini') ?>
-                <span class="add-on">
-                    <i class="icon-time"></i>
-                </span>
-            </div>
-        </td>
-    <tr>
-</table>
-<?php endif; ?>
+
 <div><h3>Set time and day color</h3></div>
+
+<table class="table table-bordered table-condensed table-striped">
+    <thead>
+    <tr>
+        <th >Hour type</th><th >Color</th><th >Time start</th><th >Time end</th><th >Holiday</th>
+    </tr>
+    </thead>
+    <?php if  ($selectedStatus1 == 2) ://green color status ?>
+    <tr><td><?php echo $statuses[3]['description']  ?></td><td style="background-color: #<?php echo $statuses[3]['color_hex']?>"></td><td></td><td></td><td></td></tr>
+    <tr><td><?php echo $statuses[4]['description']  ?></td><td style="background-color: #<?php echo $statuses[4]['color_hex']?>"></td><td></td><td></td><td></td></tr>
+    <tr><td><?php echo $statuses[5]['description']  ?></td><td style="background-color: #<?php echo $statuses[5]['color_hex']?>"></td><td></td><td></td><td></td></tr>
+    <tr><td><?php echo $statuses[6]['description']  ?></td><td style="background-color: #<?php echo $statuses[6]['color_hex']?>"></td><td></td><td></td><td></td></tr>
+    <?php endif; ?>
+    <?php if ($selectedStatus1 == 2 || $selectedStatus1 == 1) ://white color status ?>
+    <tr><td><?php echo $statuses[7]['description']  ?></td><td style="background-color: #<?php echo $statuses[7]['color_hex']?>"></td><td></td><td></td><td></td></tr>
+    <?php endif; ?>
+</table>
 
 <table>
     <tr>
