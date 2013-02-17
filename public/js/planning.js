@@ -101,22 +101,39 @@
                 //    alert($('#status1').val + el.data('color'));
             }
         },
-        changeHourInput: function(el) {
+        checkHourInput: function(el) {
             el = $(el);
             var inputValue = el.attr('value');
-            //inputValue = inputValue * 1 || 0;
-            if (inputValue) {
-                inputValue = 0;
+            if (inputValue !== '') {
+                inputValue = inputValue * 1
+                if (! inputValue) {
+                    inputValue = 0;
+                }
+                if (inputValue > 23 ) {
+                    el.attr('value',23);
+                } else if  (inputValue <= 0) {
+                    el.attr('value',0);
+                } else {
+                    el.attr('value',inputValue);
+                }
             }
-            alert(inputValue);
-            if (inputValue != '' && inputValue > 23 ) {
-                el.attr('value',23);
+        },
+        checkMinuteInput: function(el) {
+            el = $(el);
+            var inputValue = el.attr('value');
+            if (inputValue !== '') {
+                inputValue = inputValue * 1
+                if (! inputValue) {
+                    inputValue = 0;
+                }
+                if (inputValue > 59 ) {
+                    el.attr('value',59);
+                } else if  (inputValue <= 0) {
+                    el.attr('value',0);
+                } else {
+                    el.attr('value',inputValue);
+                }
             }
-            if (inputValue != '' && inputValue <= 0) {
-                el.attr('value',0);
-            }
-
-            //alert();
         }
     };
 
@@ -131,7 +148,10 @@
             DaySettings.changeSelectedColor(e.currentTarget);
         });
         $(document.body).on('blur', '.set-time-hour-field', function(e) {
-            DaySettings.changeHourInput(e.currentTarget);
+            DaySettings.checkHourInput(e.currentTarget);
+        });
+        $(document.body).on('blur', '.set-time-mins-field', function(e) {
+            DaySettings.checkMinuteInput(e.currentTarget);
         });
     });
 
