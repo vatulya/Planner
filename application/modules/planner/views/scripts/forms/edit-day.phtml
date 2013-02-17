@@ -14,65 +14,51 @@ $selectedStatus1 = $this->element->status1->getValue();
 $selectedStatus2 = $this->element->status2->getValue();
 $this->selectedStatus1 = $selectedStatus1;
 $this->selectedStatus2 = $selectedStatus2;
+$additionalStyleForInput = ' style="margin: 0px;" '; //I can't replace common style
 ?>
 <?php echo $this->element->time_start; ?>
 <?php echo $this->element->time_end; ?>
 
 <div><h3>Set time and day color</h3></div>
 
-<table class="table table-bordered table-condensed table-striped">
+<table class="table table-bordered table-condensed table-striped work-time">
     <thead>
     <tr>
         <th >Hour type</th><th >Color</th><th >Time start</th><th >Time end</th><th >Holiday</th>
     </tr>
     </thead>
-    <?php if  ($selectedStatus1 == 2) ://green color status ?>
-    <tr><td><?php echo $statuses[3]['description']  ?></td><td style="background-color: #<?php echo $statuses[3]['color_hex']?>"></td><td></td><td></td><td></td></tr>
-    <tr><td><?php echo $statuses[4]['description']  ?></td><td style="background-color: #<?php echo $statuses[4]['color_hex']?>"></td><td></td><td></td><td></td></tr>
-    <tr><td><?php echo $statuses[5]['description']  ?></td><td style="background-color: #<?php echo $statuses[5]['color_hex']?>"></td><td></td><td></td><td></td></tr>
-    <tr><td><?php echo $statuses[6]['description']  ?></td><td style="background-color: #<?php echo $statuses[6]['color_hex']?>"></td><td></td><td></td><td></td></tr>
-    <?php endif; ?>
-    <?php if ($selectedStatus1 == 2 || $selectedStatus1 == 1) ://white color status ?>
-    <tr><td><?php echo $statuses[7]['description']  ?></td><td style="background-color: #<?php echo $statuses[7]['color_hex']?>"></td><td></td><td></td><td></td></tr>
-    <?php endif; ?>
+
+        <?php for ($i = 2; $i < 8; $i++): ?>
+        <?php if  ($selectedStatus1 == 2 || $i == 7) ://green color status or overtime?>
+            <tr>
+                <td>
+                    <?php echo $statuses[$i]['description']  ?>
+                </td>
+                <td style="background-color: #<?php echo $statuses[$i]['color_hex']?>;">
+                    <div   style="width: 100px;"></div>
+                </td>
+                <?php
+                if  ($i == 3 || $i == 2) {
+                    $disabledInput =  ' disabled="disabled "';
+                } else {
+                    $disabledInput =  '';
+                }
+                ?>
+                    <td>
+                        <div class="input-time">
+                            <input type="text" value="<?php echo @$startHourValue; ?>" <?php echo $additionalStyleForInput . $disabledInput ?>  name="start_hour" class="set-time-hour-status start-hour set-time-hour-field">:
+                            <input type="text" value="<?php echo @$startMinValue; ?>"  <?php echo $additionalStyleForInput . $disabledInput?> name="start_min" class="set-time-min-status start-min">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-time">
+                            <input type="text" value="<?php echo @$endHourValue; ?>" <?php echo $additionalStyleForInput . $disabledInput ?>  name="end_hour" class="set-time-hour-status end-hour">:
+                            <input type="text" value="<?php echo @$endMinValue; ?>" <?php echo $additionalStyleForInput . $disabledInput ?>  name="end_min" class="set-time-min-status end-min">
+                        </div>
+                    </td>
+                <td></td>
+            </tr>
+        <?php endif; ?>
+        <?php endfor; ?>
 </table>
 
-<table>
-    <tr>
-        <td>
-            <label class="control-label" for="time_exclude">Time Start</label>
-            <div class="input-append bootstrap-timepicker">
-                <?php echo $this->element->time_start2->setAttrib('class', 'timepicker-start2 input-mini') ?>
-            </div>
-        </td>
-        <td>
-            <label class="control-label" for="time_exclude">Time end</label>
-            <div class="input-append bootstrap-timepicker">
-                <?php echo $this->element->time_end2->setAttrib('class', 'timepicker-end2 input-mini') ?>
-            </div>
-        </td>
-    <tr>
-</table>
-<?php if ($selectedStatus1 != 1) ://white color status ?>
-<button type="button" class="btn  btn-primary" id="apply-time-full-day" >Apply for full day</button>
-<?php endif; ?>
-<?php if  ($selectedStatus1 == 2) ://green color status ?>
-<div class="day-color-selector">
-    <?php
-        $this->status = $statuses[4];
-        echo $this->render('forms/color_button.phtml');
-        $this->status = $statuses[5];
-        echo $this->render('forms/color_button.phtml');
-        $this->status = $statuses[6];
-        echo $this->render('forms/color_button.phtml');
-        $this->status = $statuses[7];
-        echo $this->render('forms/color_button.phtml');
-    ?>
-</div>
-<?php elseif ($selectedStatus1 == 1) ://white color status ?>
-<?php
-    $this->status = $statuses[7];
-    //$this->selectedStatus2 = 7;
-    echo $this->render('forms/color_button.phtml');
-?>
-<?php endif; ?>

@@ -100,6 +100,23 @@
                 $('#status2').val( el.data('status'));
                 //    alert($('#status1').val + el.data('color'));
             }
+        },
+        changeHourInput: function(el) {
+            el = $(el);
+            var inputValue = el.attr('value');
+            //inputValue = inputValue * 1 || 0;
+            if (inputValue) {
+                inputValue = 0;
+            }
+            alert(inputValue);
+            if (inputValue != '' && inputValue > 23 ) {
+                el.attr('value',23);
+            }
+            if (inputValue != '' && inputValue <= 0) {
+                el.attr('value',0);
+            }
+
+            //alert();
         }
     };
 
@@ -112,6 +129,9 @@
         });
         $(document.body).on('click', '.day-status-color', function(e) {
             DaySettings.changeSelectedColor(e.currentTarget);
+        });
+        $(document.body).on('blur', '.set-time-hour-field', function(e) {
+            DaySettings.changeHourInput(e.currentTarget);
         });
     });
 
