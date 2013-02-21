@@ -9,7 +9,7 @@ class Application_Model_History extends Application_Model_Abstract
         $this->_modelPlanning   = new Application_Model_Planning();
         $this->_modelDbPlanning = new Application_Model_Db_User_Planning();
         $this->_modelMissing    = new Application_Model_Missing();
-        $this->_modelOvertime   = new Application_Model_Db_User_Overtime();
+        $this->_modelOvertime   = new Application_Model_Overtime();
         $this->_modelRequest    = new Application_Model_Db_User_Requests();
         $this->_modelHistory    = new Application_Model_Db_User_History();
         $this->_modelChecks     = new Application_Model_Db_User_Checks();
@@ -61,9 +61,9 @@ class Application_Model_History extends Application_Model_Abstract
             } else {
                  $overtimeData['time_start2'] = $fullUserDayPlan['time_end'];
             }
-            $this->_modelPlanning->saveUserOvertimeDay($overtimeData);
+            $this->_modelOvertime->saveUserOvertimeDay($overtimeData);
         }
-        $overtime = $this->_modelPlanning->getUserDayOvertimeByDate($userId, $groupId, $date);
+        $overtime = $this->_modelOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
         if (!empty($overtime)) {
             $userHistoryData['overtime_time'] =  $overtime['total_time'];
         }

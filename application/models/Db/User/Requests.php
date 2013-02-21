@@ -18,10 +18,11 @@ class Application_Model_Db_User_Requests extends Application_Model_Db_Abstract
         }
         if (empty($date)) {
             $select->order('request_date ASC');
+            $result = $this->_db->fetchAll($select);
         } else {
             $select->where('ur.request_date = ?', $date);
+            $result = $this->_db->fetchRow($select);
         }
-        $result = $this->_db->fetchAll($select);
         return $result;
     }
 

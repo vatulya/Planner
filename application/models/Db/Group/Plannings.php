@@ -10,7 +10,7 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
     public function getGroupPlanning($groupId, $userId, $weekType = null, $day = null)
     {
         $select = $this->_db->select()
-            ->from(array('gp' => self::TABLE_NAME), array('*', 'total_time' => 'TIMEDIFF(time_end,time_start)'))
+            ->from(array('gp' => self::TABLE_NAME))
             ->where('gp.group_id = ?', $groupId)
             ->where('gp.user_id = ?', $userId)
             ->where('gp.enabled = ?', 1)

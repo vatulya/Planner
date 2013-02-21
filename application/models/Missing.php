@@ -9,9 +9,9 @@ class Application_Model_Missing extends Application_Model_Abstract
         $this->_modelDb = new Application_Model_Db_User_Missing();
     }
 
-    public function getUserDayMissingPlanByDate($userId, $date)
+    public function getUserDayMissingPlanByDate($userId, $date, $statusId = false)
     {
-        $missings = $this->_modelDb->getUserDayMissingPlanByDate($userId, $date);
+        $missings = $this->_modelDb->getUserDayMissingPlanByDate($userId, $date, $statusId);
         if(!empty($missings['time_start']) && !empty($missings['time_end'])) {
             $workSeconds = Application_Model_Day::getWorkHoursByMarkers(
                 $missings['time_start'],

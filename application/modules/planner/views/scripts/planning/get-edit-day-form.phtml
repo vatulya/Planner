@@ -1,2 +1,73 @@
-<?php echo $this->editForm; ?>
-<?php //var_dump($this->day); ?>
+<div class="alert alert-error" style="display: none;"></div>
+<div class="alert alert-success" style="display: none;"></div>
+
+<?php
+
+
+//$additionalStyleForInput = ' style="margin: 0px;" '; //I can't replace common style
+    $additionalStyleForInput = '';
+$dayStatuses = $this->dayStatuses
+?>
+
+
+<div><h3>Set time and day color</h3></div>
+
+<table class="table table-bordered table-condensed table-striped work-time">
+    <thead>
+    <tr>
+        <th >Hour type</th><th >Color</th><th >Time start</th><th >Time end</th><th >Holiday</th>
+    </tr>
+    </thead>
+
+    <?php foreach($dayStatuses as $statusId => $statusData): ?>
+    <?php if  ($statusId != 1 ) ://white color status no need show?>
+        <tr>
+            <td>
+                <?php echo $statusData['description']  ?>
+            </td>
+            <td style="background-color: #<?php echo $statusData['color_hex']?>;">
+                <div  class="text-center text-info" style="width: 100px;">
+                        <?php if (!empty($statusData['status']) ) { echo strtoupper($statusData['status']);} ?>
+                </div>
+            </td>
+            <?php
+            if  ($statusId == 2) {
+                $disabledInput =  ' disabled="disabled "';
+            } else {
+                $disabledInput =  '';
+            }
+            ?>
+            <?php if ($statusId == 3) : ?>
+
+                <td>
+                    <button class="sendRequest btn btn-success"
+                    <?php if (!empty($statusData['status'])) { echo ' disabled="disabled" ';} ?>
+                    data-request-date="<?php echo $this->date ?>">Request</button>
+                </td>
+                <td>
+                    <button class="sendRefund btn btn-inverse"
+                    <?php if (empty($statusData['status']) || $statusData['status'] != Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED) { echo ' disabled="disabled" ';} ?>
+                    data-request-date="<?php echo $this->date ?>">Refund</button>
+                </td>
+            <?php else : ?>
+            <td>
+                <div class="input-time">
+                    <input type="text" value="<?php echo @$statusData['split_time_start']['hour']; ?>" <?php echo $additionalStyleForInput . $disabledInput ?>  name="start_hour" class="set-time-hour-status start-hour set-time-hour-field">:
+                    <input type="text" value="<?php echo @$statusData['split_time_start']['min']; ?>"  <?php echo $additionalStyleForInput . $disabledInput?> name="start_min" class="set-time-min-status start-min set-time-mins-field">
+                </div>
+            </td>
+            <td>
+                <div class="input-time">
+                    <input type="text" value="<?php echo @$statusData['split_time_end']['hour']; ?>" <?php echo $additionalStyleForInput . $disabledInput ?>  name="end_hour" class="set-time-hour-status end-hour set-time-hour-field">:
+                    <input type="text" value="<?php echo @$statusData['split_time_end']['min']; ?>" <?php echo $additionalStyleForInput . $disabledInput ?>  name="end_min" class="set-time-min-status end-min set-time-mins-field">
+                </div>
+            </td>
+            <?php endif; ?>
+            <td>
+                <?php if ($statusData['is_holiday'] == 1) {echo "Y";} else {echo "N";}  ?>
+            </td>
+        </tr>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</table>
+

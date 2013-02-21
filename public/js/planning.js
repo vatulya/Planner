@@ -9,24 +9,22 @@
 
         editDay: function(el) {
             el = $(el);
-            if (el.data('status') != 3) {  //no popup for yellow status
-                modalEditH3.show();
-                modalBody.html('Loading...');
-                modal.modal();
-                $.ajax({
-                    url: el.attr('href'),
-                    data: {
-                        day: el.data('day-id')
-                    },
-                    success: function(response) {
-                        modalBody.html(response);
-                        DaySettings.initEditAjaxForm();
-                    },
-                    error: function(response) {
-                        modalBody.html('Error! Something wrong.');
-                    }
-                });
-            }
+            modalEditH3.show();
+            modalBody.html('Loading...');
+            modal.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    day: el.data('day-id')
+                },
+                success: function(response) {
+                    modalBody.html(response);
+                    DaySettings.initEditAjaxForm();
+                },
+                error: function(response) {
+                    modalBody.html('Error! Something wrong.');
+                }
+            });
         },
 
         selectSecondStatus: function(el) {
@@ -134,6 +132,33 @@
                     el.attr('value',inputValue);
                 }
             }
+        },
+        saveRequest: function(el) {
+            var data;
+            var selectedDates = [];
+            selectedDates[0] = $(el).data('request-date');
+            data = {
+                selected_dates: selectedDates,
+                format: 'json'
+            };
+            if (selectedDates.length) {
+                $.ajax({
+                    url: '/requests/save-request',
+                    data: data,
+                    success: function(response) {
+                        response = response.response;
+                        if (response.status) {
+                            alert('Request Sended.');
+                            window.location.reload();
+                        } else {
+                            alert('Error! Something wrong.');
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error! Something wrong.');
+                    }
+                });
+            }
         }
     };
 
@@ -152,6 +177,9 @@
         });
         $(document.body).on('blur', '.set-time-mins-field', function(e) {
             DaySettings.checkMinuteInput(e.currentTarget);
+        });
+        $(document.body).on('click', '.sendRequest', function(e) {
+            DaySettings.saveRequest(e.currentTarget);
         });
     });
 

@@ -268,5 +268,5 @@ form.form-mini {
 
 .set-time-hour-status, .set-time-min-status {
     width: 16px;
-    margin: 0px;
+    margin: 0px !important;
 }

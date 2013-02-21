@@ -229,4 +229,16 @@ class My_DateTime extends DateTime
         return  $historyWeeks;
     }
 
+    public static function splitTimeString($timeString)
+    {
+        try {
+        $startTime = new DateTime($timeString);
+        $startHourValue = $startTime->format('H');
+        $startMinValue  = $startTime->format('i');
+        return array('hour' => $startHourValue, 'min' => $startMinValue);
+        } catch (Exception $e) {
+            return array('hour' => '', 'min' => '');
+        }
+    }
+
 }

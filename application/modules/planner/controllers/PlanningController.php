@@ -13,6 +13,7 @@ class Planner_PlanningController extends My_Controller_Action
 
     protected $_modelGroup;
     protected $_modelUser;
+    protected $_modelPlanning;
 
     public function init()
     {
@@ -74,23 +75,11 @@ class Planner_PlanningController extends My_Controller_Action
         $userId = $this->_getParam('user_id');
         $groupId = $this->_getParam('group_id');
         $date = $this->_getParam('date');
+        $dayStatuses = $this->_modelPlanning->getUserDayStatuses($userId, $groupId, $date);
 
-        $editForm = new Planner_Form_EditDay(array(
-            'class' => 'edit-day-form',
-            'action' => $this->_helper->url->url(array('controller' => 'planning', 'action' => 'save-day-form'), 'planner', true),
-            'id' => 'form-edit-day',
-        ));
-        $day = $this->_modelPlanning->getDayGroupUserPlanByDate($userId, $groupId, $date, $this->_me['id']);
-        if (!empty($day['status1']['id'])) {
-            $day['status1'] = $day['status1']['id'];
-        }
-        if (!empty($day['status2']['id'])) {
-            $day['status2'] = $day['status2']['id'];
-        }
-        $editForm->populate($day);
-        $this->view->day = $day;
+        $this->view->dayStatuses = $dayStatuses;
+        $this->view->date = $date;
         $this->_helper->layout->disableLayout();
-        $this->view->editForm = $editForm->prepareDecorators();
     }
 
     public function saveDayFormAction()
