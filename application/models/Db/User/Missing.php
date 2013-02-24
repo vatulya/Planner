@@ -19,9 +19,20 @@ class Application_Model_Db_User_Missing extends Application_Model_Db_Abstract
 
     public function saveUserMissingDay($missingData)
     {
-        $this->_db->delete(self::TABLE_NAME, array('user_id = ?' => $missingData['user_id'], 'date = ?' => $missingData['date']));
+        $this->_db->delete(self::TABLE_NAME, array(
+            'user_id = ?' => $missingData['user_id'],
+            'date = ?' => $missingData['date'],
+            'status = ?' => $missingData['status']));
         $result = $this->_db->insert(self::TABLE_NAME, $missingData);
         return $result;
+    }
+
+    public function deleteUserMissingDay($missingData)
+    {
+        $this->_db->delete(self::TABLE_NAME, array(
+            'user_id = ?' => $missingData['user_id'],
+            'date = ?' => $missingData['date'],
+            'status = ?' => $missingData['status']));
     }
 
 }

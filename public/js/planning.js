@@ -19,7 +19,7 @@
                 },
                 success: function(response) {
                     modalBody.html(response);
-                    DaySettings.initEditAjaxForm();
+                    //DaySettings.initEditAjaxForm();
                 },
                 error: function(response) {
                     modalBody.html('Error! Something wrong.');
@@ -35,51 +35,50 @@
             el.data('toggle', oldStatus)  ;
         },
 
-        initEditAjaxForm: function() {
-            var formEl = $('#form-edit-day');
-            $('#form-edit-day').ajaxForm({
-                data: {format: 'json'},
+        saveDay: function() {
+            var data = {
+                format: 'json',
+                user_id:  $('.form-edit-day').data('user-id'),
+                date:    $('.form-edit-day').data('date'),
+                group_id: $('.form-edit-day').data('group-id'),
+                day_status_data: DaySettings.getDayStatusData()
+            };
+            $.ajax({
+                url: '/planning/save-day-form',
+                data: data,
                 success: function(response) {
                     response = response.response;
                     if (response.status) {
-                        //document.Form.showSuccess(formEl);
                         window.location.reload();
                     } else {
-                        document.Form.showErrors(formEl);
+                        alert('Error! Something wrong.');
                     }
                 },
-                error: function() {
-                    document.Form.showErrors(formEl);
+                error: function(response) {
+                    alert('Error! Something wrong.');
                 }
             });
-            $('.timepicker-start').timepicker({
-                minuteStep: 10,
-                template: 'modal',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: 'value'
+        },
+
+        getDayStatusData: function() {
+            var data = {};
+            $('.work-time').each(function(i, el) {
+                el = $(el);
+                var statusId = el.data('status-id');
+                var status = {
+                    statusId: statusId,
+                    time_start: {
+                        hour: el.find('.start-hour').val(),
+                        min: el.find('.start-min').val()
+                    },
+                    time_end: {
+                        hour: el.find('.end-hour').val(),
+                        min: el.find('.end-min').val()
+                    }
+                }
+                data[statusId] = status;
             });
-            $('.timepicker-end').timepicker({
-                minuteStep: 10,
-                template: 'modal',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: 'value'
-            });
-            $('.timepicker-start2').timepicker({
-                minuteStep: 10,
-                template: 'false',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: 'value'
-            });
-            $('.timepicker-end2').timepicker({
-                minuteStep: 10,
-                template: 'false',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: 'value'
-            });
+            return data;
         },
 
         applyTimeFullDay: function(el) {
@@ -168,6 +167,9 @@
         });
         $(document.body).on('click', '#apply-time-full-day', function(e) {
             DaySettings.applyTimeFullDay(e.currentTarget);
+        });
+        $(document.body).on('click', '#form-edit-day', function(e) {
+            DaySettings.saveDay(e.currentTarget);
         });
         $(document.body).on('click', '.day-status-color', function(e) {
             DaySettings.changeSelectedColor(e.currentTarget);

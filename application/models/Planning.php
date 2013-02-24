@@ -279,21 +279,73 @@ class Application_Model_Planning extends Application_Model_Abstract
         return $result;
     }
 
-    public function saveDayAdditionalUserStatus($formData)
+    public function saveDayAdditionalUserStatus($dayStatusData, $userId, $date, $groupId)
     {
-        if (!empty($formData['time_start']) && !empty($formData['time_end'])) {
-            //TODO realize logic for update
-            //$this->_modelDb->saveWorkTime($formData);
+        $saveStatus = true;
+        foreach($dayStatusData as $statusId => &$status) {
+            switch ($statusId) {
+                case self::STATUS_DAY_WHITE:
+                    break;
+                case self::STATUS_DAY_GREEN:
+                    //now no need edit day start/end in history
+                    break;
+                case self::STATUS_DAY_YELLOW:
+                    break;
+                case self::STATUS_DAY_RED:
+                    $saveStatus = $this->_saveMissingData($saveStatus, self::STATUS_DAY_RED, $userId, $dayStatusData, $date);
+                    break;
+                case self::STATUS_DAY_CYAN:
+                    $saveStatus = $this->_saveMissingData($saveStatus, self::STATUS_DAY_CYAN, $userId, $dayStatusData, $date);
+                    break;
+                case self::STATUS_DAY_BLUE:
+                    $saveStatus = $this->_saveMissingData($saveStatus, self::STATUS_DAY_BLUE, $userId, $dayStatusData, $date);
+                    break;
+                case self::STATUS_DAY_OVERTIME:
+                    $userOvertime = new Application_Model_Overtime();
+                    $overtime = $userOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
+                    if (!empty($overtime['time_start']) && !empty($overtime['time_end'])) {
+                        $overtime    = array_merge($overtime, $this->_splitStartEndTimeString($overtime['time_start'], $overtime['time_end']));
+                    }
+                    break;
+            }
+            if ($status == self::STATUS_DAY_RED || $status == self::STATUS_DAY_CYAN || $status == self::STATUS_DAY_BLUE) {
+                return $this->_modelMissing->saveUserMissingDay($formData);
+            } elseif ($status == self::STATUS_DAY_OVERTIME) {
+                return $this->saveUserOvertimeDay($formData);
+            }
+
         }
-        $status = $formData['status2'];
-        if ($status == self::STATUS_DAY_RED || $status == self::STATUS_DAY_CYAN || $status == self::STATUS_DAY_BLUE) {
-            return $this->_modelMissing->saveUserMissingDay($formData);
-        } elseif ($status == self::STATUS_DAY_OVERTIME) {
-            return $this->saveUserOvertimeDay($formData);
-        }
-        return false;
+
+        return $saveStatus;
     }
 
+    private function _saveMissingData($saveStatus, $statusId, $userId, $dayStatusData, $date)
+    {
+        $userMissing = new Application_Model_Missing();
+        $missingDayData = array(
+            "user_id"    => $userId,
+            "status"     => $statusId,
+            "time_start" => $this->_getConcatTimeString($dayStatusData[$statusId]['time_start']),
+            "time_end"   => $this->_getConcatTimeString($dayStatusData[$statusId]['time_end']),
+            "date"       => $date
+        );
+        $saveStatusMissing = $userMissing->saveUserMissingDay($missingDayData);
+        return $saveStatus && $saveStatusMissing;
+    }
+
+    private function _getConcatTimeString($dayStatusTime)
+    {
+        if (isset($dayStatusTime['hour']) && $dayStatusTime['hour'] != "") {
+            if (isset($dayStatusTime['min']) && $dayStatusTime['min'] != "") {
+                 $statusTime = $dayStatusTime['hour'] . ":" . $dayStatusTime['min'] . ":00";
+            } else {
+                $statusTime = $dayStatusTime['hour'] . ":00:00";
+            }
+            return $statusTime;
+        } else {
+            return "";
+        }
+    }
 
     public function checkExistDay($date)
     {

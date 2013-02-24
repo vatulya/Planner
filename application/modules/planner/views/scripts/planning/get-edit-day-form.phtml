@@ -9,10 +9,10 @@
 $dayStatuses = $this->dayStatuses
 ?>
 
-
 <div><h3>Set time and day color</h3></div>
 
-<table class="table table-bordered table-condensed table-striped work-time">
+<table class="table table-bordered table-condensed table-striped form-edit-day"
+    data-user-id="<?php echo $this->userId;  ?>" data-date="<?php echo $this->date;  ?>" data-group-id="<?php echo $this->groupId;  ?>">
     <thead>
     <tr>
         <th >Hour type</th><th >Color</th><th >Time start</th><th >Time end</th><th >Holiday</th>
@@ -21,13 +21,13 @@ $dayStatuses = $this->dayStatuses
 
     <?php foreach($dayStatuses as $statusId => $statusData): ?>
     <?php if  ($statusId != 1 ) ://white color status no need show?>
-        <tr>
+        <tr  class="work-time" data-status-id="<?php echo $statusId;  ?>">
             <td>
                 <?php echo $statusData['description']  ?>
             </td>
             <td style="background-color: #<?php echo $statusData['color_hex']?>;">
                 <div  class="text-center text-info" style="width: 100px;">
-                        <?php if (!empty($statusData['status']) ) { echo strtoupper($statusData['status']);} ?>
+                        <?php if (!empty($statusData['status']) && $statusData['status'] == Application_Model_Planning::STATUS_DAY_YELLOW) { echo strtoupper($statusData['status']);} ?>
                 </div>
             </td>
             <?php

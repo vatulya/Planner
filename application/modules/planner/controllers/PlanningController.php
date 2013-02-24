@@ -78,7 +78,9 @@ class Planner_PlanningController extends My_Controller_Action
         $dayStatuses = $this->_modelPlanning->getUserDayStatuses($userId, $groupId, $date);
 
         $this->view->dayStatuses = $dayStatuses;
-        $this->view->date = $date;
+        $this->view->date        = $date;
+        $this->view->userId      = $userId;
+        $this->view->groupId     = $groupId;
         $this->_helper->layout->disableLayout();
     }
 
@@ -89,12 +91,14 @@ class Planner_PlanningController extends My_Controller_Action
         $request = $this->getRequest();
         $data = array();
         $status = false;
-        if ($request->isPost()) {
-            if ($editForm->isValid($request->getPost())) {
-                $status = $this->_modelPlanning->saveDayAdditionalUserStatus($editForm->getValues());
-            } else {
-                $data = $editForm->getErrors();
-            }
+        $dayStatusData = $this->_getParam('day_status_data', array());
+        $userId        = $this->_getParam('user_id');
+        $date          = $this->_getParam('date');
+        $groupId       = $this->_getParam('group_id');
+        if (!empty($dayStatusData) && !empty($userId) && !empty($date) && !empty($groupId)) {
+            $status = $this->_modelPlanning->saveDayAdditionalUserStatus($dayStatusData, $userId, $date, $groupId);
+        } else {
+            $data = $editForm->getErrors();
         }
         if ($status) {
             $this->_response(1, '', $data);
