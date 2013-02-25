@@ -138,6 +138,7 @@
             selectedDates[0] = $(el).data('request-date');
             data = {
                 selected_dates: selectedDates,
+                user: $(el).data('user-id'),
                 format: 'json'
             };
             if (selectedDates.length) {

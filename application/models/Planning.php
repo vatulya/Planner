@@ -45,9 +45,32 @@ class Application_Model_Planning extends Application_Model_Abstract
             return $this->_setStatusByRules($dayPlan);
         }  else {
             $dayPlan = $this->getUserDayPlanFromPlanning($userId, $groupId, $dateFormat);
-            return $this->_setStatusByRules($dayPlan);
+            if (empty($dayPlan)) {
+                return $this->_setDefaultStatusForEmptyPlan($userId, $groupId, $dateFormat);
+            } else {
+                return $this->_setStatusByRules($dayPlan);
+            }
         }
     }
+
+    private function _setDefaultStatusForEmptyPlan($userId, $groupId, $dateFormat) {
+        $status = new Application_Model_Status();
+        $dayPlan['status1'] = $status->getDataById(self::STATUS_DAY_WHITE);
+        $dayPlan['user_id'] = $userId;
+        $dayPlan['group_id'] = $groupId;
+        $dayPlan['date'] = $dateFormat;
+
+        $date = new My_DateTime();
+        $currentDateFormat = $date->format('Y-m-d');
+        if ($dateFormat == $currentDateFormat) {
+            $dayPlan['editable'] = $this->_getEditableDay($userId, $groupId);
+        } else {
+            //user can't chang past data only admins.
+            $dayPlan['editable'] = $this->_getEditableDay(0, $groupId);
+        }
+        return $dayPlan;
+    }
+
 
     public function getUserPlanningByDate($userId, $groupId, $dateFormat)
     {
@@ -58,7 +81,7 @@ class Application_Model_Planning extends Application_Model_Abstract
         if ($date->getTimestamp() >= $currentDate) {
             $groupPlanning = new Application_Model_Group();
             $dayPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $userId, $dateFormat);
-            $dayPlanning = $dayPlanning[0];
+            $dayPlanning = @$dayPlanning[0];
         }  else {
             $dayPlanning = $this->getUserDayPlanFromPlanning($userId, $groupId, $dateFormat);
         }
@@ -144,7 +167,6 @@ class Application_Model_Planning extends Application_Model_Abstract
     {
         //TODO use  _getUserDayPlanFromGroupPlan and allow needed fields
         $groupPlanning = new Application_Model_Group();
-        $group = new Application_Model_Group();
         $weekGroupPlanning = $groupPlanning->getGroupPlanningByDate($groupId, $userId, $date);
         if (!empty($weekGroupPlanning[0])) {
             $weekGroupPlanning = $weekGroupPlanning[0];
@@ -177,73 +199,55 @@ class Application_Model_Planning extends Application_Model_Abstract
         $userRequest = new Application_Model_Db_User_Requests();
         $userMissing = new Application_Model_Missing();
         $userOvertime = new Application_Model_Overtime();
+        $approveUserDayRequest = $userRequest->getAllByUserId($result['user_id'], Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $result['date']);
+        $missingUserDayStatuses = $userMissing->getUserDayMissingPlanByDate($result['user_id'], $result['date']);
 
-        if(!empty($result)) {
-            $approveUserDayRequest = $userRequest->getAllByUserId($result['user_id'], Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $result['date']);
-            $missingUserDayStatuses = $userMissing->getUserDayMissingPlanByDate($result['user_id'], $result['date']);
-            $overtimeUserDay = $userOvertime->getUserDayOvertimeByDate($result['user_id'], $result['group_id'], $result['date']);
+        $statuses = $status->getAllStatus();
+        if ($result['status1'] == self::STATUS_DAY_GREEN) {
+            $result['status1'] = $status->getDataById(self::STATUS_DAY_GREEN);
+            if (!empty($result['time_start']) && !empty($result['time_end'])) {
+                $result['time_start'] = $this->_formatTime($result['time_start']);
+                $result['time_end'] = $this->_formatTime($result['time_end']);
+                $result['pause_start'] = $this->_formatTime($result['pause_start']);
+                $result['pause_end'] = $this->_formatTime($result['pause_end']);
+                $result['total_time'] = My_DateTime::TimeToDecimal($result['total_time']);
+            }
+        } else {
+            $result['status1'] = $status->getDataById($result['status1']);
+            $result = $this->_resetTimeAndSecondStatus($result);
+        }
+        if (!empty($approveUserDayRequest)) {
+            $result['status1'] = $status->getDataById(self::STATUS_DAY_YELLOW);
+            $result = $this->_resetTimeAndSecondStatus($result);
+        } else {
 
-            $statuses = $status->getAllStatus();
-            if ($result['status1'] == self::STATUS_DAY_GREEN) {
-                if (!empty($result['time_start']) && !empty($result['time_end'])) {
-                    $statuses[self::STATUS_DAY_GREEN]['time_start'] = $this->_formatTime($result['time_start']);
-                    $statuses[self::STATUS_DAY_GREEN]['time_end'] = $this->_formatTime($result['time_end']);
-                    $statuses[self::STATUS_DAY_GREEN]['pause_start'] = $this->_formatTime($result['pause_start']);
-                    $statuses[self::STATUS_DAY_GREEN]['pause_end'] = $this->_formatTime($result['pause_end']);
-                    $statuses[self::STATUS_DAY_GREEN]['total_time'] = My_DateTime::TimeToDecimal($result['total_time']);
-                }
-            } else {
-                $result['status1'] = $status->getDataById($result['status1']);
-                $result = $this->_resetTimeAndSecondStatus($result);
-               //$overtime = $this->getUserDayOvertimeByDate($result['user_id'], $result['group_id'], $result['date']);
+            if (!empty($missingUserDayStatuses)) {
+                $result['status2'] = $status->getDataById($missingUserDayStatuses['status']);
+                $result['time_start2'] = $this->_formatTime($missingUserDayStatuses['time_start']);
+                $result['time_end2'] = $this->_formatTime($missingUserDayStatuses['time_end']);
+                $result['total_time2'] =  My_DateTime::TimeToDecimal($missingUserDayStatuses['total_time']);
+            }  else {
+                $overtime = $userOvertime->getUserDayOvertimeByDate($result['user_id'], $result['group_id'], $result['date']);
                 if (!empty($overtime)) {
                     $result['time_start2'] = $this->_formatTime($overtime['time_start']) ;
                     $result['time_end2']   = $this->_formatTime($overtime['time_end']);
                     $result['total_time2'] =  My_DateTime::TimeToDecimal($overtime['total_time']);
                     $result['status2'] = $status->getDataById(self::STATUS_DAY_OVERTIME);
+                } else {
+                    $result['status2'] = "";
                 }
             }
-            if (!empty($approveUserDayRequest)) {
-                $result['status1'] = $status->getDataById(self::STATUS_DAY_YELLOW);
-                $result = $this->_resetTimeAndSecondStatus($result);
-            } else {
-
-                if (!empty($missingUserDayStatuses)) {
-                    $result['status2'] = $status->getDataById($missingUserDayStatuses['status']);
-                    $result['time_start2'] = $this->_formatTime($missingUserDayStatuses['time_start']);
-                    $result['time_end2'] = $this->_formatTime($missingUserDayStatuses['time_end']);
-                    $result['total_time2'] =  My_DateTime::TimeToDecimal($missingUserDayStatuses['total_time']);
-                }  else {
-                    $overtime = $userOvertime->getUserDayOvertimeByDate($result['user_id'], $result['group_id'], $result['date']);
-                    if (!empty($overtime)) {
-                        $result['time_start2'] = $this->_formatTime($overtime['time_start']) ;
-                        $result['time_end2']   = $this->_formatTime($overtime['time_end']);
-                        $result['total_time2'] =  My_DateTime::TimeToDecimal($overtime['total_time']);
-                        $result['status2'] = $status->getDataById(self::STATUS_DAY_OVERTIME);
-                    } else {
-                        $result['status2'] = "";
-                    }
-                }
-            }
-
-            //If the day as now allow edit form
-            $date = new My_DateTime();
-            $currentDateFormat = $date->format('Y-m-d');
-            if ($result['date'] == $currentDateFormat) {
-                $result['editable'] = $this->_getEditableDay($result['user_id'], $result['group_id']);
-            } elseif (empty($result['editable'])) {
-                //user can't chang past data only admins.
-                $result['editable'] = $this->_getEditableDay(0, $result['group_id']);
-            }
-        } else {
-            $result = $this->_setDefaultStatusForEmptyPlan();
         }
-        return $result;
-    }
 
-    private function _setDefaultStatusForEmptyPlan() {
-        $status = new Application_Model_Status();
-        $result['status1'] = $status->getDataById(self::STATUS_DAY_WHITE);
+        //If the day as now allow edit form
+        $date = new My_DateTime();
+        $currentDateFormat = $date->format('Y-m-d');
+        if ($result['date'] == $currentDateFormat) {
+            $result['editable'] = $this->_getEditableDay($result['user_id'], $result['group_id']);
+        } elseif (empty($result['editable'])) {
+            //user can't chang past data only admins.
+            $result['editable'] = $this->_getEditableDay(0, $result['group_id']);
+        }
         return $result;
     }
 
@@ -302,20 +306,18 @@ class Application_Model_Planning extends Application_Model_Abstract
                     break;
                 case self::STATUS_DAY_OVERTIME:
                     $userOvertime = new Application_Model_Overtime();
-                    $overtime = $userOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
-                    if (!empty($overtime['time_start']) && !empty($overtime['time_end'])) {
-                        $overtime    = array_merge($overtime, $this->_splitStartEndTimeString($overtime['time_start'], $overtime['time_end']));
-                    }
+                    $overtimeData = array(
+                        'user_id'    => $userId,
+                        'group_id'   => $groupId,
+                        'date'       => $date,
+                        'time_start' => $this->_getConcatTimeString($dayStatusData[$statusId]['time_start']),
+                        'time_end'   => $this->_getConcatTimeString($dayStatusData[$statusId]['time_end'])
+                    );
+                    $saveStatusOvertime = $userOvertime->saveUserOvertimeDay($overtimeData);
+                    $saveStatus = $saveStatus && $saveStatusOvertime;
                     break;
             }
-            if ($status == self::STATUS_DAY_RED || $status == self::STATUS_DAY_CYAN || $status == self::STATUS_DAY_BLUE) {
-                return $this->_modelMissing->saveUserMissingDay($formData);
-            } elseif ($status == self::STATUS_DAY_OVERTIME) {
-                return $this->saveUserOvertimeDay($formData);
-            }
-
         }
-
         return $saveStatus;
     }
 

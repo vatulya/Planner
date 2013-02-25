@@ -32,6 +32,7 @@ class Application_Model_Missing extends Application_Model_Abstract
             "time_end"   => $formData['time_end'],
             "date"       => $formData['date']
         );
+        $result = true;
         if (!empty($formData['status'])  && !empty($formData['user_id']) && !empty($formData['date'])) {
             $this->_modelDb->deleteUserMissingDay($missingDayData);
         } else {
@@ -40,6 +41,6 @@ class Application_Model_Missing extends Application_Model_Abstract
         if ( !empty($formData['time_start']) && !empty($formData['time_end'])) {
             $result = $this->_modelDb->saveUserMissingDay($missingDayData);
         }
-        return true;
+        return $result;
     }
 }

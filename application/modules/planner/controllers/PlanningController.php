@@ -30,7 +30,6 @@ class Planner_PlanningController extends My_Controller_Action
 
     public function indexAction()
     {
-
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $week = $request->getParam('week');
         $year = $request->getParam('year');

@@ -16,10 +16,19 @@ class Application_Model_Overtime extends Application_Model_Abstract
             'user_id'    => $formData['user_id'],
             'group_id'   => $formData['group_id'],
             'date'       => $formData['date'],
-            'time_start' => $formData['time_start2'],
-            'time_end'   => $formData['time_end2']
+            'time_start' => $formData['time_start'],
+            'time_end'   => $formData['time_end']
         );
-        return $this->_modelOvertime->saveUserDayOvertimeByDate($overtimeData);
+        $result = true;
+        if (!empty($formData['user_id']) && !empty($formData['date']) && !empty($formData['group_id'])) {
+            $this->_modelOvertime->deleteOvertime($overtimeData);
+        } else {
+            return false;
+        }
+        if ( !empty($formData['time_start']) && !empty($formData['time_end'])) {
+            $result = $this->_modelOvertime->saveUserDayOvertimeByDate($overtimeData);
+        }
+        return $result;
     }
 
     public function getUserDayOvertimeByDate($userId, $groupId, $date)

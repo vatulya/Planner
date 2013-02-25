@@ -20,18 +20,22 @@ $dayStatuses = $this->dayStatuses
     </thead>
 
     <?php foreach($dayStatuses as $statusId => $statusData): ?>
-    <?php if  ($statusId != 1 ) ://white color status no need show?>
+    <?php if  ($statusId != 1) ://white color status no need show?>
         <tr  class="work-time" data-status-id="<?php echo $statusId;  ?>">
             <td>
                 <?php echo $statusData['description']  ?>
             </td>
             <td style="background-color: #<?php echo $statusData['color_hex']?>;">
                 <div  class="text-center text-info" style="width: 100px;">
-                        <?php if (!empty($statusData['status']) && $statusData['status'] == Application_Model_Planning::STATUS_DAY_YELLOW) { echo strtoupper($statusData['status']);} ?>
+                        <?php if (!empty($statusData['status']) && $statusId == Application_Model_Planning::STATUS_DAY_YELLOW) { echo strtoupper($statusData['status']);} ?>
                 </div>
             </td>
             <?php
-            if  ($statusId == 2) {
+            if  (($statusId == Application_Model_Planning::STATUS_DAY_GREEN
+                || (empty($dayStatuses[Application_Model_Planning::STATUS_DAY_GREEN]['time_start'])
+                || empty($dayStatuses[Application_Model_Planning::STATUS_DAY_GREEN]['time_end']))
+                && empty($dayStatuses[$statusId]['time_end']))
+                && $statusId != Application_Model_Planning::STATUS_DAY_OVERTIME) {
                 $disabledInput =  ' disabled="disabled "';
             } else {
                 $disabledInput =  '';
@@ -42,12 +46,12 @@ $dayStatuses = $this->dayStatuses
                 <td>
                     <button class="sendRequest btn btn-success"
                     <?php if (!empty($statusData['status'])) { echo ' disabled="disabled" ';} ?>
-                    data-request-date="<?php echo $this->date ?>">Request</button>
+                    data-request-date="<?php echo $this->date ?>" data-user-id="<?php echo $this->userId ?>">Request</button>
                 </td>
                 <td>
                     <button class="sendRefund btn btn-inverse"
                     <?php if (empty($statusData['status']) || $statusData['status'] != Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED) { echo ' disabled="disabled" ';} ?>
-                    data-request-date="<?php echo $this->date ?>">Refund</button>
+                    data-request-date="<?php echo $this->date ?>" data-user-id="<?php echo $this->userId ?>">Refund</button>
                 </td>
             <?php else : ?>
             <td>

@@ -17,8 +17,12 @@ class Application_Model_Db_User_Overtime extends Application_Model_Db_Abstract
 
     public function saveUserDayOvertimeByDate($overtimeData)
     {
-        $this->_db->delete(self::TABLE_NAME, array('user_id = ?' => $overtimeData['user_id'], 'group_id = ?' => $overtimeData['group_id'], 'date = ?' => $overtimeData['date']));
         $result = $this->_db->insert(self::TABLE_NAME, $overtimeData);
         return $result;
+    }
+
+    public function deleteOvertime($overtimeData)
+    {
+        $this->_db->delete(self::TABLE_NAME, array('user_id = ?' => $overtimeData['user_id'], 'group_id = ?' => $overtimeData['group_id'], 'date = ?' => $overtimeData['date']));
     }
 }
