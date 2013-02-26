@@ -1,3 +1,26 @@
+
+<div class="span11">
+    <table class="table table-bordered table-striped table-small-td">
+        <thead>
+        <tr>
+            <th class="span3">&nbsp;</th>
+            <th class="span2">Check IN/OUT</th>
+            <th class="span2">Datum</th>
+            <th class="span2">Check IN time</th>
+            <th class="span2">Check OUT time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if ( ! empty($this->me)): ?>
+            <?php $this->user  = $this->me; ?>
+            <?php $this->group = array(); ?>
+            <?php echo $this->render('checking/_blocks/user_row.phtml'); ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+
 <?php if (empty($this->users)): ?>
 Error! No users.
 <?php else: ?>
