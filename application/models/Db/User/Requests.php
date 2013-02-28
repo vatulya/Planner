@@ -10,18 +10,22 @@ class Application_Model_Db_User_Requests extends Application_Model_Db_Abstract
 
     public function getAllByUserId($userId, $status = '', $date = '')
     {
-        $select = $this->_db->select()
-            ->from(array('ur' => self::TABLE_NAME))
-            ->where('ur.user_id = ?', $userId);
-        if ( ! empty($status)) {
-            $select->where('ur.status = ?', $status);
-        }
-        if (empty($date)) {
-            $select->order('request_date ASC');
-            $result = $this->_db->fetchAll($select);
-        } else {
-            $select->where('ur.request_date = ?', $date);
-            $result = $this->_db->fetchRow($select);
+        try {
+            $select = $this->_db->select()
+                ->from(array('ur' => self::TABLE_NAME))
+                ->where('ur.user_id = ?', $userId);
+            if ( ! empty($status)) {
+                $select->where('ur.status = ?', $status);
+            }
+            if (empty($date)) {
+                $select->order('request_date ASC');
+                $result = $this->_db->fetchAll($select);
+            } else {
+                $select->where('ur.request_date = ?', $date);
+                $result = $this->_db->fetchRow($select);
+            }
+        } catch (Exception $e) {
+            throw new Exception('Error! Database error!');
         }
         return $result;
     }

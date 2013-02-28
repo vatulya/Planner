@@ -31,7 +31,7 @@ class Application_Model_Request extends Application_Model_Abstract
         $userModel = new Application_Model_User();
         $user = $userModel->getUserById($userId);
         if ( ! $user) {
-            return $result;
+            throw new Exception('Error! Wrong user.');
         }
         $oldRequests = $this->_modelDb->getAllByUserId($user['id']);
         foreach ($oldRequests as $request) {
@@ -57,6 +57,7 @@ class Application_Model_Request extends Application_Model_Abstract
             $parameters            = $modelDbUserParameters->getParametersByUserId($userId);
             $checkAllowedFreeTime  = $parameters['total_free_time'] - $checkAllowedFreeTime;
             if ($checkAllowedFreeTime < 0) {
+                throw new Exception('Error! This user don\'t have so much free time.');
                 // Error. Too much free days
                 $result = false;
                 return $result;

@@ -164,15 +164,21 @@ class Application_Model_Db_Group_Settings extends Application_Model_Db_Abstract
     {
         $result = false;
         if (in_array($setting, $this->_allowedSaveSettings)) {
-            $data = array(
-                $setting => $value,
-            );
-            $check = $this->getGroupSettings($groupId);
-            if ($check[$setting] == $data[$setting]) {
-                $result = true;
-            } else {
-                $result = $this->_db->update(self::TABLE_NAME, $data, array('group_id = ?' => $groupId));
+            try {
+                $data = array(
+                    $setting => $value,
+                );
+                $check = $this->getGroupSettings($groupId);
+                if ($check[$setting] == $data[$setting]) {
+                    $result = true;
+                } else {
+                    $result = $this->_db->update(self::TABLE_NAME, $data, array('group_id = ?' => $groupId));
+                }
+            } catch (Exception $e) {
+                throw new Exception('Error! Database error!');
             }
+        } else {
+            throw new Exception('Error! Not allowed setting.');
         }
         return $result;
     }

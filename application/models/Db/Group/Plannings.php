@@ -34,7 +34,7 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
         if (empty($planning)) {
             $result = true;
         }
-        foreach ($planning as $key => $day) {
+        foreach ($planning as $day) {
             $day['enabled'] = $day['enabled'] ? 1 : 0;
             $data = array(
                 'group_id'    => $groupId,
@@ -49,7 +49,7 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
             );
             $result = $this->_db->insert(self::TABLE_NAME, $data);
             if ( ! $result) {
-                break;
+                throw new Exception('Error! Database error.');
             }
         }
         return $result;

@@ -150,8 +150,14 @@ class Application_Model_User extends Application_Model_Abstract
                     $currentPasswordEncoded = Application_Model_AuthAdapter::encodePassword($currentPassword);
                     if (empty($currentPassword) || $user['password'] == $currentPasswordEncoded) {
                         $result = $modelAuth->_changePassword($userId, $newPassword);
+                    } else {
+                        throw new Exception('Error! Wrong old password.');
                     }
+                } else {
+                    throw new Exception('Error! Wrong new password.');
                 }
+            } else {
+                throw new Exception('Error! Wrong user ID.');
             }
         }
         return $result;
@@ -169,6 +175,8 @@ class Application_Model_User extends Application_Model_Abstract
         $allowedRoles = Application_Model_Auth::getAllowedRoles();
         if ( ! empty($allowedRoles[$role])) {
             $result = $this->_modelDb->saveRole($userId, $role);
+        } else {
+            throw new Exception('Error! This user don\'t have permissions.');
         }
         return $result;
     }
@@ -177,9 +185,9 @@ class Application_Model_User extends Application_Model_Abstract
     {
         $modelUserGroups = new Application_Model_Db_User_Groups();
         $result = $modelUserGroups->saveUserGroups($userId, $groups);
-        $user = $this->getUserById($userId);
-        $adminGroups = $modelUserGroups->getUserGroupsAdmin($userId);
         if ($result) {
+            $user = $this->getUserById($userId);
+            $adminGroups = $modelUserGroups->getUserGroupsAdmin($userId);
             if (count($adminGroups)) {
                 if ($user['role'] < Application_Model_Auth::ROLE_GROUP_ADMIN) {
                     $result = $this->saveRole($userId, Application_Model_Auth::ROLE_GROUP_ADMIN);

@@ -60,7 +60,7 @@ class Planner_CheckingController extends My_Controller_Action
         if ($user) {
             $this->_response(1, '', $user);
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, 'Error! Unknown user.', array());
         }
     }
 

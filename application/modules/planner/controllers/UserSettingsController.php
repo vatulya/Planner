@@ -73,6 +73,7 @@ class Planner_UserSettingsController extends My_Controller_Action
     public function saveUserGroupsAction()
     {
         $status  = false;
+        $message = 'Error! Something wrong.';
 
         $userId = $this->_getParam('user');
         $groups = $this->_getParam('groups');
@@ -83,16 +84,21 @@ class Planner_UserSettingsController extends My_Controller_Action
                 'admin' => (bool)$group[1],
             );
         }
-        $status = $this->_modelUser->saveGroups($userId, $groups);
+        try {
+            $status = $this->_modelUser->saveGroups($userId, $groups);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 
     public function saveUserFieldAction()
     {
+        $message = 'Error! Something wrong.';
         $status  = false;
 
         $userId = $this->_getParam('user');
@@ -100,22 +106,27 @@ class Planner_UserSettingsController extends My_Controller_Action
         $value  = $this->_getParam('value');
         $errors = $this->_checkUserField($userId, $field, $value);
         if (empty($errors)) {
-            if ($field == 'password') {
-                // TODO: refactor change-password logic
-                $status = $this->_modelUser->savePassword($userId, $value[0]);
-            }  else {
-                $status = $this->_modelUser->saveField($userId, $field, $value);
+            try {
+                if ($field == 'password') {
+                    // TODO: refactor change-password logic
+                    $status = $this->_modelUser->savePassword($userId, $value[0]);
+                }  else {
+                    $status = $this->_modelUser->saveField($userId, $field, $value);
+                }
+            } catch (Exception $e) {
+                $message = $e->getMessage();
             }
         }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', $errors);
+            $this->_response(0, $message, $errors);
         }
     }
 
     public function createUserFormAction()
     {
+        $message = 'Error! Something wrong.';
         $createForm = new Planner_Form_CreateUser();
         /** @var $request Zend_Controller_Request_Http */
         $request = $this->getRequest();
@@ -143,7 +154,7 @@ class Planner_UserSettingsController extends My_Controller_Action
         if ($status) {
             $this->_response(1, '', $data);
         } else {
-            $this->_response(0, 'Error!', $data);
+            $this->_response(0, $message, $data);
         }
     }
 
@@ -168,16 +179,25 @@ class Planner_UserSettingsController extends My_Controller_Action
 
     public function deleteUserAction()
     {
+        $message = 'Error! Something wrong.';
         $userId = $this->_getParam('user');
         if ($this->_me['role'] == Application_Model_Auth::ROLE_SUPER_ADMIN) {
             if ($this->_me['id'] != $userId) {
-                $status = $this->_modelUser->delete($userId);
+                try {
+                    $status = $this->_modelUser->delete($userId);
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+                }
+            } else {
+                $message = 'Error! You can\'t delete yourself.';
             }
+        } else {
+            $message = 'Error! You don\'t have permissions.';
         }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 

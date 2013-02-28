@@ -15,14 +15,18 @@ class Application_Model_Db_Parameters extends Application_Model_Db_Abstract
 
      public function setDefaultTotalFreeHours($value)
      {
-         $check = $this->getDefaultTotalFreeHours();
-         if ($check == $value) {
-             $result = 1;
-         } else {
-             $data = array(
-                 'default_total_free_hours' => $value,
-             );
-             $result = $this->_db->update(self::TABLE_NAME, $data);
+         try {
+             $check = $this->getDefaultTotalFreeHours();
+             if ($check == $value) {
+                 $result = 1;
+             } else {
+                 $data = array(
+                     'default_total_free_hours' => $value,
+                 );
+                 $result = $this->_db->update(self::TABLE_NAME, $data);
+             }
+         } catch (Exception $e) {
+             throw new Exception('Error! Database error!');
          }
          return $result;
      }

@@ -71,12 +71,12 @@
                     if (response.status) {
                         window.location.reload();
                     } else {
-                        alert('Error! Something wrong.');
+                        alert(response.message);
                     }
                 },
                 error: function(response) {
                     UserSettings.unlockPopup();
-                    alert('Error! Something wrong.');
+                    alert('Error! Something wrong. AJAX error. Please try later.');
                 }
             });
         },
@@ -231,13 +231,13 @@
                             }
                             alert('Error! ' + errors);
                         } else {
-                            alert('Error! Something wrong.');
+                            alert(response.message);
                         }
                     }
                 },
                 error: function(response) {
                     UserSettings.unlockEditFieldForm(el);
-                    alert('Error! Something wrong.');
+                    alert('Error! Something wrong. AJAX error. Please try later.');
                 }
             });
         },
@@ -367,12 +367,12 @@
                         if (response.status) {
                             window.location.reload();
                         } else {
-                            alert('Error! Something wrong.');
+                            alert(response.message);
                         }
                     },
                     error: function() {
                         el.removeAttr('disabled');
-                        alert('Error! Something wrong.');
+                        alert('Error! Something wrong. AJAX error. Please try later.');
                     }
                 });
             }

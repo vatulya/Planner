@@ -106,7 +106,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, 'Error! You don\'t have permissions.', array());
         }
     }
 
@@ -178,31 +178,46 @@ class Planner_GroupSettingsController extends My_Controller_Action
 
     public function saveGroupPlanningAction()
     {
-        $status = $this->_modelGroup->saveGroupPlanning($this->_getParam('group'), $this->_getParam('group_planning', array()));
+        $message = 'Error! Something wrong.';
+        try {
+            $status = $this->_modelGroup->saveGroupPlanning($this->_getParam('group'), $this->_getParam('group_planning', array()));
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 
     public function saveUserPlanningAction()
     {
-        $status = $this->_modelGroup->saveUserPlanning($this->_getParam('group'), $this->_getParam('user'), $this->_getParam('user_planning', array()));
+        $message = 'Error! Something wrong.';
+        try {
+           $status = $this->_modelGroup->saveUserPlanning($this->_getParam('group'), $this->_getParam('user'), $this->_getParam('user_planning', array()));
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 
     public function saveGroupSettingMaxFreePeopleAction()
     {
-        $status = $this->_modelGroup->saveGroupSetting($this->_getParam('group'), 'max_free_people', $this->_getParam('max_free_people', 0));
+        $message = 'Error! Something wrong.';
+        try {
+            $status = $this->_modelGroup->saveGroupSetting($this->_getParam('group'), 'max_free_people', $this->_getParam('max_free_people', 0));
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 
@@ -212,11 +227,16 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $selectedDates    = $this->_getParam('selected_dates', array());
         $maxFreePeople    = $this->_getParam('max_free_people');
         $editDates        = $this->_getParam('edit_dates', array());
-        $status = $this->_modelGroup->saveGroupExceptions($groupId, $editDates, $selectedDates, $maxFreePeople);
+        $message = 'Error! Something wrong.';
+        try {
+            $status = $this->_modelGroup->saveGroupExceptions($groupId, $editDates, $selectedDates, $maxFreePeople);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 
@@ -225,11 +245,16 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $groupId          = $this->_getParam('group', 0);
         $selectedDate     = $this->_getParam('selected_dates', array());
         $holidayName      = $this->_getParam('holiday_name', '');
-        $status = $this->_modelGroup->saveGroupHoliday($groupId, $selectedDate, $holidayName);
+        $message = 'Error! Something wrong.';
+        try {
+            $status = $this->_modelGroup->saveGroupHoliday($groupId, $selectedDate, $holidayName);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 
@@ -237,36 +262,53 @@ class Planner_GroupSettingsController extends My_Controller_Action
     {
         $holidayId = $this->_getParam('holiday', 0);
         $status = false;
-        if ($holidayId > 0) {
-            $status = $this->_modelGroup->deleteGroupHolidayById($holidayId);
+        $message = 'Error! Something wrong.';
+        try {
+            if ($holidayId > 0) {
+                $status = $this->_modelGroup->deleteGroupHolidayById($holidayId);
+            } else {
+                $message = 'Error! Wrong holiday ID.';
+            }
+        } catch (Exception $e) {
+            $message = $e->getMessage();
         }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 
     public function saveAlertOverLimitAction()
     {
+        $message = 'Error! Something wrong.';
         $limit = $this->_getParam('alert_over_limit_free_people', 0);
-        $status = $this->_modelGroup->saveGroupSetting(0, 'alert_over_limit_free_people', $limit);
+        try {
+            $status = $this->_modelGroup->saveGroupSetting(0, 'alert_over_limit_free_people', $limit);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 
     public function saveDefaultTotalFreeHoursAction()
     {
+        $message = 'Error! Something wrong.';
         $value = $this->_getParam('default_total_free_hours', 216);
         $modelParameter = new Application_Model_Parameter();
-        $status = $modelParameter->setDefaultTotalFreeHours($value);
+        try {
+            $status = $modelParameter->setDefaultTotalFreeHours($value);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 

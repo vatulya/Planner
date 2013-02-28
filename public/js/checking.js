@@ -40,7 +40,7 @@
                     if (data.status) {
                         Checking.checkUser(data.data);
                     } else {
-                        window.showError();
+                        alert(data.message);
                     }
                 }
             });

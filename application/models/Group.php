@@ -95,8 +95,9 @@ class Application_Model_Group extends Application_Model_Abstract
     {
         if (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
             $this->_modelDb->deleteGroup($groupId);
+            return true;
         }
-        return true;
+        return false;
     }
 
     public function getGroupPlanning($groupId, $userId = 0,  $weekType = null, $day = null)
@@ -136,7 +137,11 @@ class Application_Model_Group extends Application_Model_Abstract
                 $planning = $this->_preparePlanning($planning);
                 $groupPlannings = new Application_Model_Db_Group_Plannings();
                 $result = $groupPlannings->saveGroupPlanning($groupId, 0, $planning);
+            } else {
+                throw new Exception('Error! Unknown group.');
             }
+        } else {
+            throw new Exception('Error! You don\'t have permissions.');
         }
         return $result;
     }
@@ -280,6 +285,8 @@ class Application_Model_Group extends Application_Model_Abstract
         $result = false;
         if ($holidayId) {
             $result = $modelDbGroupHolidays->deleteGroupHolidayById($holidayId);
+        } else {
+            throw new Exception('Error! Wrong holiday ID.');
         }
         return $result;
     }

@@ -91,11 +91,11 @@
                         OpenRequests.openRequestDetailsShowAlert('success', 'Saved');
                         window.location.reload();
                     } else {
-                        OpenRequests.openRequestDetailsShowAlert('error', 'Error! Something wrong.');
+                        OpenRequests.openRequestDetailsShowAlert('error', response.message);
                     }
                 },
                 error: function(response) {
-                    OpenRequests.openRequestDetailsShowAlert('error', 'Error! Something wrong.');
+                    OpenRequests.openRequestDetailsShowAlert('error', 'Error! Something wrong. AJAX error. Please try later.');
                 }
             });
         }

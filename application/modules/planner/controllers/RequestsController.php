@@ -74,21 +74,31 @@ class Planner_RequestsController extends My_Controller_Action
 
     public function saveRequestAction()
     {
+        $message = 'Error! Something wrong.';
         $userId = $this->_getParam('user');
         $modelRequests = new Application_Model_Request();
         $selectedDates = $this->_getParam('selected_dates', array());
-        $blocked = $this->_getBlockedDatesByUserId($userId);
+        try {
+            $blocked = $this->_getBlockedDatesByUserId($userId);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
         $check = array_intersect($blocked, $selectedDates);
         if (count($check)) {
             $status = false;
+            $message = 'Error! Some selected dates is blocked or wrong. Please check: ' . implode(', ', $check);
         } else {
-            $status = $modelRequests->saveRequest($userId, $selectedDates);
+            try {
+                $status = $modelRequests->saveRequest($userId, $selectedDates);
+            } catch (Exception $e) {
+                $message = $e->getMessage();
+            }
         }
 
         if ($status) {
             $this->_response(1, '', array());
         } else {
-            $this->_response(0, 'Error!', array());
+            $this->_response(0, $message, array());
         }
     }
 

@@ -40,21 +40,29 @@ class Application_Model_Db_Group_Holidays extends Application_Model_Db_Abstract
 
     public function deleteGroupHoliday($groupId, $date)
     {
-        $where = array(
-            'group_id = ?'     => $groupId,
-            'holiday_date = ?' => $date,
-        );
-        $this->_db->delete(self::TABLE_NAME, $where);
-        return true;
+        try {
+            $where = array(
+                'group_id = ?'     => $groupId,
+                'holiday_date = ?' => $date,
+            );
+            $this->_db->delete(self::TABLE_NAME, $where);
+            return true;
+        } catch (Exception $e) {
+            throw new Exception('Error! Database error!');
+        }
     }
 
     public function deleteGroupHolidayById($holidayId)
     {
-        $where = array(
-            'id = ?' => $holidayId,
-        );
-        $this->_db->delete(self::TABLE_NAME, $where);
-        return true;
+        try {
+            $where = array(
+                'id = ?' => $holidayId,
+            );
+            $this->_db->delete(self::TABLE_NAME, $where);
+            return true;
+        } catch (Exception $e) {
+            throw new Exception('Error! Database error!');
+        }
     }
 
 }

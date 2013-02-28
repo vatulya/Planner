@@ -26,18 +26,23 @@ class Application_Model_Db_Group_Exceptions extends Application_Model_Db_Abstrac
 
     public function editGroupExceptions($groupId, array $oldSelectedDates, array $selectedDates, $maxFreePeople)
     {
-        foreach ($oldSelectedDates as $date) {
-            try {
-                $date = new DateTime($date);
-                $date = $date->format('Y-m-d');
-            } catch (Exception $e) { continue; }
-            $where = array(
-                'group_id = ?' => $groupId,
-                'exception_date = ?' => $date,
-            );
-            $this->_db->delete(self::TABLE_NAME, $where);
+        try {
+            foreach ($oldSelectedDates as $date) {
+                try {
+                    $date = new DateTime($date);
+                    $date = $date->format('Y-m-d');
+                } catch (Exception $e) { continue; }
+                $where = array(
+                    'group_id = ?' => $groupId,
+                    'exception_date = ?' => $date,
+                );
+                $this->_db->delete(self::TABLE_NAME, $where);
+            }
+            $this->insertGroupExceptions($groupId, $selectedDates, $maxFreePeople);
+            return true;
+        } catch (Exception $e) {
+            throw new Exception('Error! Database error.');
         }
-        return $this->insertGroupExceptions($groupId, $selectedDates, $maxFreePeople);
     }
 
     public function insertGroupExceptions($groupId, array $selectedDates, $maxFreePeople)

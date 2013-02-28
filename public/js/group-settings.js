@@ -107,11 +107,11 @@
                         if (response.status) {
                             window.location.reload();
                         } else {
-                            alert('Error! Something wrong.');
+                            alert(response.message);
                         }
                     },
                     error: function(response) {
-                        alert('Error! Something wrong.');
+                        alert('Error! Something wrong. AJAX error. Please try again later.');
                     }
                 });
             }
@@ -166,7 +166,7 @@
                     GroupSettings.initGroupPlanningForm();
                 },
                 error: function(response) {
-                    groupPlanningBody.html('<span class="alert alert-error">Error! Something wrong.</span>');
+                    groupPlanningBody.html('<span class="alert alert-error">Error! Something wrong. AJAX error. Please try later.</span>');
                 }
             });
         },
@@ -217,12 +217,12 @@
                         GroupSettings.showPlanningAlert(container, 'success', 'Success');
                         GroupSettings.selectGroupPlanning();
                     } else {
-                        GroupSettings.showPlanningAlert(container, 'error', 'Error!');
+                        GroupSettings.showPlanningAlert(container, 'error', response.message);
                     }
                 },
                 error: function(response) {
 //                    GroupSettings.unblockFormGroupPlanning();
-                    GroupSettings.showPlanningAlert(container, 'error', 'Error!');
+                    GroupSettings.showPlanningAlert(container, 'error', 'Error! Something wrong. AJAX error. Please try later.');
                 }
             });
         },
@@ -248,12 +248,12 @@
                         GroupSettings.showPlanningAlert(container, 'success', 'Success');
                         GroupSettings.selectGroupPlanning();
                     } else {
-                        GroupSettings.showPlanningAlert(container, 'error', 'Error!');
+                        GroupSettings.showPlanningAlert(container, 'error', response.message);
                     }
                 },
                 error: function(response) {
 //                    GroupSettings.unblockFormGroupPlanning();
-                    GroupSettings.showPlanningAlert(container, 'error', 'Error!');
+                    GroupSettings.showPlanningAlert(container, 'error', 'Error! Something wrong. AJAX error. Please try later.');
                 }
             });
         },
@@ -372,11 +372,11 @@
                     if (response.status) {
                         window.location.reload();
                     } else {
-                        alert('Error! Something wrong.');
+                        alert(response.message);
                     }
                 },
                 error: function(response) {
-                    alert('Error! Something wrong.');
+                    alert('Error! Something wrong. AJAX error. Please try later.');
                 }
             });
         },
@@ -435,11 +435,11 @@
                     if (response.status) {
                         window.location.reload();
                     } else {
-                        alert('Error! Something wrong.');
+                        alert(response.message);
                     }
                 },
                 error: function(response) {
-                    alert('Error! Something wrong.');
+                    alert('Error! Something wrong. AJAX error. Please try later.');
                 }
             });
         },
@@ -460,11 +460,11 @@
                         if (response.status) {
                             window.location.reload();
                         } else {
-                            alert('Error! Something wrong.');
+                            alert(response.message);
                         }
                     },
                     error: function(response) {
-                        alert('Error! Something wrong.');
+                        alert('Error! Something wrong. AJAX error. Please try later.');
                     }
                 });
             }
@@ -482,11 +482,11 @@
                     if (response.status) {
                         window.location.reload();
                     } else {
-                        alert('Error! Something wrong.');
+                        alert(response.message);
                     }
                 },
                 error: function(response) {
-                    alert('Error! Something wrong.');
+                    alert('Error! Something wrong. AJAX error. Please try later.');
                 }
             });
         }

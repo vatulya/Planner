@@ -82,11 +82,11 @@
                         if (response.status) {
                             window.location.reload();
                         } else {
-                            alert('Error! Something wrong.');
+                            alert(response.message);
                         }
                     },
                     error: function(response) {
-                        alert('Error! Something wrong.');
+                        alert('Error! Something wrong. AJAX error. Please try later.');
                     }
                 });
             }

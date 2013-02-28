@@ -16,22 +16,26 @@ class Application_Model_Db_User_Groups extends Application_Model_Db_Abstract
 
     public function saveUserGroups($userId, array $groups)
     {
-        $this->_db->delete(self::TABLE_NAME, array('user_id = ?' => $userId));
-        $partResult = true;
-        $result = false;
-        foreach ($groups as $group) {
-            if ($group['group'] > 0) {
-                $admin = (int)$group['admin'];
-                $data = array(
-                    'user_id' => $userId,
-                    'group_id' => $group['group'],
-                    'is_admin' => $admin,
-                );
-                $partResult = $this->_db->insert(self::TABLE_NAME, $data);
-                if ($partResult) {
-                    $result = true;
+        try {
+            $this->_db->delete(self::TABLE_NAME, array('user_id = ?' => $userId));
+            $partResult = true;
+            $result = false;
+            foreach ($groups as $group) {
+                if ($group['group'] > 0) {
+                    $admin = (int)$group['admin'];
+                    $data = array(
+                        'user_id' => $userId,
+                        'group_id' => $group['group'],
+                        'is_admin' => $admin,
+                    );
+                    $partResult = $this->_db->insert(self::TABLE_NAME, $data);
+                    if ($partResult) {
+                        $result = true;
+                    }
                 }
             }
+        } catch (Exception $e) {
+            throw new Exception('Error! Database error!');
         }
         return $result;
     }
