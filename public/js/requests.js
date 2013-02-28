@@ -21,12 +21,36 @@
             Requests.calendarContainer.on('calendar-loaded', function(e, calendar) {
                 Requests.calendar = calendar;
                 Requests.refreshSelectedDates();
+                Requests.refreshHolidays();
             });
             Requests.calendarContainer.on('calendar-selected-changed', function(e) {
                 Requests.refreshSelectedDates();
             });
             $(document.body).on('click', '#save-request', function(e) {
                 Requests.saveRequest();
+            });
+        },
+
+        refreshHolidays: function() {
+            var holidays = [];
+            var holidaysTitles = {};
+            if (window.calendarHolidays != undefined && typeof window.calendarHolidays == 'object') {
+                holidays = window.calendarHolidays;
+                holidaysTitles = window.calendarHolidaysTitles;
+            }
+            Requests.calendarContainer.find('.calendar-day-cell').each(function(i, el) {
+                el = $(el);
+                var date = el.data('date');
+                if ($.inArray(date, holidays) > -1) {
+                    el.addClass('holiday');
+                    el.addClass('blocked');
+                    if (holidaysTitles[date] != undefined) {
+                        el.addClass('show-tooltip');
+                        Form.setDataEl(el, 'original-title', holidaysTitles[date]);
+                        Form.setDataEl(el, 'placement', 'bottom');
+                        el.tooltip();
+                    }
+                }
             });
         },
 

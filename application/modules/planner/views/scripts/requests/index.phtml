@@ -25,7 +25,23 @@ foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_ST
 foreach ($this->userRequests[Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED] as $request) {
     $rejectedRequestDates[] = $request['request_date'];
 };
+
+$holidays = array();
+$holidaysTitles = array();
+foreach ($this->regularHolidays as $holiday) {
+    $holidays[] = $holiday['holiday_date'];
+    $holiday['holiday_name'] = trim($holiday['holiday_name']);
+    if ( ! empty($holiday['holiday_name'])) {
+        $holidaysTitles[$holiday['holiday_date']] = $holiday['holiday_name'];
+    }
+}
+$holidays = json_encode($holidays);
+$holidaysTitles = json_encode($holidaysTitles);
 ?>
+<script language="JavaScript">
+    var calendarHolidays = <?php echo ($holidays ? $holidays : '[]'); ?>;
+    var calendarHolidaysTitles = <?php echo ($holidaysTitles ? $holidaysTitles : '{}'); ?>;
+</script>
 
 <div class="span4">
     <?php echo $this->me['full_name']; ?>

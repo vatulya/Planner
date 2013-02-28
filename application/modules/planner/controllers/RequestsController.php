@@ -57,11 +57,16 @@ class Planner_RequestsController extends My_Controller_Action
         $userPreAllowedFreeHours = My_DateTime::TimeToDecimal($userPreAllowedFreeTime);
         $userPreUsedFreeHours    = My_DateTime::TimeToDecimal($userParameters['total_free_time'] - $userPreAllowedFreeTime);
         $blocked = $this->_getBlockedDatesByUserId($userId);
+
+        $modelGroup = new Application_Model_Group();
+        $generalHolidays = $modelGroup->getGeneralHolidays();
+
         $assign = array(
-            'userRequests'       => $userRequests,
-            'blocked'            => $blocked,
+            'userRequests'        => $userRequests,
+            'blocked'             => $blocked,
             'preAllowedFreeHours' => $userPreAllowedFreeHours,
             'preUsedFreeHours'    => $userPreUsedFreeHours,
+            'regularHolidays'     => $generalHolidays,
         );
         $this->view->me['parameters'] = $userParameters;
         $this->view->assign($assign);
