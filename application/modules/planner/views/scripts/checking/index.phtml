@@ -1,3 +1,8 @@
+<?php /********** INCLUDE CALENDAR MODULE *****************/ ?>
+<?php $this->headScript()->appendFile('/js/calendar.js'); ?>
+<?php $this->headLink()->appendStylesheet('/css/calendar.css'); ?>
+
+<input type="hidden" id="date-today" value="<?php echo $this->today; ?>" />
 
 <div class="span11">
     <table class="table table-bordered table-striped table-small-td">
@@ -76,3 +81,27 @@ Error! No users.
 </div>
 
 <?php endif; ?>
+
+<div class="modal hide span12 popup" id="show-user-checking-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3>User Checking</h3>
+    </div>
+    <div class="modal-body">
+        <div class="user-calendar-container">
+            <div class="pull-left" id="user-checking-calendar-container">
+                <div class="">
+                    <div
+                        class="module-calendar"
+                        data-old-selected-dates=""
+                        data-selected-dates=""
+                        data-blocked-dates="<?php echo $this->date; ?>"
+                        data-container-id="user-checking-calendar-container"
+                        data-editable="0"
+                        ></div>
+                </div>
+            </div>
+        </div>
+        <div class="user-checking-container"></div>
+    </div>
+</div>

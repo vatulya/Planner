@@ -2,6 +2,49 @@
 
     var Checking = {
 
+        today: null,
+
+        userCheckingModal: null,
+        userCheckingModalContainer: null,
+
+        calendar: null,
+        calendarContainer: null,
+
+        init: function() {
+            Checking.today = $('#date-today').val();
+
+            Checking.userCheckingModal = $('#show-user-checking-modal');
+            Checking.userCheckingModalContainer = Checking.userCheckingModal.find('.user-checking-container');
+
+            Checking.calendarContainer = $('#user-checking-calendar-container');
+            if (Checking.calendarContainer) {
+                Checking.initCalendar();
+                Checking.initCalendarBinds();
+            }
+        },
+
+        initCalendar: function() {
+            Calendar.render(Checking.calendarContainer.find('.module-calendar'));
+        },
+
+        initCalendarBinds: function() {
+            Checking.calendarContainer.on('calendar-loaded', function(e, calendar) {
+                Checking.calendar = calendar;
+            });
+            $(Checking.calendarContainer).on('click', '.calendar-day-cell', function(e) {
+                Checking.refreshSelectedDate(e.currentTarget);
+            });
+        },
+
+        refreshSelectedDate: function(el) {
+            el = $(el);
+            var date = el.data('date');
+            var user = Checking.userCheckingModalContainer.data('user');
+            Calendar.setData(Checking.calendar, {blocked_dates: [date]});
+            Calendar.refresh(Checking.calendar);
+            Checking.loadUserCheckingHistory(user, date);
+        },
+
         checkUser: function(user) {
             var userEl = $('.user-row.user-id-' + user.id);
             if (userEl.length > 0) {
@@ -44,17 +87,45 @@
                     }
                 }
             });
+        },
+
+        showUserCheckingHistory: function(user) {
+            Calendar.setData(Checking.calendar, {blocked_dates: [Checking.today], show_date: Checking.today});
+            Calendar.refresh(Checking.calendar);
+            Checking.loadUserCheckingHistory(user, Checking.today);
+        },
+
+        loadUserCheckingHistory: function(user, date) {
+            $.ajax({
+                url: '/checking/get-user-checking-history',
+                data: {
+                    format: 'html',
+                    user: user,
+                    date: date
+                },
+                success: function(data) {
+                    Checking.userCheckingModalContainer.html(data);
+                    Checking.userCheckingModalContainer.data('user', user);
+                    Checking.userCheckingModal.modal('show');
+                }
+            });
         }
 
     };
 
     $(function() {
 
+        Checking.init();
+
         $(document.body).on('click', '.btn-user-check-in', function(e) {
             Checking.userCheck(e.currentTarget, 'in');
         });
         $(document.body).on('click', '.btn-user-check-out', function(e) {
             Checking.userCheck(e.currentTarget, 'out');
+        });
+        $(document.body).on('click', '.show-history .user-full-name', function(e) {
+            var el = $(e.currentTarget);
+            Checking.showUserCheckingHistory(el.data('user-id'));
         });
 
     });

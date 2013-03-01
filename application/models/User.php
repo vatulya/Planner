@@ -314,4 +314,16 @@ class Application_Model_User extends Application_Model_Abstract
 
         return true;
     }
+
+    public function getUserCheckings($userId, $date) {
+
+        $date = My_DateTime::factory($date);
+        if ($date) {
+            $checkins = $this->_modelDb->getUserCheckins($userId, $date);
+        } else {
+            throw new Exception('Error! Wrong date.');
+        }
+        return $checkins;
+    }
+
 }

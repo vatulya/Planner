@@ -62,15 +62,15 @@
                 value = data.container_id;
                 Calendar.setDataEl(el, 'container-id', value);
             }
-            if (data.selected_dates.length) {
+            if (typeof data.selected_dates != 'undefined' && data.selected_dates.length) {
                 value = data.selected_dates.join(',');
                 Calendar.setDataEl(el, 'selected-dates', value);
             }
-            if (data.old_selected_dates.length) {
+            if (typeof data.old_selected_dates != 'undefined' && data.old_selected_dates.length) {
                 value = data.old_selected_dates.join(',');
                 Calendar.setDataEl(el, 'old-selected-dates', value);
             }
-            if (data.blocked_dates.length) {
+            if (typeof data.blocked_dates != 'undefined' && data.blocked_dates.length) {
                 value = data.blocked_dates.join(',');
                 Calendar.setDataEl(el, 'blocked-dates', value);
             }
@@ -89,8 +89,10 @@
         },
 
         render: function(el) {
-            Calendar.refresh(el);
-            Calendar.bind(el);
+            if (el.length) {
+                Calendar.refresh(el);
+                Calendar.bind(el);
+            }
         },
 
         refresh: function(el) {

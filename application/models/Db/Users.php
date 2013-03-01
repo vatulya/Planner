@@ -161,6 +161,17 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
         return true;
     }
 
+    public function getUserCheckins($userId, DateTime $date)
+    {
+        $select = $this->_db->select()
+            ->from(array('uc' => Application_Model_Db_User_Checks::TABLE_NAME))
+            ->where('uc.user_id = ?', $userId)
+            ->where('uc.check_date = ?', $date->format('Y-m-d'))
+            ->order(array('uc.check_in ASC'));
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
     protected function _addCheckinByDate($select, DateTime $checkingDate = null)
     {
         if ($checkingDate) {

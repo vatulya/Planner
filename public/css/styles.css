@@ -24,6 +24,26 @@ input[type="checkbox"] {
 .user-row.checked-out .btn-user-check-in, .user-row.checked-out .btn-user-check-out {
     display: none;
 }
+#user-checking-calendar-container {
+    width: 510px;
+}
+.user-row .user-full-name {
+    padding-bottom: 1px;
+}
+.show-history .user-full-name:hover {
+    padding-bottom: 0px;
+    border-bottom: 1px dashed #808080;
+    cursor: pointer;
+}
+.checking-history-header {
+    float: left;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+}
+.checking-history-header span {
+    font-weight: bold;
+}
 .small-tip {
     font-size: 10px;
     color: gray;
@@ -266,7 +286,3 @@ form.form-mini {
     margin: -300px 0 0 -350px;
 }
 
-.set-time-hour-status, .set-time-min-status {
-    width: 16px;
-    margin: 0px !important;
-}
