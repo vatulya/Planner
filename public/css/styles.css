@@ -44,6 +44,12 @@ input[type="checkbox"] {
 .checking-history-header span {
     font-weight: bold;
 }
+.checkins-table-container {
+    margin-left: 100px;
+}
+.checkins-table-container th {
+    width: 150px;
+}
 .small-tip {
     font-size: 10px;
     color: gray;

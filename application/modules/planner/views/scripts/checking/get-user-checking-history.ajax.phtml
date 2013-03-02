@@ -3,6 +3,7 @@
 </div>
 
 <?php if ( ! empty($this->checkins)): ?>
+    <div class="span4 checkins-table-container">
     <table class="table table-bordered table-striped table-small-td">
         <thead>
         <tr>
@@ -12,13 +13,7 @@
             <th>
                 Check OUT
             </th>
-            <th>
-                Overtime
-            </th>
             <?php if ($this->isAdmin): ?>
-            <th>
-                Approve
-            </th>
             <?php endif; ?>
         </tr>
         </thead>
@@ -32,19 +27,15 @@
                 <td>
                     <?php echo (string)$checkin['check_out']; ?>
                 </td>
-                <td>
-                    <?php echo $overtime; ?>
-                </td>
                 <?php if ($this->isAdmin): ?>
-                <td>
                     <input type="checkbox" class="approve-overtime" checked="checked" data-checkin-id="<?php echo $checkin['id']; ?>" />
-                </td>
                 <?php endif; ?>
             </tr>
         <?php endforeach;?>
         <tr></tr>
         </tbody>
     </table>
+    </div>
 <?php else: ?>
     <div class="checking-history-header">
         No checkins in this day.
