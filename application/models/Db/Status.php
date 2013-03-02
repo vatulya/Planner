@@ -23,4 +23,12 @@ class Application_Model_Db_Status extends Application_Model_Db_Abstract
      }
 
 
+     public function saveStatus($statusData)
+     {
+         $this->_db->delete(self::TABLE_NAME, array('id = ?' => $statusData['id']));
+         $result = $this->_db->insert(self::TABLE_NAME, $statusData);
+         return $result;
+     }
+
+
 }

@@ -244,3 +244,4 @@ ALTER TABLE `user_parameters` DROP COLUMN `regular_work_hours`;
 
 ALTER TABLE `status`     ADD COLUMN `is_holiday` BINARY(1) DEFAULT '0' NOT NULL AFTER `edit_type`;
 UPDATE `status` SET `is_holiday`='1' WHERE `id`='5' AND `id`='3';
+ALTER TABLE `status` ADD COLUMN `long_description` VARCHAR(512) NULL AFTER `is_holiday`;

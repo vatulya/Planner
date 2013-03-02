@@ -6,8 +6,10 @@ class Planner_GroupSettingsController extends My_Controller_Action
     public $ajaxable = array(
         'index'                              => array('html'),
         'get-edit-group-form'                => array('html'),
+        'get-edit-status-form'               => array('html'),
         'get-group-planning'                 => array('html'),
         'save-group-form'                    => array('json'),
+        'save-status-form'                   => array('json'),
         'delete-group'                       => array('json'),
         'save-group-planning'                => array('json'),
         'save-user-planning'                 => array('json'),
@@ -28,6 +30,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
     {
         $this->view->me = $this->_me = $this->_helper->CurrentUser();
         $this->_modelGroup = new Application_Model_Group();
+        $this->_modelStatus = new Application_Model_Status();
         parent::init();
     }
 
@@ -54,6 +57,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
             'generalHolidays'       => $generalHolidays,
             'defaultTotalFreeHours' => $defaultTotalFreeHours,
         );
+        $this->view->statuses = $this->_modelStatus->getAllstatus();
         $this->view->assign($assign);
     }
 
@@ -76,6 +80,52 @@ class Planner_GroupSettingsController extends My_Controller_Action
         }
         $this->_helper->layout->disableLayout();
         $this->view->editForm = $editForm->prepareDecorators();
+    }
+
+    public function getEditStatusFormAction()
+    {
+        $statusId = $this->_getParam('status_id');
+        $editForm = new Planner_Form_EditStatus(array(
+            'class' => 'edit-status-form',
+            'action' => $this->_helper->url->url(array('controller' => 'group-settings', 'action' => 'save-status-form'), 'planner', true),
+            'id' => 'form-edit-status',
+        ));
+        if ($statusId) {
+            $status = $this->_modelStatus->getDataById($statusId);
+            if ($status) {
+                if (!empty($status['color_hex'])) {
+                    $status['color'] = $status['color_hex'];
+                }
+                $editForm->populate($status);
+            } else {
+                return false;
+            }
+            $this->view->status = $status;
+        }
+        $this->_helper->layout->disableLayout();
+        $this->view->editForm = $editForm->prepareDecorators();
+    }
+
+    public function saveStatusFormAction()
+    {
+        $editForm = new Planner_Form_EditStatus();
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        $data = array();
+        $status = false;
+        if ($request->isPost()) {
+            if ($editForm->isValid($request->getPost())) {
+                $data = $this->_modelStatus->saveStatus($editForm->getValues());
+                $status = true;
+            } else {
+                $data = $editForm->getErrors();
+            }
+        }
+        if ($status) {
+            $this->_response(1, '', $data);
+        } else {
+            $this->_response(0, 'Error!', $data);
+        }
     }
 
     public function saveGroupFormAction()

@@ -306,3 +306,11 @@ form.form-mini {
     margin: -300px 0 0 -350px;
 }
 
+.set-time-hour-status, .set-time-min-status {
+    width: 16px;
+    margin: 0px !important;
+}
+
+.popup-edit-statuses {
+    z-index: 2000 !important;
+}

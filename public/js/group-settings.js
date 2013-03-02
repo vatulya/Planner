@@ -8,6 +8,11 @@
         modalBody = modal.find('.modal-body')
         ;
 
+    var modalStatus = $('.modal-edit-status'),
+        modalTmplGroupNameStatus = modalStatus.find('.tmpl-group-name'),
+        modalBodyStatus = modalStatus.find('.modal-body')
+        ;
+
     var groupPlanning = $('.group-work-days-planning'),
         groupPlanningSelect = $('#group-planning'),
         groupPlanningBody = groupPlanning.find('.planning-body');
@@ -68,6 +73,26 @@
                 },
                 error: function(response) {
                     modalBody.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        editStatus: function(el) {
+            el = $(el);
+            modalTmplGroupName.html(el.data(''));
+            modalBodyStatus.html('Loading...');
+            modalStatus.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    status_id: el.data('status-id')
+                },
+                success: function(response) {
+                    modalBodyStatus.html(response);
+                    GroupSettings.initEditStatusAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyStatus.html('Error! Something wrong.');
                 }
             });
         },
@@ -136,6 +161,25 @@
             });
         },
 
+        initEditStatusAjaxForm: function() {
+            var formEl = $('#form-edit-status');
+            $('#form-edit-status').ajaxForm({
+                data: {format: 'json'},
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.Form.showSuccess(formEl);
+                        window.location.reload();
+                    } else {
+                        window.Form.showErrors(formEl);
+                    }
+                },
+                error: function() {
+                    window.Form.showErrors(formEl);
+                }
+            });
+        },
+
         changeSelectedColor: function(el) {
             el = $(el);
             $('.group-color-variation').removeClass('active');
@@ -143,6 +187,10 @@
             var color = $('#form-edit-group').find('#color');
             if (color) {
                 color.val(el.data('color'));
+            }
+            var colorStatus = $('#form-edit-status').find('#color');
+            if (colorStatus) {
+                colorStatus.val(el.data('color'));
             }
         },
 
@@ -497,6 +545,9 @@
 
         $(document.body).on('click', '.edit-group', function(e) {
             GroupSettings.editGroup(e.currentTarget);
+        });
+        $(document.body).on('click', '.edit-status', function(e) {
+            GroupSettings.editStatus(e.currentTarget);
         });
         $(document.body).on('click', '.create-group', function(e) {
             GroupSettings.createGroup(e.currentTarget);

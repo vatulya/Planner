@@ -129,7 +129,37 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
         <?php endif; ?>
         </tbody>
     </table>
+    </div>
+    <div class="span5">
+    <table class="table table-bordered statuses-table">
+        <thead>
+        <tr>
+            <th class="span2">
+                Status
+            </th>
+            <th class="span1">
+                Color
+            </th>
+            <th class="span1">
+                Holiday
+            </th>
+        </tr>
+        </thead>
+        <tbody>
 
+        <?php foreach( $this->statuses as $status ) : ?>
+        <tr>
+            <td>
+                <a href="<?php echo $this->url(array('controller' => 'group-settings', 'action' => 'get-edit-status-form'), 'planner', true); ?>" class="no-action edit-status btn btn-mini" data-status-id="<?php echo $status['id']; ?>" data-status-color="<?php echo $status['id'];; ?>">
+                    <i class="icon-cog"></i>
+                </a>
+                <!--a href="#" data-placement="top" class="no-action editable-status"--><?php echo $status['description'] ?></td>
+            <td style="background-color: #<?php echo $status['color_hex'] ?>;"><a href="#" class="editable-status"><div style="width: 100px;"></div></a></td>
+            <td><?php if(empty($status['is_holiday'])) { echo "No"; } else { echo "Yes"; } ?></td>
+        </tr>
+            <?php endforeach ?>
+        </tbody>
+    </table>
 </div>
 
 <div class="span12 normal-user-holidays">
@@ -208,6 +238,58 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
     </div>
 </div>
 
+<div class="modal hide fade modal-edit-status">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3 class="header-edit-group">Edit status: <span class="tmpl-status-name"></span></h3>
+    </div>
+    <div class="modal-body">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary button-submit" data-form="form-edit-status">Save</button>
+    </div>
+</div>
+
+<div class="modal hide fade modal-edit-status-old">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3 class="header-edit-group">Edit Statuses: <span class="tmpl-group-name"></span></h3>
+    </div>
+    <div class="modal-body">
+        <div class="span4">
+            <table class="table table-bordered statuses-table">
+                <thead>
+                <tr>
+                    <th class="span2">
+                        Status Type
+                    </th>
+                    <th class="span1">
+                        Color
+                    </th>
+                    <th class="span1">
+                        Holiday
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <?php foreach( $this->statuses as $status ) : ?>
+                <tr>
+                    <td><a href="#" data-placement="top" class="no-action editable-status"><?php echo $status['description'] ?></a></td>
+                    <td style="background-color: #<?php echo $status['color_hex'] ?>;"><a href="#" class="editable-status"><div style="width: 100px;"></div></a></td>
+                    <td><?php if(empty($status['is_holiday'])) { echo "No"; } else { echo "Yes"; } ?></td>
+                </tr>
+                <?php endforeach ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary button-submit" data-form="form-edit-group">Save</button>
+    </div>
+</div>
+
 <div class="modal hide popup" id="edit-group-exceptions-modal">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
@@ -258,5 +340,16 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
     </div>
     <div class="modal-footer">
         <button class="btn btn-success" id='submit-group-holidays'>Save</button>
+    </div>
+</div>
+
+
+<!-- EDIT STATUS POPOVER -->
+<div id="popover-edit-field-html" style="display: none;">
+    <div class="popover-container" data-user="">
+        <div class="input-append">
+            <input type="text" name="" value="" class="input-edit-field for-focus">
+            <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
+        </div>
     </div>
 </div>

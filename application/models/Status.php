@@ -24,14 +24,18 @@ class Application_Model_Status extends Application_Model_Abstract
         return $statusesNormalized;
     }
 
-    public function saveStatus($values)
+    public function saveStatus($statusData)
     {
-        $result = false;
-        if (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) {
-
-        }
         //var_dump($values);
-        $result = $this->_modelDb->saveStatus($values);
+        $statusDataForSave = array(
+            'id'               => $statusData['id'],
+            'color_hex'        => $statusData['color'],
+            'color'            => $statusData['color'],
+            'description'      => $statusData['description'],
+            'long_description' => $statusData['long_description'],
+            'is_holiday'       => $statusData['is_holiday'],
+        );
+        $result = $this->_modelDb->saveStatus($statusDataForSave);
         return $result;
     }
 
