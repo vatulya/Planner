@@ -30,7 +30,7 @@ if (
 ?>
 <tr class="user-row user-id-<?php echo $user['id']?> <?php echo $additionalClass?>">
     <td class="<?php echo $showHistoryClass; ?>">
-        <div class="user-full-name" data-user-id="<?php echo $user['id']?>"><?php echo $user['full_name']?></div>
+        <div class="user-full-name" data-user-id="<?php echo $user['id']?>" data-is-admin="<?php echo ($user['is_admin'] ? '1' : '0' ); ?>"><?php echo $user['full_name']?></div>
     </td>
     <td style="text-align: center;">
         <?php

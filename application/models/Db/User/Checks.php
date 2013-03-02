@@ -16,6 +16,9 @@ class Application_Model_Db_User_Checks extends Application_Model_Db_Abstract
             ->order(array('uc.check_date DESC', 'uc.check_in DESC'))
             ->limit(1);
         $lastCheck = $this->_db->fetchRow($select);
+        if ( ! $lastCheck) {
+            $lastCheck = array();
+        }
         return $lastCheck;
     }
 

@@ -125,6 +125,11 @@
         });
         $(document.body).on('click', '.show-history .user-full-name', function(e) {
             var el = $(e.currentTarget);
+            if (el.data('is-admin')) {
+                Checking.userCheckingModal.addClass('is-admin');
+            } else {
+                Checking.userCheckingModal.removeClass('is-admin');
+            }
             Checking.showUserCheckingHistory(el.data('user-id'));
         });
 

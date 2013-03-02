@@ -35,6 +35,7 @@ input[type="checkbox"] {
     border-bottom: 1px dashed #808080;
     cursor: pointer;
 }
+
 .checking-history-header {
     float: left;
     width: 100%;
@@ -50,6 +51,19 @@ input[type="checkbox"] {
 .checkins-table-container th {
     width: 150px;
 }
+#show-user-checking-modal .modal-footer .save-checkin-data-button,
+#show-user-checking-modal .edit-check-data {
+    display: none;
+}
+#show-user-checking-modal.is-admin .modal-footer .save-checkin-data-button,
+#show-user-checking-modal.is-admin .edit-check-data {
+    display: block;
+}
+.edit-check-data {
+    position: relative;
+    float: right;
+}
+
 .small-tip {
     font-size: 10px;
     color: gray;

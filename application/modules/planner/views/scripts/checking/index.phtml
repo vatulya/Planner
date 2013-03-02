@@ -19,6 +19,7 @@
         <?php if ( ! empty($this->me)): ?>
             <?php
                 $this->user  = $this->me + $this->lastCheck;
+                $this->user['is_admin'] = false;
                 $this->group = array();
             ?>
             <?php echo $this->render('checking/_blocks/user_row.phtml'); ?>
@@ -56,6 +57,7 @@ Error! No users.
     <?php */ ?>
 
     <?php foreach($this->groups as $group): ?>
+        <?php $isAdmin = (bool)$group['is_admin']; ?>
     <table class="table table-bordered table-striped table-small-td">
         <thead>
         <tr <?php if ( ! empty($group['color'])): ?>style="background-color: #<?php echo $group['color']; ?>;"<?php endif; ?>>
@@ -70,6 +72,7 @@ Error! No users.
             <?php if ( ! empty($group['users'])): ?>
             <?php foreach($group['users'] as $user): ?>
             <?php $this->user  = $user; ?>
+            <?php $this->user['is_admin'] = $isAdmin; ?>
             <?php $this->group = $group; ?>
             <?php echo $this->render('checking/_blocks/user_row.phtml'); ?>
             <?php endforeach; ?>
@@ -112,7 +115,7 @@ Error! No users.
             Work hours done: <?php echo $this->workHoursDone; ?><br />
             Work hours overtime: <?php echo $this->workHoursOvertime; ?><br />
         </div>
-        <div class="pull-right">
+        <div class="pull-right save-checkin-data-button">
             <input type="button" class="btn btn-primary" value="Save" />
         </div>
     </div>

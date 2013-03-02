@@ -48,6 +48,15 @@ class Planner_CheckingController extends My_Controller_Action
                 continue; // get groups what must work today only
             }
             $groupUsers = $this->_modelUser->getAllUsersByGroup($group['id'], $date);
+            $isAdmin = false;
+            if ($this->_me['role'] >= Application_Model_Auth::ROLE_ADMIN) {
+                $isAdmin = true;
+            } else {
+                if (in_array($group['id'], $this->_me['admin_groups'])) {
+                    $isAdmin = true;
+                }
+            }
+            $groups[$key]['is_admin'] = $isAdmin;
             $groups[$key]['users'] = $groupUsers;
         }
         $modelUserCheck = new Application_Model_Db_User_Checks();

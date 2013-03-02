@@ -13,23 +13,21 @@
             <th>
                 Check OUT
             </th>
-            <?php if ($this->isAdmin): ?>
-            <?php endif; ?>
         </tr>
         </thead>
         <tbody>
         <?php foreach ($this->checkins as $checkin): ?>
             <?php $overtime = ''; ?>
-            <tr>
+            <tr id="checkin-<?php echo $checkin['id']; ?>">
                 <td>
                     <?php echo (string)$checkin['check_in']; ?>
                 </td>
                 <td>
                     <?php echo (string)$checkin['check_out']; ?>
+                    <a href="" class="no-action edit-check-data btn btn-mini" data-checkin-id="<?php echo $checkin['id']; ?>">
+                        <i class="icon-cog"></i>
+                    </a>
                 </td>
-                <?php if ($this->isAdmin): ?>
-                    <input type="checkbox" class="approve-overtime" checked="checked" data-checkin-id="<?php echo $checkin['id']; ?>" />
-                <?php endif; ?>
             </tr>
         <?php endforeach;?>
         <tr></tr>
