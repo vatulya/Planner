@@ -11,12 +11,11 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
         'emergency_phone', 'emergency_full_name', 'birthday', 'owner', 'regular_work_hours',
     );
 
-    public function getUserByEmail($email, DateTime $checkingDate = null)
+    public function getUserByEmail($email)
     {
         $select = $this->_db->select()
             ->from(array('u' => self::TABLE_NAME))
             ->where('u.email = ?', $email);
-        $select = $this->_addCheckinByDate($select, $checkingDate);
         $result = $this->_db->fetchRow($select);
         return $result;
     }
@@ -31,12 +30,11 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
         return $result;
     }
 
-    public function getAllUsers(DateTime $checkingDate = null)
+    public function getAllUsers()
     {
         $select = $this->_db->select()
             ->from(array('u' => self::TABLE_NAME))
             ->order(array('u.full_name ASC'));
-        $select = $this->_addCheckinByDate($select, $checkingDate);
         $result = $this->_db->fetchAll($select);
         return $result;
     }
@@ -175,9 +173,45 @@ class Application_Model_Db_Users extends Application_Model_Db_Abstract
     protected function _addCheckinByDate($select, DateTime $checkingDate = null)
     {
         if ($checkingDate) {
-            $table     = array('uc' => Application_Model_Db_User_Checks::TABLE_NAME);
-            $condition = 'u.id = uc.user_id AND uc.check_date = "' . $checkingDate->format('Y-m-d') . '"';
-            $fields    = array('uc.check_date', 'uc.check_in', 'uc.check_out');
+            $query = 'DROP TEMPORARY TABLE IF EXISTS tmp_user_checkins_sort';
+            $this->_db->query($query);
+
+            $query = 'DROP TEMPORARY TABLE IF EXISTS tmp_user_checkins';
+            $this->_db->query($query);
+
+            // Prepare temporary table with latest check IN for all users
+            $query = '
+                CREATE TEMPORARY TABLE tmp_user_checkins_sort
+                SELECT
+                    uc.id,
+                    uc.user_id,
+                    uc.check_date,
+                    uc.check_in,
+                    uc.check_out
+                FROM
+                    ' . Application_Model_Db_User_Checks::TABLE_NAME . ' uc
+                WHERE
+                    uc.check_date = :date
+                ORDER BY uc.check_in DESC
+            ';
+            $this->_db->query($query, array(':date' => $checkingDate->format('Y-m-d')));
+            $this->_db->query('ALTER TABLE tmp_user_checkins_sort ADD INDEX(check_date)');
+
+            $query = '
+                CREATE TEMPORARY TABLE tmp_user_checkins
+                SELECT
+                    tucs.*
+                FROM
+                    tmp_user_checkins_sort tucs
+                GROUP BY
+                    tucs.check_date
+            ';
+            $this->_db->query($query);
+            $this->_db->query('ALTER TABLE tmp_user_checkins_sort ADD INDEX(user_id)');
+
+            $table     = array('tuc' => 'tmp_user_checkins');
+            $condition = 'u.id = tuc.user_id';
+            $fields    = array('tuc.check_date', 'tuc.check_in', 'tuc.check_out');
             $select->joinLeft($table, $condition, $fields);
         }
         return $select;

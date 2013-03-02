@@ -48,9 +48,9 @@ class Application_Model_User extends Application_Model_Abstract
         return $user;
     }
 
-    public function getAllUsers(DateTime $checkingDate = null)
+    public function getAllUsers()
     {
-        $users = $this->_modelDb->getAllUsers($checkingDate);
+        $users = $this->_modelDb->getAllUsers();
         foreach ($users as $key => $user) {
             $user = $this->_filterHiddenFields($user);
             $users[$key] = $user;
@@ -107,22 +107,47 @@ class Application_Model_User extends Application_Model_Abstract
 
     public function userCheck($userId, $check)
     {
-        $now = new DateTime();
+        $now = new My_DateTime();
         $user = $this->_modelDb->getUserById($userId, $now);
+        if (empty($user)) {
+            throw new Exception('Error! Wrong user ID.');
+        }
         $check = ($check == Application_Model_User::USER_CHECK_IN || $check == Application_Model_User::USER_CHECK_OUT ? $check : null);
         if ( ! $check) {
             return $user;
         }
         $modelUserCheck = new Application_Model_Db_User_Checks();
-        $allowed = $modelUserCheck->isAllowedCheckin($user, $check);
-        if ($allowed) {
-            $modelUserCheck->userCheck($user['id'], $check);
-            $user = $this->_modelDb->getUserById($user['id'], $now); // update user data
+
+        $lastCheck = $modelUserCheck->getUserLastCheck($userId);
+        if (empty($lastCheck)) {
+            // No checks today. We can do check IN only.
+            if ($check == Application_Model_User::USER_CHECK_IN) {
+                $modelUserCheck->userCheckIn($userId);
+            } else {
+                throw new Exception('Error! User can\'t check OUT if no action check IN in this day.');
+            }
+        } else {
+            // We have some checks today.
+            if ( ! empty($lastCheck['check_out'])) {
+                // Last check session is closed. We can start new.
+                if ($check == Application_Model_User::USER_CHECK_IN) {
+                    $modelUserCheck->userCheckIn($userId);
+                } else {
+                    throw new Exception('Error! User can\'t check OUT if no action check IN in latest session.');
+                }
+            } else {
+                // We have started session without check-OUT.
+                if ($check == Application_Model_User::USER_CHECK_OUT) {
+                    $modelUserCheck->userCheckOut($userId);
+                } else {
+                    throw new Exception('Error! User can\'t check IN if no action check OUT in latest session.');
+                }
+            }
         }
+
+        $user = $this->_modelDb->getUserById($user['id'], $now); // update user data
         return $user;
     }
-
-
 
     public function getParametersByUserId($userId, $year = '')
     {

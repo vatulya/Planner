@@ -21,7 +21,7 @@ input[type="checkbox"] {
 .user-row.checked-in .btn-user-check-out {
     display: inline-block;
 }
-.user-row.checked-out .btn-user-check-in, .user-row.checked-out .btn-user-check-out {
+/*.user-row.checked-out .btn-user-check-in,*/ .user-row.checked-out .btn-user-check-out {
     display: none;
 }
 #user-checking-calendar-container {

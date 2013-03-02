@@ -17,8 +17,10 @@
         </thead>
         <tbody>
         <?php if ( ! empty($this->me)): ?>
-            <?php $this->user  = $this->me; ?>
-            <?php $this->group = array(); ?>
+            <?php
+                $this->user  = $this->me + $this->lastCheck;
+                $this->group = array();
+            ?>
             <?php echo $this->render('checking/_blocks/user_row.phtml'); ?>
         <?php endif; ?>
         </tbody>

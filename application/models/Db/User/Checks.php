@@ -5,48 +5,41 @@ class Application_Model_Db_User_Checks extends Application_Model_Db_Abstract
 
     const TABLE_NAME = 'user_checks';
 
-    public function userCheck($userId, $check)
+    public function getUserLastCheck($userId)
     {
-        $field = ($check == Application_Model_User::USER_CHECK_OUT ? 'check_out' : 'check_in');
-        $date = new DateTime();
+        $date = new My_DateTime();
+        // Get last check IN
+        $select = $this->_db->select()
+            ->from(array('uc' => self::TABLE_NAME))
+            ->where('uc.user_id = ?', $userId)
+            ->where('uc.check_date = ?', $date->format('Y-m-d'))
+            ->order(array('uc.check_date DESC', 'uc.check_in DESC'))
+            ->limit(1);
+        $lastCheck = $this->_db->fetchRow($select);
+        return $lastCheck;
+    }
+
+    public function userCheckIn($userId)
+    {
+        $date = new My_DateTime();
         $fields = array(
             'user_id'    => $userId,
             'check_date' => $date->format('Y-m-d'),
-            $field       => $date->format('H:i:s'),
+            'check_in'   => $date->format('H:i:s'),
         );
-        $select = $this->_db->select()
-            ->from(array('uc' => self::TABLE_NAME), array('id'))
-            ->where('uc.user_id = ?', $userId)
-            ->where('uc.check_date = ?', $date->format('Y-m-d'));
-        $id = $this->_db->fetchOne($select);
-        if ($id) {
-            $this->_db->update(self::TABLE_NAME, $fields, array('id = ?' => $id));
-        } else {
-            $this->_db->insert(self::TABLE_NAME, $fields);
-        }
+        $this->_db->insert(self::TABLE_NAME, $fields);
         return true;
     }
 
-    public function isAllowedCheckin(array $user, $check)
+    public function userCheckOut($userId)
     {
-        $now = new DateTime();
-        $allowed = false;
-        if (empty($user['check_date'])) {
-            $allowed = true;
-        } else {
-            if ($user['check_date'] == $now->format('Y-m-d')) {
-                if (empty($user['check_in']) && $check == Application_Model_User::USER_CHECK_IN) {
-                    $allowed = true;
-                } elseif ( ! empty($user['check_in']) && empty($user['check_out']) && $check == Application_Model_User::USER_CHECK_OUT) {
-                    $in = $user['check_date'] . ' ' . $user['check_in'];
-                    $in = strtotime($in);
-                    if ($in && $in < $now->format('U')) {
-                        $allowed = true;
-                    }
-                }
-            }
-        }
-        return $allowed;
+        $latest = $this->getUserLastCheck($userId);
+        $date = new My_DateTime();
+        $fields = array(
+            'check_out' => $date->format('H:i:s'),
+        );
+        $this->_db->update(self::TABLE_NAME, $fields, array('id = ?' => $latest['id']));
+        return true;
     }
 
     public function getUserCheckTimeByIdDate($userId, $date)
