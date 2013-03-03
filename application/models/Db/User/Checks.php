@@ -54,4 +54,35 @@ class Application_Model_Db_User_Checks extends Application_Model_Db_Abstract
         $result = $this->_db->fetchRow($select);
         return $result;
     }
+
+    public function getById($id)
+    {
+        $select = $this->_db->select()
+            ->from(array('uc' => self::TABLE_NAME))
+            ->where('uc.id = ?', $id);
+        $result = $this->_db->fetchRow($select);
+        return $result;
+    }
+
+    public function update($id, DateTime $in, DateTime $out)
+    {
+        $fields = array(
+            'check_in'  => $in->format('H:i:s'),
+            'check_out' => $out->format('H:i:s'),
+        );
+        $this->_db->update(self::TABLE_NAME, $fields, array('id = ?' => $id));
+        return true;
+    }
+
+    public function getUserWorkTime($userId, DateTime $date)
+    {
+        $select = $this->_db->select()
+            ->from(array('uc' => self::TABLE_NAME))
+            ->where('uc.user_id = ?', $userId)
+            ->where('uc.check_date = ?', $date->format('Y-m-d'))
+            ->where('uc.check_out IS NOT NULL');
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
 }

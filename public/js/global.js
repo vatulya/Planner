@@ -12,10 +12,18 @@
                 html = html.substr(0, (chars + end.length)) + end;
                 el.html(html);
             }
+        },
+
+        secondsToParts: function(secs) {
+            secs = secs * 1;
+            hours = Number(Math.floor(secs / 3600));
+            mins  = Number(Math.floor(((secs % 3600) / 60)));
+            secs  = Number(Math.floor((secs % 60)));
+            return [hours, mins, secs];
         }
 
     };
-    document.Text = Text;
+    window.Text = Text;
 
     var Popup = {
 

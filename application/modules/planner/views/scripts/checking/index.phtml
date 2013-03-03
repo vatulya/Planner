@@ -111,12 +111,12 @@ Error! No users.
     </div>
     <div class="modal-footer">
         <div class="pull-left">
-            Work hours plan: <?php echo $this->workHoursPlan; ?><br />
-            Work hours done: <?php echo $this->workHoursDone; ?><br />
-            Work hours overtime: <?php echo $this->workHoursOvertime; ?><br />
+            Work hours plan: <span class="work-hours-plan"><?php echo $this->workHoursPlan; ?></span><br />
+            Work hours done: <span class="work-hours-done"><?php echo $this->workHoursDone; ?></span><br />
+            Work hours overtime: <span class="work-hours-overtime"><?php echo $this->workHoursOvertime; ?></span><br />
         </div>
         <div class="pull-right save-checkin-data-button">
-            <input type="button" class="btn btn-primary" value="Save" />
+            <input id="save-checkin-data-button" type="button" class="btn btn-primary" value="Save" />
         </div>
     </div>
 </div>

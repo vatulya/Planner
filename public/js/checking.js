@@ -78,12 +78,12 @@
                     group: el.data('group-id'),
                     check: check
                 },
-                success: function(data) {
-                    data = data.response;
-                    if (data.status) {
-                        Checking.checkUser(data.data);
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        Checking.checkUser(response.data);
                     } else {
-                        alert(data.message);
+                        alert(response.message);
                     }
                 }
             });
@@ -103,12 +103,111 @@
                     user: user,
                     date: date
                 },
-                success: function(data) {
-                    Checking.userCheckingModalContainer.html(data);
+                success: function(response) {
+                    Checking.userCheckingModalContainer.html(response);
                     Checking.userCheckingModalContainer.data('user', user);
+                    Checking.loadUserWorkData(user, date);
                     Checking.userCheckingModal.modal('show');
                 }
             });
+        },
+
+        loadUserWorkData: function(user, date) {
+            $.ajax({
+                url: '/checking/get-user-work-data',
+                data: {
+                    format: 'json',
+                    user: user,
+                    date: date
+                },
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        Checking.showUserWorkData(response.data);
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            });
+        },
+
+        showUserWorkData: function(data)
+        {
+            var plan = window.Text.secondsToParts(data.work_hours_plan);
+            var done = window.Text.secondsToParts(data.work_hours_done);
+            var overtime = window.Text.secondsToParts(data.work_hours_overtime);
+
+            plan = plan[0] + 'h ' + plan[1] + 'm ' + plan[2] + 's';
+            done = done[0] + 'h ' + done[1] + 'm ' + done[2] + 's';
+            overtime = overtime[0] + 'h ' + overtime[1] + 'm ' + overtime[2] + 's';
+
+            Checking.userCheckingModal.find('.work-hours-plan').html(plan);
+            Checking.userCheckingModal.find('.work-hours-done').html(done);
+            Checking.userCheckingModal.find('.work-hours-overtime').html(overtime);
+        },
+
+        toggleEditCheckData: function(el, isEdit) {
+            el = $(el);
+            var row = $('#checkin-' + el.data('checkin-id'));
+            if (row.length) {
+                if (isEdit) {
+                    row.addClass('edit');
+                } else {
+                    row.removeClass('edit');
+                }
+            }
+        },
+
+        getEditCheckData: function() {
+            var data = {
+                user: undefined,
+                date: undefined,
+                checks: []
+            };
+            var selectedDate = Checking.userCheckingModalContainer.find('#selected-date');
+            var selectedUser = Checking.userCheckingModalContainer.find('#selected-user');
+            if (selectedDate.length && selectedUser.length) {
+                data.date = selectedDate.data('selected-date');
+                data.user = selectedUser.data('selected-user');
+                Checking.userCheckingModalContainer.find('.user-check-row.edit').each(function(i, el) {
+                    el = $(el);
+                    var row = {
+                        id: el.data('checkin-id'),
+                        check_in: {
+                            hours: el.find('.check-in-hour').val(),
+                            mins: el.find('.check-in-min').val()
+                        },
+                        check_out: {
+                            hours: el.find('.check-out-hour').val(),
+                            mins: el.find('.check-out-min').val()
+                        }
+                    };
+                    data.checks.push(row);
+                });
+            }
+            return data;
+        },
+
+        saveCheckData: function() {
+            var data = Checking.getEditCheckData();
+            if (data.checks.length) {
+                data.format = 'json';
+                $.ajax({
+                    url: '/checking/save-user-checks',
+                    data: data,
+                    success: function(response) {
+                        response = response.response;
+                        if (response.status) {
+                            Checking.loadUserCheckingHistory(data.user, data.date);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error! Something wrong.');
+                    }
+                });
+            }
         }
 
     };
@@ -131,6 +230,15 @@
                 Checking.userCheckingModal.removeClass('is-admin');
             }
             Checking.showUserCheckingHistory(el.data('user-id'));
+        });
+        $(document.body).on('click', '.edit-check-data', function(e) {
+            Checking.toggleEditCheckData(e.currentTarget, true);
+        });
+        $(document.body).on('click', '.cancel-edit-check-data', function(e) {
+            Checking.toggleEditCheckData(e.currentTarget, false);
+        });
+        $(document.body).on('click', '#save-checkin-data-button', function(e) {
+            Checking.saveCheckData();
         });
 
     });

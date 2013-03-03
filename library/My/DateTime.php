@@ -241,4 +241,15 @@ class My_DateTime extends DateTime
         }
     }
 
+    public static function isFutureDate($date)
+    {
+        $date = My_DateTime::factory($date);
+        $now  = My_DateTime::factory('now');
+        $compare = My_DateTime::compare($now, $date);
+        if ($compare > 0) {
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -7,6 +7,8 @@ class Planner_CheckingController extends My_Controller_Action
         'index'                     => array('html'),
         'user-check'                => array('json'),
         'get-user-checking-history' => array('html'),
+        'save-user-checks'          => array('json'),
+        'get-user-work-data'        => array('json'),
     );
 
     /**
@@ -96,7 +98,7 @@ class Planner_CheckingController extends My_Controller_Action
             $date = My_DateTime::factory($date);
         }
         if ( ! $date) {
-            throw new Exception('Error! Wrong date ID.');
+            throw new Exception('Error! Wrong date.');
         }
         $user = $this->_modelUser->getUserById($userId);
         if ( ! $user) {
@@ -125,8 +127,40 @@ class Planner_CheckingController extends My_Controller_Action
             $this->_isAdmin = false;
         }
 
-        $this->view->date     = $date->format('Y-m-d');
+        $this->view->date     = $date;
+        $this->view->user     = $user;
         $this->view->checkins = $userCheckins;
+    }
+
+    public function saveUserChecksAction()
+    {
+        $message = 'Error! Something wrong.';
+        $errors  = array();
+        try {
+            $errors = $this->_modelUser->saveUserCheck($this->_getParam('user'), $this->_getParam('date'), $check = $this->_getParam('checks'));
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
+        if (empty($errors)) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, $message, $errors);
+        }
+    }
+
+    public function getUserWorkDataAction()
+    {
+        $message = 'Error! Something wrong.';
+        try {
+            $data = $this->_modelUser->getUserWorkData($this->_getParam('user'), $this->_getParam('date'));
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+        }
+        if (empty($errors)) {
+            $this->_response(1, '', $data);
+        } else {
+            $this->_response(0, $message, array());
+        }
     }
 
 }

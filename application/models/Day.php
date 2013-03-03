@@ -6,17 +6,21 @@ class Application_Model_Day
 
     protected $_date;
 
-    protected $_isHistory = false; // TODO: need finish this logic and take data from history tables
-
     static protected $_holidays;
 
-    static protected $_groupsPlanning;
+    static protected $_groupsPlanning = array();
 
     /**
      * For fill this value please use method _fillWorkTime()
      * @var int Work time in seconds
      */
     protected $_workHours = null;
+
+    /**
+     * For fill this value please use method _fillWorkedTime()
+     * @var int Real Work time in seconds
+     */
+    protected $_workedHours = null;
 
     /**
      * For fill this value please use method _fillWorkTime()
@@ -66,7 +70,13 @@ class Application_Model_Day
     public function getWorkTime()
     {
         if ( ! isset($this->_workHours)) { $this->_fillWorkTime(); }
-        return $this->_workHours;
+        return (int)$this->_workHours;
+    }
+
+    public function getWorkedTime()
+    {
+        if ( ! isset($this->_workedHours)) { $this->_fillWorkedTime(); }
+        return $this->_workedHours;
     }
 
     public function getWorkPlanning()
@@ -84,32 +94,28 @@ class Application_Model_Day
         }
 
         $workPlanning = array();
-        $groupsPlanning = self::getGroupsPlanning($this->_date);
-        $groups         = $this->_modelGroup->getGroupsByUserId($this->_user['id']);
-        foreach ($groups as $group) {
-            $groupId = $group['id'];
-            if (isset($groupsPlanning[$groupId])) {
-                $workStart  = My_DateTime::factory($groupsPlanning[$groupId]['time_start']);
-                $workEnd    = My_DateTime::factory($groupsPlanning[$groupId]['time_end']);
-//                $pauseStart = $groupsPlanning[$groupId]['time_end'];
-//                $pauseEnd = $groupsPlanning[$groupId]['time_end'];
-                $pauseStart = null;
-                $pauseEnd   = null;
+        $groupsPlanning = $this->getGroupsPlanning();
+        foreach ($groupsPlanning as $groupId => $group) {
+            $workStart  = My_DateTime::factory($groupsPlanning[$groupId]['time_start']);
+            $workEnd    = My_DateTime::factory($groupsPlanning[$groupId]['time_end']);
+            $pauseStart = My_DateTime::factory($groupsPlanning[$groupId]['pause_start']);
+            $pauseEnd   = My_DateTime::factory($groupsPlanning[$groupId]['pause_end']);
+//            $pauseStart = null;
+//            $pauseEnd   = null;
 
-                $workSeconds = Application_Model_Day::getWorkHoursByMarkers($workStart, $workEnd, $pauseStart, $pauseEnd);
+            $workSeconds = Application_Model_Day::getWorkHoursByMarkers($workStart, $workEnd, $pauseStart, $pauseEnd);
 
-                $this->_workHours += $workSeconds;
+            $this->_workHours += $workSeconds;
 
-                if (empty($workPlanning['time_start'])) {
-                    $workPlanning['time_start'] = $workStart;
-                } elseif ( ! empty($workPlanning['time_start']) && My_DateTime::compare($workPlanning['time_start'], $workStart) === 1) {
-                    $workPlanning['time_start'] = $workStart;
-                }
-                if (empty($workPlanning['time_end'])) {
-                    $workPlanning['time_end'] = $workEnd;
-                } elseif ( ! empty($workPlanning['time_end']) && My_DateTime::compare($workPlanning['time_end'], $workEnd) === 1) {
-                    $workPlanning['time_end'] = $workEnd;
-                }
+            if (empty($workPlanning['time_start'])) {
+                $workPlanning['time_start'] = $workStart;
+            } elseif ( ! empty($workPlanning['time_start']) && My_DateTime::compare($workPlanning['time_start'], $workStart) === 1) {
+                $workPlanning['time_start'] = $workStart;
+            }
+            if (empty($workPlanning['time_end'])) {
+                $workPlanning['time_end'] = $workEnd;
+            } elseif ( ! empty($workPlanning['time_end']) && My_DateTime::compare($workPlanning['time_end'], $workEnd) === 1) {
+                $workPlanning['time_end'] = $workEnd;
             }
         }
 
@@ -119,6 +125,18 @@ class Application_Model_Day
         }
 
         $this->_workPlanning = $workPlanning;
+        return true;
+    }
+
+    protected function _fillWorkedTime()
+    {
+        $modelChecks = new Application_Model_Db_User_Checks();
+        $checks = $modelChecks->getUserWorkTime($this->_user['id'], $this->_date);
+        $work = 0;
+        foreach ($checks as $check) {
+            $work += My_DateTime::diffInSeconds($check['check_in'], $check['check_out']);
+        }
+        $this->_workedHours = $work;
         return true;
     }
 
@@ -160,31 +178,24 @@ class Application_Model_Day
         return true;
     }
 
-    /**
-     * DEPRECATED
-     */
-    static public function refreshHolidays()
+    public function getGroupsPlanning()
     {
-        return self::_fillHolidays();
-    }
-
-    static public function getGroupsPlanning(My_DateTime $date)
-    {
-        if (static::$_groupsPlanning === null) {
-            self::_fillGroupsPlanning();
+        $userId = $this->_user['id'];
+        if ( ! isset(static::$_groupsPlanning[$userId]) || static::$_groupsPlanning[$userId] === null) {
+            static::_fillGroupsPlanning($userId);
         }
-        $weekType = $date->format('W') % 2 ? Application_Model_Db_Group_Plannings::WEEK_TYPE_ODD : Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN;
-        $dayNumber = $date->format('N');
-        if (isset(static::$_groupsPlanning[$weekType][$dayNumber])) {
-            return static::$_groupsPlanning[$weekType][$dayNumber];
+        $weekType = $this->_date->format('W') % 2 ? Application_Model_Db_Group_Plannings::WEEK_TYPE_ODD : Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN;
+        $dayNumber = $this->_date->format('N');
+        if (isset(static::$_groupsPlanning[$userId][$weekType][$dayNumber])) {
+            return static::$_groupsPlanning[$userId][$weekType][$dayNumber];
         }
         return array();
     }
 
-    static protected function _fillGroupsPlanning()
+    protected function _fillGroupsPlanning($userId)
     {
         $modelGroup = new Application_Model_Group();
-        $groups = $modelGroup->getAllGroups();
+        $groups = $modelGroup->getGroupsByUserId($userId);
         $days = array(
             1 => array(), // monday
             2 => array(), // tuesday
@@ -199,7 +210,7 @@ class Application_Model_Day
             Application_Model_Db_Group_Plannings::WEEK_TYPE_EVEN => $days,
         );
         foreach ($groups as $group) {
-            $groupPlannings = $modelGroup->getGroupPlanning($group['id']);
+            $groupPlannings = $modelGroup->getGroupPlanning($group['id'], $userId);
             foreach ($groupPlannings as $groupPlanning) {
                 $week  = $groupPlanning['week_type'];
                 $day   = $groupPlanning['day_number'];
@@ -209,16 +220,8 @@ class Application_Model_Day
                 }
             }
         }
-        static::$_groupsPlanning = $plannings;
+        static::$_groupsPlanning[$userId] = $plannings;
         return true;
-    }
-
-    /**
-     * DEPRECATED
-     */
-    static public function refreshGroupsPlanning()
-    {
-        return self::_fillGroupsPlanning();
     }
 
 }

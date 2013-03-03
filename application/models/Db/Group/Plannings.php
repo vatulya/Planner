@@ -55,4 +55,16 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
         return $result;
     }
 
+    public function getUserPlanning($userId, $weekType, $day)
+    {
+        $select = $this->_db->select()
+            ->from(array('gp' => self::TABLE_NAME))
+            ->where('gp.user_id = ?', $userId)
+            ->where('gp.enabled = ?', 1)
+            ->where('gp.week_type = ?', $weekType)
+            ->where('gp.day_number = ?', (int)$day);
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
 }

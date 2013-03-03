@@ -209,8 +209,22 @@ class Application_Model_User extends Application_Model_Abstract
     public function saveGroups($userId, array $groups)
     {
         $modelUserGroups = new Application_Model_Db_User_Groups();
+        $modelGroup = new Application_Model_Group();
+
+        $userGroupsOld = $modelGroup->getGroupsByUserId($userId);
+        $userGroupsOld = array_map(function($group) {
+            return (int)$group['id'];
+        }, $userGroupsOld);
+        $userGroupsNew = array_map(function($group) {
+            return $group['group'];
+        }, $groups);
+        $userGroupsDiff = array_diff($userGroupsOld, $userGroupsNew);
         $result = $modelUserGroups->saveUserGroups($userId, $groups);
         if ($result) {
+            $modelDbGroupPlanning = new Application_Model_Db_Group_Plannings();
+            foreach ($userGroupsDiff as $groupId) {
+                $modelDbGroupPlanning->saveGroupPlanning($userId, $groupId, array()); // delete planning for this user in this group
+            }
             $user = $this->getUserById($userId);
             $adminGroups = $modelUserGroups->getUserGroupsAdmin($userId);
             if (count($adminGroups)) {
@@ -340,7 +354,8 @@ class Application_Model_User extends Application_Model_Abstract
         return true;
     }
 
-    public function getUserCheckings($userId, $date) {
+    public function getUserCheckings($userId, $date)
+    {
 
         $date = My_DateTime::factory($date);
         if ($date) {
@@ -349,6 +364,101 @@ class Application_Model_User extends Application_Model_Abstract
             throw new Exception('Error! Wrong date.');
         }
         return $checkins;
+    }
+
+    public function saveUserCheck($userId, $date, array $checks)
+    {
+        if (empty($date)) {
+            throw new Exception('Error! Wrong date.');
+        } else {
+            $date = My_DateTime::factory($date);
+        }
+        if ( ! $date) {
+            throw new Exception('Error! Wrong date.');
+        }
+        $user = $this->getUserById($userId);
+        if ( ! $user) {
+            throw new Exception('Error! Wrong user ID.');
+        }
+
+        $modelUserCheck = new Application_Model_Db_User_Checks();
+        $errors = array();
+        $toSave = array();
+        foreach ($checks as $check) {
+            if (empty($check['id'])) {
+                continue;
+            }
+            $error = '';
+            if ( ! empty($check['check_in']) && ! empty($check['check_in']['hours']) && ! empty($check['check_in']['mins'])) {
+                $in = $check['check_in']['hours'] . ':' . $check['check_in']['mins'] . ':00';
+                $in = My_DateTime::factory($in);
+            }
+            if ( ! empty($check['check_out']) && ! empty($check['check_out']['hours']) && ! empty($check['check_out']['mins'])) {
+                $out = $check['check_out']['hours'] . ':' . $check['check_out']['mins'] . ':00';
+                $out = My_DateTime::factory($out);
+            }
+            if ($in && $out) {
+                $compare = My_DateTime::compare($in, $out);
+                if ($compare <= 0) {
+                    $c = $modelUserCheck->getById($check['id']);
+                    if ( ! empty($c) && ! empty($c['user_id']) && $c['user_id'] == $user['id']) {
+                        $toSave[$check['id']] = array(
+                            'id'        => $check['id'],
+                            'check_in'  => $in,
+                            'check_out' => $out,
+                        );
+                    } else {
+                        $error = 'Error! Wrong check ID or user ID.';
+                    }
+                } else {
+                    $error = 'Error! Wrong time check IN or OUT. IN can\'t be less then OUT.';
+                }
+            } else {
+                $error = 'Error! Wrong time check IN or OUT.';
+            }
+            if ( ! empty($error)) {
+                $errors[$check['id']] = $error;
+            }
+        }
+        if (empty($errors) && ! empty($toSave)) {
+            foreach ($toSave as $toSaveCheck) {
+                $modelUserCheck->update($toSaveCheck['id'], $toSaveCheck['check_in'], $toSaveCheck['check_out']);
+            }
+        }
+        return $errors;
+    }
+
+    public function getUserWorkData($userId, $date)
+    {
+        if (empty($date)) {
+            throw new Exception('Error! Wrong date.');
+        } else {
+            $date = My_DateTime::factory($date);
+        }
+        if ( ! $date) {
+            throw new Exception('Error! Wrong date.');
+        }
+        $user = $this->getUserById($userId);
+        if ( ! $user) {
+            throw new Exception('Error! Wrong user ID.');
+        }
+
+        $day = Application_Model_Day::factory($date, $userId);
+
+        $plan = $day->getWorkTime();
+        $done = $day->getWorkedTime();
+        $overtime = $done - $plan;
+        if ($overtime < 0) {
+            $overtime = 0;
+        }
+
+        $data = array(
+            'work_hours_plan'     => $plan,
+            'work_hours_done'     => $done,
+            'work_hours_overtime' => $overtime,
+        );
+
+        return $data;
     }
 
 }

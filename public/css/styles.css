@@ -59,9 +59,22 @@ input[type="checkbox"] {
 #show-user-checking-modal.is-admin .edit-check-data {
     display: block;
 }
-.edit-check-data {
+.edit-check-data, .cancel-edit-check-data {
     position: relative;
     float: right;
+}
+
+.user-check-row .check-input {
+    display: none;
+}
+.user-check-row .check-string {
+    display: block;
+}
+.user-check-row.edit .check-input {
+    display: block;
+}
+.user-check-row.edit .check-string {
+    display: none;
 }
 
 .small-tip {

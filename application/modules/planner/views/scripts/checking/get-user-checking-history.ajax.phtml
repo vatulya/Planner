@@ -1,5 +1,7 @@
 <div class="checking-history-header">
-    Check IN/OUT for: "<span><?php echo $this->date; ?></span>"
+    Check IN/OUT for:
+    "<span id="selected-date" data-selected-date="<?php echo $this->date->format('Y-m-d'); ?>"><?php echo $this->date->format('d-m-Y'); ?></span>"
+    "<span id="selected-user" data-selected-user="<?php echo $this->user['id']; ?>"><?php echo $this->user['full_name']; ?></span>"
 </div>
 
 <?php if ( ! empty($this->checkins)): ?>
@@ -17,16 +19,45 @@
         </thead>
         <tbody>
         <?php foreach ($this->checkins as $checkin): ?>
-            <?php $overtime = ''; ?>
-            <tr id="checkin-<?php echo $checkin['id']; ?>">
+            <?php
+            $overtime = '';
+            $timeIN = My_DateTime::factory($checkin['check_in']);
+            if ( ! $timeIN) {continue;} // Something wrong.
+            $hours = $timeIN->format('H');
+            $mins  = $timeIN->format('i');
+            ?>
+            <tr class="user-check-row" id="checkin-<?php echo $checkin['id']; ?>" data-checkin-id="<?php echo $checkin['id']; ?>">
                 <td>
-                    <?php echo (string)$checkin['check_in']; ?>
+                    <div class="check-string">
+                        <?php echo $timeIN->format('H:i'); ?>
+                    </div>
+                    <div class="check-input form-inline">
+                        <input type="text" value="<?php echo $hours; ?>" class="set-time-hour check-in-hour">:<input type="text" value="<?php echo $mins; ?>" class="set-time-min check-in-min">
+                    </div>
                 </td>
                 <td>
-                    <?php echo (string)$checkin['check_out']; ?>
-                    <a href="" class="no-action edit-check-data btn btn-mini" data-checkin-id="<?php echo $checkin['id']; ?>">
-                        <i class="icon-cog"></i>
-                    </a>
+                    <?php
+                    if ( ! empty($checkin['check_out'])) {
+                        $timeOUT = My_DateTime::factory($checkin['check_out']);
+                        $hours = $timeOUT->format('H');
+                        $mins  = $timeOUT->format('i');
+                        $time  = $timeOUT->format('H:i');
+                    } else {
+                        $time = $hours = $mins = '';
+                    }
+                    ?>
+                    <div class="check-string">
+                        <?php echo $time; ?>
+                        <a href="" class="no-action edit-check-data btn btn-mini show-tooltip" data-checkin-id="<?php echo $checkin['id']; ?>" data-original-title="Edit">
+                            <i class="icon-cog"></i>
+                        </a>
+                    </div>
+                    <div class="check-input form-inline">
+                        <input type="text" value="<?php echo $hours; ?>" class="set-time-hour check-out-hour">:<input type="text" value="<?php echo $mins; ?>" class="set-time-min check-out-min">
+                        <a href="" class="no-action cancel-edit-check-data btn btn-mini show-tooltip" data-checkin-id="<?php echo $checkin['id']; ?>"  data-original-title="Cancel edit">
+                            <i class="icon-remove"></i>
+                        </a>
+                    </div>
                 </td>
             </tr>
         <?php endforeach;?>
