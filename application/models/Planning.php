@@ -221,7 +221,8 @@ class Application_Model_Planning extends Application_Model_Abstract
             $result = $this->_resetTimeAndSecondStatus($result);
         } else {
 
-            if (!empty($missingUserDayStatuses)) {
+            if (!empty($missingUserDayStatuses[0])) {
+                $missingUserDayStatuses = $missingUserDayStatuses[0];
                 $result['status2'] = $status->getDataById($missingUserDayStatuses['status']);
                 $result['time_start2'] = $this->_formatTime($missingUserDayStatuses['time_start']);
                 $result['time_end2'] = $this->_formatTime($missingUserDayStatuses['time_end']);

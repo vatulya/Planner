@@ -3,15 +3,16 @@
 class Planner_OverviewController extends My_Controller_Action
 {
     public $ajaxable = array(
-        'index'     => array('html'),
-        'export'     => array('html'),
-        'update-history-hour' => array('json'),
-        'delete-email' => array('json'),
-        'add-new-email' => array('json'),
-        'get-year-totals' => array('html'),
+        'index'                                     => array('html'),
+        'export'                                    => array('html'),
+        'update-history-hour'                       => array('json'),
+        'recalculate-history-week-for-user-by-date' => array('json'),
+        'delete-email'                              => array('json'),
+        'add-new-email'                             => array('json'),
+        'get-year-totals'                           => array('html'),
     );
 
-    /**
+    /**recalculate History Week For User By Date Action
      * @var Application_Model_User
      */
     protected $_modelUser;
@@ -70,6 +71,23 @@ class Planner_OverviewController extends My_Controller_Action
         $this->view->year                = $year;
         $this->view->historyDateWeekYear = $historyDateWeekYear;
         $this->view->groups              = $groupsUserData;
+    }
+
+    public function recalculateHistoryWeekForUserByDateAction()
+    {
+        $request = Zend_Controller_Front::getInstance()->getRequest();
+        $date = $request->getParam('date');
+        $userId = $request->getParam('user_id');
+        if (empty($date) || empty($userId))  {
+            $this->_response(0, 'Error!', 'Date or User is empty.');
+        }
+
+        $status = $this->_modelHistory->recalculateHistoryWeekForUser($userId, $date);
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error!', "Recalculate is wrong.");
+        }
     }
 
     public function exportAction()

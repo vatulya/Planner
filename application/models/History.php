@@ -13,6 +13,7 @@ class Application_Model_History extends Application_Model_Abstract
         $this->_modelRequest    = new Application_Model_Db_User_Requests();
         $this->_modelHistory    = new Application_Model_Db_User_History();
         $this->_modelChecks     = new Application_Model_Db_User_Checks();
+        $this->_modelUser       = new Application_Model_User();
     }
 
     public function addDayDataToHistory($userId, $groupId, $date)
@@ -20,7 +21,7 @@ class Application_Model_History extends Application_Model_Abstract
         $currentDate = new My_DateTime($date);
         $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
         $dayPlan = $this->_modelPlanning->getUserDayPlanFromPlanning($userId, $groupId, $date);
-        $missingUserDay = $this->_modelMissing->getUserDayMissingPlanByDate($userId, $date);
+        $missingUserDay = $this->_modelMissing->getTotalTimeMissingForDate($userId, $date);
 
         $approveUserDayRequest = $this->_modelRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
         $userHistoryData = array();
@@ -33,38 +34,27 @@ class Application_Model_History extends Application_Model_Abstract
         $userHistoryData['vacation_time']  = 0;
         $userHistoryData['missing_time']   = 0;
         if ($dayPlan['status1'] === Application_Model_Planning::STATUS_DAY_GREEN && !empty($dayPlan['total_time'])) {
+            if (!empty($missingUserDay['total_time'])) {
+                $userHistoryData['missing_time'] = $missingUserDay['total_time'];
+            }
             if (!empty($approveUserDayRequest)) {
                 $userHistoryData['vacation_time'] = $dayPlan['total_time'];
             } else {
-                $userHistoryData['work_time'] = $dayPlan['total_time'];
-            }
-            if (!empty($missingUserDay['status'])) {
-                $userHistoryData['missing_time'] = $missingUserDay['total_time'];
+                $userHistoryData['work_time'] = $dayPlan['total_time'] - $userHistoryData['missing_time'];
+                if ($userHistoryData['work_time'] < 0) {
+                    $userHistoryData['work_time'] = 0;
+                }
             }
         }
-
-        $checks = $this->_modelChecks->getUserCheckTimeByIdDate($userId, $date);
-        $fullDay = Application_Model_Day::factory($date, $userId);
-        $fullUserDayPlan = $fullDay->getWorkPlanning();
-        // Check overtime after work time
-        if ( !empty($checks["check_out"]) && !empty($fullUserDayPlan['time_end']) &&  !empty($dayPlan['time_end'] ) &&
-            $fullUserDayPlan['time_end'] == $dayPlan['time_end'] &&
-            My_DateTime::compare($checks["check_out"], $fullUserDayPlan['time_end']) === 1) {
-            $overtimeData = array(
-                'user_id'    => $userId,
-                'group_id'   => $groupId,
-                'date'       => $date,
-                'time_end2'   => $checks["check_out"]
-            );
-            if (My_DateTime::compare($checks["check_in"], $fullUserDayPlan['time_end']) === 1) {
-                 $overtimeData['time_start2'] = $checks['check_in'];
-            } else {
-                 $overtimeData['time_start2'] = $fullUserDayPlan['time_end'];
-            }
-            $this->_modelOvertime->saveUserOvertimeDay($overtimeData);
+        //Calculate overtime by user's check In
+        $lastUserWorkGroup =  $this->_modelDbPlanning->getGroupLastUserWork($userId, $date);
+        $workData = $this->_modelUser->getUserWorkData($userId, $date);
+        if ($workData['work_hours_overtime'] > 0 && $groupId == $lastUserWorkGroup['group_id']) {
+            $userHistoryData['overtime_time'] = $workData['work_hours_overtime'];
         }
+        //Maybe somebody set onplanning overtime without checkin so set it as overtime
         $overtime = $this->_modelOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
-        if (!empty($overtime)) {
+        if (!empty($overtime) && empty($userHistoryData['overtime_time'])) {
             $userHistoryData['overtime_time'] =  $overtime['total_time'];
         }
         $this->_modelHistory->addUserWeekData($userHistoryData);
@@ -128,5 +118,57 @@ class Application_Model_History extends Application_Model_Abstract
         //TODO check valid field
         $value = $value * 60 * 60;
         return $this->_modelHistory->updateHistoryWeekHour($userId, $groupId, $field, $value, $year, $week);
+    }
+
+    public function deleteUserWeekData($userId, $week, $year)
+    {
+        $this->_modelHistory->deleteUserWeekData($userId, $week, $year);
+    }
+
+    public function recalculateHistoryWeekForUser($userId, $date)
+    {
+         try {
+            $currentDate = new My_DateTime($date);
+            $weekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
+            $year = $weekYear['year'];
+            $week = $weekYear['week'];
+        } catch (Exception $e) {
+            $this->_response(0, 'Error!', 'Error create date.');
+        }
+        //delete data from history table for changed week
+        $this->deleteUserWeekData($userId, $week, $year);
+        //Add fresh data to history table for changed week
+        $weekDays = My_DateTime::getWeekDays();
+        $dateWeekStart = new My_DateTime($year . 'W' . sprintf("%02d", $week));
+        $groupModel = new Application_Model_Group();
+        $historyUserGroups = $groupModel->getAllGroupsFromHistory($year, $week, $userId);
+        if (empty($historyUserGroups) || !is_array($historyUserGroups)) {
+            return true;
+        }
+        foreach ($weekDays as $numDay=>$nameDay) {
+            $date = clone $dateWeekStart;
+            $date->modify('+' . $numDay . 'day');
+            $dateFormat = $date->format('Y-m-d');
+            try {
+                $currentDate = new My_DateTime();
+                $currentDateFormat = $currentDate->format('Y-m-d');
+                $currentDate = new My_DateTime($currentDateFormat);
+                $currentDate = $currentDate->getTimestamp();
+                $date = new My_DateTime($dateFormat);
+                //check future or past date
+                if ($date->getTimestamp() >= $currentDate) {
+                    return true;
+                }  else {
+                    foreach($historyUserGroups as $group) {
+                        $this->addDayDataToHistory($userId, $group['id'], $dateFormat);
+                    }
+                }
+            } catch (Exception $e) {
+                return false;
+            }
+
+
+        }
+        return true;
     }
 }

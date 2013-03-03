@@ -100,7 +100,7 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
         return $result;
     }
 
-    public function getGroupsByDateInterval($dateStart, $dateEnd)
+    public function getGroupsByDateInterval($dateStart, $dateEnd, $userId = false)
     {
         $select = $this->_db->select()
             ->from(array('up' => self::TABLE_NAME), array('id' => 'up.group_id'))
@@ -110,7 +110,21 @@ class Application_Model_Db_User_Planning extends Application_Model_Db_Abstract
             ->group('up.group_id')
             ->order(array('g.group_name ASC'));
         ;
+        if ($userId) {
+            $select->where('up.user_id = ?', $userId);
+        }
         $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
+    public function getGroupLastUserWork($userId, $date)
+    {
+        $select = $this->_db->select()
+            ->from(array('up' => self::TABLE_NAME), array('*'))
+            ->where('up.user_id = ?', $userId)
+            ->where('up.date = ?', $date)
+            ->order(array('up.time_end DESC', 'up.group_id DESC'));
+        $result = $this->_db->fetchRow($select);
         return $result;
     }
 }

@@ -12,8 +12,10 @@ class Application_Model_Db_User_Missing extends Application_Model_Db_Abstract
             ->where('um.date = ?', $date);
         if ($statusId) {
             $select->where('um.status = ?', $statusId);
+            $result = $this->_db->fetchRow($select);
+        } else {
+            $result = $this->_db->fetchAll($select);
         }
-        $result = $this->_db->fetchRow($select);
         return $result;
     }
 

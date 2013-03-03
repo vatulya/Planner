@@ -22,12 +22,12 @@ class Application_Model_Group extends Application_Model_Abstract
         return $groupsNormalized;
     }
 
-    public function getAllGroupsFromHistory($year, $week)
+    public function getAllGroupsFromHistory($year, $week, $userId = false)
     {
         $historyDateInterval = My_DateTime::getWeekHistoryDateInterval($year, $week);
         $modelPlanning = new Application_Model_Db_User_Planning();
         $groupsNormalized = array();
-        $groups = $modelPlanning->getGroupsByDateInterval($historyDateInterval['start'], $historyDateInterval['end']);
+        $groups = $modelPlanning->getGroupsByDateInterval($historyDateInterval['start'], $historyDateInterval['end'], $userId);
         foreach ($groups as $group) {
              $groupsNormalized[$group['id']] = $group;
              //$groupsNormalized[$group['id']] = $this->getGroupById($group['id']);
@@ -35,7 +35,7 @@ class Application_Model_Group extends Application_Model_Abstract
         $currentDate = new My_DateTime();
         $currentDate = $currentDate->getTimestamp();
         $endWeek = My_DateTime::getTimestampNextWeekByYearWeek($year, $week);
-        if ($endWeek > $currentDate) {
+        if ($endWeek > $currentDate && empty($userId)) {
             $modelGroup = new Application_Model_Group();
             $groups = $modelGroup->getAllGroups();
             foreach ($groups as $group) {

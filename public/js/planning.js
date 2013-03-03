@@ -9,24 +9,22 @@
 
         editDay: function(el) {
             el = $(el);
-            if (el.data('status') != 3) {  //no popup for yellow status
-                modalEditH3.show();
-                modalBody.html('Loading...');
-                modal.modal();
-                $.ajax({
-                    url: el.attr('href'),
-                    data: {
-                        day: el.data('day-id')
-                    },
-                    success: function(response) {
-                        modalBody.html(response);
-                        DaySettings.initEditAjaxForm();
-                    },
-                    error: function(response) {
-                        modalBody.html('Error! Something wrong. AJAX error. Please try later.');
-                    }
-                });
-            }
+            modalEditH3.show();
+            modalBody.html('Loading...');
+            modal.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    day: el.data('day-id')
+                },
+                success: function(response) {
+                    modalBody.html(response);
+                    //DaySettings.initEditAjaxForm();
+                },
+                error: function(response) {
+                    modalBody.html('Error! Something wrong.');
+                }
+            });
         },
 
         selectSecondStatus: function(el) {
@@ -37,51 +35,64 @@
             el.data('toggle', oldStatus)  ;
         },
 
-        initEditAjaxForm: function() {
-            var formEl = $('#form-edit-day');
-            $('#form-edit-day').ajaxForm({
-                data: {format: 'json'},
+        saveDay: function() {
+            var data = {
+                format: 'json',
+                user_id:  $('.form-edit-day').data('user-id'),
+                date:    $('.form-edit-day').data('date'),
+                group_id: $('.form-edit-day').data('group-id'),
+                day_status_data: DaySettings.getDayStatusData()
+            };
+            $.ajax({
+                url: '/planning/save-day-form',
+                data: data,
                 success: function(response) {
                     response = response.response;
                     if (response.status) {
-                        //document.Form.showSuccess(formEl);
-                        window.location.reload();
+                        $.ajax({
+                            url: '/overview/recalculate-history-week-for-user-by-date',
+                            data: data,
+                            success: function(response) {
+                                response = response.response;
+                                if (response.status) {
+                                    window.location.reload();
+                                } else {
+                                    modalBody.html('Error! Recalculate history error. Try again later.');
+                                }
+                            },
+                            error: function(response) {
+                                modalBody.html('Error! Recalculate History error. Try again later.');
+                            }
+                        });
                     } else {
-                        document.Form.showErrors(formEl);
+                        alert('Error! Something wrong.');
                     }
                 },
-                error: function() {
-                    document.Form.showErrors(formEl);
+                error: function(response) {
+                    alert('Error! Something wrong.');
                 }
             });
-            $('.timepicker-start').timepicker({
-                minuteStep: 10,
-                template: 'modal',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: 'value'
+        },
+
+        getDayStatusData: function() {
+            var data = {};
+            $('.work-time').each(function(i, el) {
+                el = $(el);
+                var statusId = el.data('status-id');
+                var status = {
+                    statusId: statusId,
+                    time_start: {
+                        hour: el.find('.start-hour').val(),
+                        min: el.find('.start-min').val()
+                    },
+                    time_end: {
+                        hour: el.find('.end-hour').val(),
+                        min: el.find('.end-min').val()
+                    }
+                }
+                data[statusId] = status;
             });
-            $('.timepicker-end').timepicker({
-                minuteStep: 10,
-                template: 'modal',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: 'value'
-            });
-            $('.timepicker-start2').timepicker({
-                minuteStep: 10,
-                template: 'false',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: 'value'
-            });
-            $('.timepicker-end2').timepicker({
-                minuteStep: 10,
-                template: 'false',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: 'value'
-            });
+            return data;
         },
 
         applyTimeFullDay: function(el) {
@@ -100,6 +111,68 @@
                 $('#status2').val( el.data('status'));
                 //    alert($('#status1').val + el.data('color'));
             }
+        },
+        checkHourInput: function(el) {
+            el = $(el);
+            var inputValue = el.attr('value');
+            if (inputValue !== '') {
+                inputValue = inputValue * 1
+                if (! inputValue) {
+                    inputValue = 0;
+                }
+                if (inputValue > 23 ) {
+                    el.attr('value',23);
+                } else if  (inputValue <= 0) {
+                    el.attr('value',0);
+                } else {
+                    el.attr('value',inputValue);
+                }
+            }
+        },
+        checkMinuteInput: function(el) {
+            el = $(el);
+            var inputValue = el.attr('value');
+            if (inputValue !== '') {
+                inputValue = inputValue * 1
+                if (! inputValue) {
+                    inputValue = 0;
+                }
+                if (inputValue > 59 ) {
+                    el.attr('value',59);
+                } else if  (inputValue <= 0) {
+                    el.attr('value',0);
+                } else {
+                    el.attr('value',inputValue);
+                }
+            }
+        },
+        saveRequest: function(el) {
+            var data;
+            var selectedDates = [];
+            selectedDates[0] = $(el).data('request-date');
+            data = {
+                selected_dates: selectedDates,
+                user: $(el).data('user-id'),
+                format: 'json'
+            };
+            if (selectedDates.length) {
+                $.ajax({
+                    url: '/requests/save-request',
+                    data: data,
+                    success: function(response) {
+                        response = response.response;
+                        if (response.status) {
+                            alert('Request Sended.');
+                            window.location.reload();
+                        } else {
+                            alert('Error! Something wrong.');
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error! Something wrong.');
+                    }
+                });
+            }
         }
     };
 
@@ -110,8 +183,20 @@
         $(document.body).on('click', '#apply-time-full-day', function(e) {
             DaySettings.applyTimeFullDay(e.currentTarget);
         });
+        $(document.body).on('click', '#form-edit-day', function(e) {
+            DaySettings.saveDay(e.currentTarget);
+        });
         $(document.body).on('click', '.day-status-color', function(e) {
             DaySettings.changeSelectedColor(e.currentTarget);
+        });
+        $(document.body).on('blur', '.set-time-hour-field', function(e) {
+            DaySettings.checkHourInput(e.currentTarget);
+        });
+        $(document.body).on('blur', '.set-time-mins-field', function(e) {
+            DaySettings.checkMinuteInput(e.currentTarget);
+        });
+        $(document.body).on('click', '.sendRequest', function(e) {
+            DaySettings.saveRequest(e.currentTarget);
         });
     });
 

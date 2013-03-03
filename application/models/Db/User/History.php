@@ -92,4 +92,12 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
         }
         return true;
     }
+
+    public function deleteUserWeekData($userId, $week, $year)
+    {
+        $this->_db->delete(self::TABLE_NAME, array(
+            'user_id = ?' => $userId,
+            'week = ?' => $week,
+            'year = ?' => $year));
+    }
 }
