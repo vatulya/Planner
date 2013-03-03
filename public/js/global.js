@@ -156,9 +156,9 @@
         $('#container').on('init', function(e) {
             $('#logout-link').tooltip({placement: 'bottom'});
             $('.show-tooltip').tooltip({placement: 'bottom'});
-            $('.no-action')
-                .on('click', document.body, function(e) {e.preventDefault();})
-                .on('submit', document.body, function(e) {e.preventDefault();})
+            $(document.body)
+                .on('click', '.no-action', function(e) {e.preventDefault();})
+                .on('submit', '.no-action', function(e) {e.preventDefault();})
             ;
             $('.truncate').each(function(i, el) {
                 el = $(el);
