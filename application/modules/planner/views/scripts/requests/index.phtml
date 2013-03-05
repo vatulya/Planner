@@ -1,7 +1,7 @@
-<?php $this->headScript()->appendFile('/js/requests.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl() . '/js/requests.js'); ?>
 <?php /********** INCLUDE CALENDAR MODULE *****************/ ?>
-<?php $this->headScript()->appendFile('/js/calendar.js'); ?>
-<?php $this->headLink()->appendStylesheet('/css/calendar.css'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl() . '/js/calendar.js'); ?>
+<?php $this->headLink()->appendStylesheet($this->baseUrl() . '/css/calendar.css'); ?>
 
 <?php
 $openRequestDates     = array();

@@ -1,6 +1,6 @@
 <?php /********** INCLUDE CALENDAR MODULE *****************/ ?>
-<?php $this->headScript()->appendFile('/js/calendar.js'); ?>
-<?php $this->headLink()->appendStylesheet('/css/calendar.css'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl() . '/js/calendar.js'); ?>
+<?php $this->headLink()->appendStylesheet($this->baseUrl() . '/css/calendar.css'); ?>
 
 <input type="hidden" id="date-today" value="<?php echo $this->today; ?>" />
 
@@ -32,7 +32,7 @@
 <?php if (empty($this->users)): ?>
 Error! No users.
 <?php else: ?>
-<?php $this->headScript()->appendFile('/js/checking.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl() . '/js/checking.js'); ?>
 
 <div class="span11">
 

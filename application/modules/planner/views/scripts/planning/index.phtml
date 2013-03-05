@@ -1,6 +1,6 @@
-<?php $this->headScript()->appendFile('/js/planning.js'); ?>
-<?php $this->headScript()->appendFile('/js/bootstrap-timepicker.js'); ?>
-<?php $this->headLink()->appendStylesheet('/css/timepicker.css')
+<?php $this->headScript()->appendFile($this->baseUrl() . '/js/planning.js'); ?>
+<?php $this->headScript()->appendFile($this->baseUrl() . '/js/bootstrap-timepicker.js'); ?>
+<?php $this->headLink()->appendStylesheet($this->baseUrl() . '/css/timepicker.css')
 ?>
 <?php if (empty($this->groups)): ?>
 <h2>No groups and users</h2>

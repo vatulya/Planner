@@ -1,19 +1,22 @@
+<?php
+/** @var $this Zend_View */
+?>
 <?php echo $this->doctype() ?>
 <html>
 <head>
     <?php $this->headLink()
-        ->appendStylesheet('/css/bootstrap.css')
-        ->appendStylesheet('/css/styles.css')
+        ->appendStylesheet($this->baseUrl() . '/css/bootstrap.css')
+        ->appendStylesheet($this->baseUrl() . '/css/styles.css')
     ?>
     <?php echo $this->headLink() ?>
     <?php echo $this->headTitle() ?>
 
     <?php
     $this->headScript()
-        ->prependFile('/js/global.js')
-        ->prependFile('/js/bootstrap.js')
-        ->prependFile('/js/jquery.form.js')
-        ->prependFile('/js/jquery-1.8.2.min.js')
+        ->prependFile($this->baseUrl() . '/js/global.js')
+        ->prependFile($this->baseUrl() . '/js/bootstrap.js')
+        ->prependFile($this->baseUrl() . '/js/jquery.form.js')
+        ->prependFile($this->baseUrl() . '/js/jquery-1.8.2.min.js')
 ?>
 </head>
 <body>
