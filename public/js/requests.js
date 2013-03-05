@@ -75,7 +75,7 @@
             };
             if (selectedDates.length) {
                 $.ajax({
-                    url: '/requests/save-request',
+                    url: PLANNER.BASE_URL + '/requests/save-request',
                     data: data,
                     success: function(response) {
                         response = response.response;

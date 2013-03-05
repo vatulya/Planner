@@ -18,6 +18,10 @@
         ->prependFile($this->baseUrl() . '/js/jquery.form.js')
         ->prependFile($this->baseUrl() . '/js/jquery-1.8.2.min.js')
 ?>
+    <script type="text/javascript">
+        var PLANNER = PLANNER || {};
+        PLANNER.BASE_URL = '<?php echo $this->baseUrl(); ?>';
+    </script>
 </head>
 <body>
 

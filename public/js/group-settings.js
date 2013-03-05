@@ -204,7 +204,7 @@
             groupPlanningSelect.css('background-color', '#' + option.data('group-color'));
             groupPlanningBody.html('Loading...');
             $.ajax({
-                url: '/group-settings/get-group-planning',
+                url: PLANNER.BASE_URL + '/group-settings/get-group-planning',
                 data: {
                     group: option.val()
                 },
@@ -256,7 +256,7 @@
                 group_planning: GroupSettings.getGroupPlanning()
             };
             $.ajax({
-                url: '/group-settings/save-group-planning',
+                url: PLANNER.BASE_URL + '/group-settings/save-group-planning',
                 data: data,
                 success: function(response) {
 //                    GroupSettings.unblockFormGroupPlanning();
@@ -288,7 +288,7 @@
                 user_planning: GroupSettings.getUserPlanning(container)
             };
             $.ajax({
-                url: '/group-settings/save-user-planning',
+                url: PLANNER.BASE_URL + '/group-settings/save-user-planning',
                 data: data,
                 success: function(response) {
                     response = response.response;
@@ -413,7 +413,7 @@
             }
             data.format = 'json';
             $.ajax({
-                url: '/group-settings/save-group-exceptions',
+                url: PLANNER.BASE_URL + '/group-settings/save-group-exceptions',
                 data: data,
                 success: function(response) {
                     response = response.response;
@@ -476,7 +476,7 @@
             data.holiday_name = modal.find('.holiday_name').val();
             data.format       = 'json';
             $.ajax({
-                url: '/group-settings/save-group-holidays',
+                url: PLANNER.BASE_URL + '/group-settings/save-group-holidays',
                 data: data,
                 success: function(response) {
                     response = response.response;
@@ -501,7 +501,7 @@
                 data.holiday = el.data('holiday');
                 data.format = 'json';
                 $.ajax({
-                    url: '/group-settings/delete-group-holidays',
+                    url: PLANNER.BASE_URL + '/group-settings/delete-group-holidays',
                     data: data,
                     success: function(response) {
                         response = response.response;
@@ -523,7 +523,7 @@
             data.default_total_free_hours = $('#default_total_free_hours').val();
             data.format = 'json';
             $.ajax({
-                url: '/group-settings/save-default-total-free-hours',
+                url: PLANNER.BASE_URL + '/group-settings/save-default-total-free-hours',
                 data: data,
                 success: function(response) {
                     response = response.response;

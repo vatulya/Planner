@@ -63,7 +63,7 @@
             data.user = container.data('user');
             data.format = 'json';
             $.ajax({
-                url: '/user-settings/save-user-groups',
+                url: PLANNER.BASE_URL + '/user-settings/save-user-groups',
                 data: data,
                 success: function(response) {
                     UserSettings.unlockPopup();
@@ -216,7 +216,7 @@
             UserSettings.lockEditFieldForm(el);
             data.format = 'json';
             $.ajax({
-                url: '/user-settings/save-user-field',
+                url: PLANNER.BASE_URL + '/user-settings/save-user-field',
                 data: data,
                 success: function(response) {
                     UserSettings.unlockEditFieldForm(el);
@@ -321,7 +321,7 @@
                     format: 'json'
                 };
                 $.ajax({
-                    url: '/user-settings/set-admin',
+                    url: PLANNER.BASE_URL + '/user-settings/set-admin',
                     data: data,
                     beforeSubmit: function() {
                         el.attr('disabled', 'disabled');
@@ -356,7 +356,7 @@
                     format: 'json'
                 };
                 $.ajax({
-                    url: '/user-settings/delete-user',
+                    url: PLANNER.BASE_URL + '/user-settings/delete-user',
                     data: data,
                     beforeSubmit: function() {
                         el.attr('disabled', 'disabled');

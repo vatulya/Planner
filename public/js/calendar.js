@@ -103,7 +103,7 @@
             data.format             = 'html';
 
             $.ajax({
-                url: '/calendar/',
+                url: PLANNER.BASE_URL + '/calendar/',
                 data: data,
                 success: function(response) {
                     var container = $('#' + el.data('container-id'));

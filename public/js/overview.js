@@ -61,7 +61,7 @@
             Overview.lockEditFieldForm(el);
             data.format = 'json';
             $.ajax({
-                url: '/overview/update-history-hour',
+                url: PLANNER.BASE_URL + '/overview/update-history-hour',
                 data: data,
                 success: function(response) {
                     Overview.unlockEditFieldForm(el);
@@ -157,7 +157,7 @@
                 data.email = el.data('email-id');
                 data.format = 'json';
                 $.ajax({
-                    url: '/overview/delete-email',
+                    url: PLANNER.BASE_URL + '/overview/delete-email',
                     data: data,
                     success: function(response) {
                         response = response.response;
@@ -181,7 +181,7 @@
             data.new_email = modal.find('.new_email').val();
             data.format       = 'json';
             $.ajax({
-                url: '/overview/add-new-email',
+                url: PLANNER.BASE_URL + '/overview/add-new-email',
                 data: data,
                 success: function(response) {
                     response = response.response;

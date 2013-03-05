@@ -71,7 +71,7 @@
         userCheck: function(el, check) {
             el = $(el);
             $.ajax({
-                url: '/checking/user-check',
+                url: PLANNER.BASE_URL + '/checking/user-check',
                 data: {
                     format: 'json',
                     user: el.data('user-id'),
@@ -97,7 +97,7 @@
 
         loadUserCheckingHistory: function(user, date) {
             $.ajax({
-                url: '/checking/get-user-checking-history',
+                url: PLANNER.BASE_URL + '/checking/get-user-checking-history',
                 data: {
                     format: 'html',
                     user: user,
@@ -114,7 +114,7 @@
 
         loadUserWorkData: function(user, date) {
             $.ajax({
-                url: '/checking/get-user-work-data',
+                url: PLANNER.BASE_URL + '/checking/get-user-work-data',
                 data: {
                     format: 'json',
                     user: user,
@@ -193,7 +193,7 @@
             if (data.checks.length) {
                 data.format = 'json';
                 $.ajax({
-                    url: '/checking/save-user-checks',
+                    url: PLANNER.BASE_URL + '/checking/save-user-checks',
                     data: data,
                     success: function(response) {
                         response = response.response;

@@ -44,13 +44,13 @@
                 day_status_data: DaySettings.getDayStatusData()
             };
             $.ajax({
-                url: '/planning/save-day-form',
+                url: PLANNER.BASE_URL + '/planning/save-day-form',
                 data: data,
                 success: function(response) {
                     response = response.response;
                     if (response.status) {
                         $.ajax({
-                            url: '/overview/recalculate-history-week-for-user-by-date',
+                            url: PLANNER.BASE_URL + '/overview/recalculate-history-week-for-user-by-date',
                             data: data,
                             success: function(response) {
                                 response = response.response;
@@ -157,7 +157,7 @@
             };
             if (selectedDates.length) {
                 $.ajax({
-                    url: '/requests/save-request',
+                    url: PLANNER.BASE_URL + '/requests/save-request',
                     data: data,
                     success: function(response) {
                         response = response.response;

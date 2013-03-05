@@ -83,7 +83,7 @@
             data.comment = comment;
             data.format = 'json';
             $.ajax({
-                url: '/open-requests/set-status/',
+                url: PLANNER.BASE_URL + '/open-requests/set-status/',
                 data: data,
                 success: function(response) {
                     response = response.response;
