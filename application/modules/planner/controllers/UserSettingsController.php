@@ -46,7 +46,7 @@ class Planner_UserSettingsController extends My_Controller_Action
             $day = Application_Model_Day::factory($today, $user);
             $user['groups']       = $modelGroup->getGroupsByUserId($user['id']);
             $user['parameters']   = $this->_modelUser->getParametersByUserId($user['id']);
-            $user['parameters']['regular_work_hours'] = $user['regular_work_hours'];
+            $user['parameters']['regular_work_hours'] = (isset($user['regular_work_hours']) ? $user['regular_work_hours'] : 0);
             $user['time_work']    = $day->getWorkPlanning();
             $user['admin_groups'] = $modelGroup->getUserGroupsAdmin($user);
             $users[$key] = $user;
