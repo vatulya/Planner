@@ -33,6 +33,7 @@ class Application_Model_History extends Application_Model_Abstract
         $userHistoryData['overtime_time']  = 0;
         $userHistoryData['vacation_time']  = 0;
         $userHistoryData['missing_time']   = 0;
+        $workData = $this->_modelUser->getUserWorkData($userId, $date);
         if ($dayPlan['status1'] === Application_Model_Planning::STATUS_DAY_GREEN && !empty($dayPlan['total_time'])) {
             if (!empty($missingUserDay['total_time'])) {
                 $userHistoryData['missing_time'] = $missingUserDay['total_time'];
@@ -40,7 +41,7 @@ class Application_Model_History extends Application_Model_Abstract
             if (!empty($approveUserDayRequest)) {
                 $userHistoryData['vacation_time'] = $dayPlan['total_time'];
             } else {
-                $userHistoryData['work_time'] = $dayPlan['total_time'] - $userHistoryData['missing_time'];
+                $userHistoryData['work_time'] = $workData['work_hours_done'];
                 if ($userHistoryData['work_time'] < 0) {
                     $userHistoryData['work_time'] = 0;
                 }
@@ -48,11 +49,10 @@ class Application_Model_History extends Application_Model_Abstract
         }
         //Calculate overtime by user's check In
         $lastUserWorkGroup =  $this->_modelDbPlanning->getGroupLastUserWork($userId, $date);
-        $workData = $this->_modelUser->getUserWorkData($userId, $date);
         if ($workData['work_hours_overtime'] > 0 && $groupId == $lastUserWorkGroup['group_id']) {
             $userHistoryData['overtime_time'] = $workData['work_hours_overtime'];
         }
-        //Maybe somebody set onplanning overtime without checkin so set it as overtime
+        //Maybe somebody set on planning overtime without checkin so set it as overtime
         $overtime = $this->_modelOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
         if (!empty($overtime) && empty($userHistoryData['overtime_time'])) {
             $userHistoryData['overtime_time'] =  $overtime['total_time'];

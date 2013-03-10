@@ -241,6 +241,16 @@ class My_DateTime extends DateTime
         }
     }
 
+    public static function formatTime($time)
+    {
+        try {
+            $date = date_create($time);
+        } catch (Exception $e) {
+            return $time;
+        }
+        return date_format($date, 'H:i');
+    }
+
     public static function isFutureDate($date)
     {
         $date = My_DateTime::factory($date);

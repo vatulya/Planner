@@ -163,6 +163,7 @@
 
         initEditStatusAjaxForm: function() {
             var formEl = $('#form-edit-status');
+            $(".is-holiday input[type='hidden']").attr('value',$('#is_holiday').attr('value'));
             $('#form-edit-status').ajaxForm({
                 data: {format: 'json'},
                 success: function(response) {

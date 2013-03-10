@@ -19,15 +19,16 @@ class Application_Model_Missing extends Application_Model_Abstract
                 "00:00:00","00:00:00"
             );
             $missings['total_time'] =  $workSeconds;
+            return $missings;
         }
-        return $missings;
+        return false;
     }
 
     public function getTotalTimeMissingForDate($userId, $date)
     {
         $missings = $this->_modelDb->getUserDayMissingPlanByDate($userId, $date);
+        $missingData['total_time'] = 0;
         if (!empty($missings) && is_array($missings)) {
-            $missingData['total_time'] = 0;
             foreach ($missings as $missing) {
                 if(!empty($missing['time_start']) && !empty($missing['time_end'])) {
                     $workSeconds = Application_Model_Day::getWorkHoursByMarkers(

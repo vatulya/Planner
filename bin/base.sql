@@ -243,5 +243,8 @@ ALTER TABLE `users`     ADD COLUMN `regular_work_hours` INT(3) DEFAULT '40' NOT 
 ALTER TABLE `user_parameters` DROP COLUMN `regular_work_hours`;
 
 ALTER TABLE `status`     ADD COLUMN `is_holiday` BINARY(1) DEFAULT '0' NOT NULL AFTER `edit_type`;
-UPDATE `status` SET `is_holiday`='1' WHERE `id`='5' AND `id`='3';
+UPDATE `status` SET `is_holiday`='1' WHERE `id`='5' OR `id`='3';
 ALTER TABLE `status` ADD COLUMN `long_description` VARCHAR(512) NULL AFTER `is_holiday`;
+
+ALTER TABLE `user_missing`     CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,    ADD PRIMARY KEY(`id`);
+ALTER TABLE `user_history`     CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT,    ADD PRIMARY KEY(`id`);

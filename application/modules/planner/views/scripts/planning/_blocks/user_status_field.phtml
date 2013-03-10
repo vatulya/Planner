@@ -1,47 +1,83 @@
-<?php if ( !empty($this->userDayData)): ?>
-<?php
-    $title = @$this->userDayData['date'] . '</br>' . @$this->userDayData['status1']['description'];
-    if (!empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])) {
-        $title .= ": " . $this->userDayData['time_start'] . "-" . $this->userDayData['time_end'];
+<?php $day = $this->userDayData;
+    $dayGreen  = $day[Application_Model_Planning::STATUS_DAY_GREEN];
+    $dayWhite  = $day[Application_Model_Planning::STATUS_DAY_WHITE];
+    $dayYellow = $day[Application_Model_Planning::STATUS_DAY_YELLOW];
+    //Default settings for day
+    $title = $dayWhite['date'] . '</br>';
+    $title .= $dayWhite['description'];
+    $dayMainColorHex = $dayWhite['color_hex'];
+    $dayMainTime = '';
+
+    if (!empty($dayGreen['time_start']) && !empty($dayGreen['time_end'])) {
+        $title = $dayWhite['date'] . '</br>';
+        if (!empty($dayYellow['status']) && $dayYellow['status'] == Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED) {
+            $title .= $dayYellow['description'];
+            $dayMainColorHex = $dayYellow['color_hex'];
+        } else {
+            $dayMainTime = $dayGreen['format_time_start'] . "-" . $dayGreen['format_time_end'];
+            $title .= $dayGreen['description'] . ": " . $dayMainTime;
+            if (!empty($dayGreen['format_pause_start']) && !empty($dayGreen['format_pause_end'])) {
+                $title .= '</br>' . "Pause : " . $dayGreen['format_pause_start'] . "-" . $dayGreen['format_pause_end'];
+            }
+            $dayMainColorHex = $dayGreen['color_hex'];
+            //If day green check additional statuses for color traingler
+            $titleAdditionalStatuses = '';
+            foreach ($day as $statuses) {
+                if ($statuses['id'] == 1 || $statuses['id'] == 2 || $statuses['id'] == 3) {
+                    continue;
+                }
+                if (!empty($statuses['time_start']) && !empty($statuses['time_end'])) {
+                    $dayAdditionalColorHex = $statuses['color_hex'];
+                    $titleAdditionalStatuses .= '</br>' . $statuses['description'] . " : " . $statuses['format_time_start'] . "-" . $statuses['format_time_end'];
+                }
+
+            }
+        }
+
     }
-    if (!empty($this->userDayData['pause_start']) && !empty($this->userDayData['pause_end'])) {
-        $title .= '</br>' . "Pause : " . $this->userDayData['pause_start'] . "-" . $this->userDayData['pause_end'];
-    }
-    if (!empty($this->userDayData['status2']['description'])) {
+
+
+//TODO need add additional statuses
+/*    if (!empty($this->userDayData['status2']['description'])) {
         $title .= "</br>" . $this->userDayData['status2']['description'];
         if (!empty($this->userDayData['time_start2']) && !empty($this->userDayData['time_end2'])) {
             $title .= ": <nobr>" . $this->userDayData['time_start2'] . "-" . $this->userDayData['time_end2'] . "&nbsp;</nobr>" ;
         }
-    }
+    }*/
 
-    $total = 0;
+/*    $total = 0;
     if (@$this->userDayData['total_time'] > 0) {
         $total = @$this->userDayData['total_time'] - @$this->userDayData['total_time2'];
     } elseif(@$this->userDayData['total_time2'] > 0)  {
         $total = @$this->userDayData['total_time2'];
     }
-    $title .= '</br>' . "Total : " . $total ;//. ;
+    $title .= '</br>' . "Total : " . $total ;//. ;*/
 ?>
+<td style="padding: 0px; width: 90px; background-color: #<?php echo $dayMainColorHex;?>">
 <a href="<?php echo $this->url(
     array(
         'controller' => 'planning',
         'action' => 'get-edit-day-form',
-        'date' => $this->userDayData['date'],
-        'user_id' => $this->userDayData['user_id'],
-        'group_id' => $this->userDayData['group_id']
+        'date' => $dayWhite['date'],
+        'user_id' => $dayWhite['user_id'],
+        'group_id' => $dayWhite['group_id']
     ), 'planner', true); ?>"
-   class="no-action  <?php if (@$this->userDayData['editable']) {echo " edit-day";} ?>"
-   data-status="<?php echo $this->userDayData['status1']['id']; ?>" >
-   <?php if ( empty($this->userDayData['status2'])): ?>
-        <?php if ( !empty($this->userDayData['time_start']) && !empty($this->userDayData['time_end'])): ?>
-            <div class="underflow-container week-table-user-day editable show-tooltip"  title="<?php echo  $title ?>" > <?php echo $this->userDayData['time_start'] . "-" . $this->userDayData['time_end']; ?></div>
-        <?php else: ?>
-            <div class="underflow-container week-table-user-day editable show-tooltip"  title="<?php echo  $title ?>"></div>
-        <?php endif; ?>
-    <?php else: ?>
-        <div class="day-status-color-traingler show-tooltip"  title="<?php echo  $title ?>" style="border-bottom: 28px solid #<?php echo $this->userDayData['status2']['color_hex']; ?>;"></div>
-    <?php endif; ?>
+   class="no-action  <?php if ($dayWhite['editable']) {echo " edit-day";} ?>">
+
+
+   <?php if ( empty($titleAdditionalStatuses)): ?>
+       <div class="underflow-container week-table-user-day editable show-tooltip"  title="<?php echo  $title ?>" > <?php echo $dayMainTime; ?></div>
+   <?php else: ?>
+       <div class="day-status-color-traingler show-tooltip"  title="<?php echo  $title . $titleAdditionalStatuses ?>" style="border-bottom: 28px solid #<?php echo $dayAdditionalColorHex; ?>;"></div>
+   <?php endif; ?>
 </a>
-<?php else: ?>
-    No data
-<?php endif; ?>
+</td>
+<!--
+class Application_Model_Planning
+    const STATUS_DAY_WHITE    = '1';
+    const STATUS_DAY_GREEN    = '2';
+    const STATUS_DAY_YELLOW   = '3';
+    const STATUS_DAY_RED      = '4';
+    const STATUS_DAY_CYAN     = '5';
+    const STATUS_DAY_BLUE     = '6';
+    const STATUS_DAY_OVERTIME = '7'; -->

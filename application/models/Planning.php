@@ -29,12 +29,12 @@ class Application_Model_Planning extends Application_Model_Abstract
             $date = clone $dateWeekStart;
             $date->modify('+' . $numDay . 'day');
             $dateFormat = $date->format('Y-m-d');
-            $weekPlan[$nameDay] = $this->getDayGroupUserPlanByDate($userId, $groupId, $dateFormat) ;
+            $weekPlan[$nameDay] = $this->getUserDayStatuses($userId, $groupId, $dateFormat) ;
         }
         return $weekPlan;
     }
 
-    public function getDayGroupUserPlanByDate($userId, $groupId, $dateFormat)
+/*    public function getDayGroupUserPlanByDate($userId, $groupId, $dateFormat)
     {
         $currentDate = new My_DateTime();
         $currentDate = $currentDate->getTimestamp();
@@ -51,7 +51,7 @@ class Application_Model_Planning extends Application_Model_Abstract
                 return $this->_setStatusByRules($dayPlan);
             }
         }
-    }
+    }*/
 
     private function _setDefaultStatusForEmptyPlan($userId, $groupId, $dateFormat) {
         $status = new Application_Model_Status();
@@ -140,16 +140,6 @@ class Application_Model_Planning extends Application_Model_Abstract
         return $dayPlan;
     }
 
-    private function _formatTime($time)
-    {
-        try {
-            $date = date_create($time);
-        } catch (Exception $e) {
-            return $time;
-        }
-        return date_format($date, 'H:i');
-    }
-
     private function _getEditableDay($userId, $groupId)
     {
         $auth = new Application_Model_Auth();
@@ -193,7 +183,7 @@ class Application_Model_Planning extends Application_Model_Abstract
         $planning->createNewDayUserPlanByGroup($dayPlan);
     }
 
-    private function _setStatusByRules($result)
+/*    private function _setStatusByRules($result)
     {
         $status = new Application_Model_Status();
         $userRequest = new Application_Model_Db_User_Requests();
@@ -259,7 +249,7 @@ class Application_Model_Planning extends Application_Model_Abstract
         unset($userDayPlan['time_end2']);
         unset($userDayPlan['status2']);
         return $userDayPlan;
-    }
+    }*/
 
     public function getUserWorkTimeByGroup($userId, $groupId,  $year, $week)
     {
@@ -269,19 +259,6 @@ class Application_Model_Planning extends Application_Model_Abstract
         $workTime = $weekUserPlan->getTotalWorkTimeByGroup($userId, $groupId, $date);
 
         return $workTime;
-    }
-
-    public function getUserDayById($dayId)
-    {
-        $userDay = new Application_Model_Db_User_Planning();
-        $result = $userDay->getDayById($dayId);
-        $userRequest = new Application_Model_Db_User_Requests();
-        $approveUserDayRequest = $userRequest->getAllByUserId($result['user_id'], Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $result['date']);
-        if ($result['status1'] == self::STATUS_DAY_GREEN && !empty($approveUserDayRequest)) {
-            $result['status1'] = self::STATUS_DAY_YELLOW;
-            $result = $this->_resetTimeAndSecondStatus($result);
-        }
-        return $result;
     }
 
     public function saveDayAdditionalUserStatus($dayStatusData, $userId, $date, $groupId)
@@ -372,6 +349,10 @@ class Application_Model_Planning extends Application_Model_Abstract
                     $day = $this->getUserPlanningByDate($userId, $groupId, $date);
                     if (!empty($day['time_start']) && !empty($day['time_end'])) {
                         $day    = array_merge($day, $this->_splitStartEndTimeString($day['time_start'], $day['time_end']));
+                        if (!empty($day['pause_start']) && !empty($day['pause_end'])) {
+                            $day['format_pause_start'] =  My_DateTime::formatTime($day['pause_start']);
+                            $day['format_pause_end']   =  My_DateTime::formatTime($day['pause_end']);
+                        }
                         $status = array_merge($day, $status);
                     }
                     break;
@@ -401,6 +382,10 @@ class Application_Model_Planning extends Application_Model_Abstract
                     break;
             }
         }
+        $statuses[self::STATUS_DAY_WHITE]['group_id'] = $groupId;
+        $statuses[self::STATUS_DAY_WHITE]['user_id'] = $userId;
+        $statuses[self::STATUS_DAY_WHITE]['date'] = $date;
+        $statuses[self::STATUS_DAY_WHITE]['editable'] = $this->_getEditableDay($userId, $groupId);
         return $statuses;
     }
 
@@ -419,6 +404,8 @@ class Application_Model_Planning extends Application_Model_Abstract
         return array(
             'split_time_start' =>  My_DateTime::splitTimeString($timeStart),
             'split_time_end'   =>  My_DateTime::splitTimeString($timeEnd),
+            'format_time_start'   =>  My_DateTime::formatTime($timeStart),
+            'format_time_end'   =>  My_DateTime::formatTime($timeEnd),
 
         );
     }
