@@ -140,9 +140,12 @@ class Application_Model_Day
         return true;
     }
 
-    static public function getWorkHoursByMarkers($workStart, $workEnd, $pauseStart, $pauseEnd)
+    static public function getWorkHoursByMarkers($workStart, $workEnd, $pauseStart = false, $pauseEnd = false)
     {
         $work  = My_DateTime::diffInSeconds($workStart, $workEnd);
+        if ($pauseStart === false || $pauseStart === false) {
+            return $work;
+        }
         $pause = My_DateTime::diffInSeconds($pauseStart, $pauseEnd);
         $workSeconds = $work - $pause;
         return $workSeconds;

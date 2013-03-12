@@ -8,12 +8,13 @@ class Application_Model_History extends Application_Model_Abstract
     {
         $this->_modelPlanning   = new Application_Model_Planning();
         $this->_modelDbPlanning = new Application_Model_Db_User_Planning();
-        $this->_modelMissing    = new Application_Model_Missing();
+        $this->_modelMissing    = new Application_Model_Db_User_Missing();
         $this->_modelOvertime   = new Application_Model_Overtime();
         $this->_modelRequest    = new Application_Model_Db_User_Requests();
         $this->_modelHistory    = new Application_Model_Db_User_History();
         $this->_modelChecks     = new Application_Model_Db_User_Checks();
         $this->_modelUser       = new Application_Model_User();
+        $this->_modelStatus     = new Application_Model_Status();
     }
 
     public function addDayDataToHistory($userId, $groupId, $date)
@@ -21,7 +22,7 @@ class Application_Model_History extends Application_Model_Abstract
         $currentDate = new My_DateTime($date);
         $dateWeekYear = My_DateTime::getWeekYear($currentDate->getTimestamp());
         $dayPlan = $this->_modelPlanning->getUserDayPlanFromPlanning($userId, $groupId, $date);
-        $missingUserDay = $this->_modelMissing->getTotalTimeMissingForDate($userId, $date);
+        $missingUserDay = $this->_modelMissing->getUserDayMissingPlanByDate($userId, $date);
 
         $approveUserDayRequest = $this->_modelRequest->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $date);
         $userHistoryData = array();
@@ -34,9 +35,17 @@ class Application_Model_History extends Application_Model_Abstract
         $userHistoryData['vacation_time']  = 0;
         $userHistoryData['missing_time']   = 0;
         $workData = $this->_modelUser->getUserWorkData($userId, $date);
-        if ($dayPlan['status1'] === Application_Model_Planning::STATUS_DAY_GREEN && !empty($dayPlan['total_time'])) {
-            if (!empty($missingUserDay['total_time'])) {
-                $userHistoryData['missing_time'] = $missingUserDay['total_time'];
+        if ($dayPlan['status1'] === Application_Model_Planning::STATUS_DAY_GREEN && !empty($dayPlan['total_time']) && empty($approveUserDayRequest)) {
+            if (!empty($missingUserDay) && is_array($missingUserDay)) {
+                foreach($missingUserDay as $missing) {
+                    $status = $this->_modelStatus->getDataById($missing['status']);
+                    $missingTotalSeconds = Application_Model_Day::getWorkHoursByMarkers($missing['time_start'], $missing['time_end']);
+                    if ($status['is_holiday']) {
+                        $userHistoryData['vacation_time'] += $missingTotalSeconds;
+                    } else {
+                        $userHistoryData['missing_time'] += $missingTotalSeconds;
+                    }
+                }
             }
             if (!empty($approveUserDayRequest)) {
                 $userHistoryData['vacation_time'] = $dayPlan['total_time'];
