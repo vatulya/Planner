@@ -35,16 +35,16 @@
             <?php
             $title = 'Week' . $week . '</br>';
             if (!empty($workTime['work_hours'])) {
-                $title .= "Gewerkte uren: " . $workTime['work_hours'] . '</br>';
+                $title .= "Work Hours: " . $workTime['work_hours'] . '</br>';
             }
             if (!empty($workTime['work_hours'])) {
-                $title .= "Vrije uren: " . $workTime['vacation_hours'] . '</br>';
+                $title .= "Holiday Hours: " . $workTime['vacation_hours'] . '</br>';
             }
             if (!empty($workTime['work_hours'])) {
-                $title .= "Overuren: " . $workTime['overtime_hours'] . '</br>';
+                $title .= "Over Hours: " . $workTime['overtime_hours'] . '</br>';
             }
             if (!empty($workTime['work_hours'])) {
-                $title .= "Ziekte/buitengew: " . $workTime['missing_hours'] . '</br>';
+                $title .= "Missing Hours: " . $workTime['missing_hours'] . '</br>';
             }
             if (!empty($workTime['work_hours'])) {
                 $title .= "Total: " . $workTime['total'];
