@@ -263,8 +263,15 @@ CREATE TABLE `user_alerts` (
   UNIQUE KEY `alertKey` (`date`,`type`,`user_id`,`group_id`),
   KEY `FK_user_alerts` (`type`),
   CONSTRAINT `FK_user_alerts` FOREIGN KEY (`type`) REFERENCES `status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8;
 
 ALTER TABLE `user_history`     ADD COLUMN `num_incident` INT(11) DEFAULT '0' NOT NULL AFTER `year`;
 ALTER TABLE `status` ADD COLUMN  `alert_description` varchar(1024) NULL AFTER `long_description`;
 ALTER TABLE `user_mail` ADD COLUMN `type` enum('overview','alerts') DEFAULT 'overview' NOT NULL after `email`;
+
+UPDATE `status` SET `alert_description`='Fogot to check in' WHERE `id`='2';
+UPDATE `status` SET `alert_description`='Ill' WHERE `id`='4';
+UPDATE `status` SET `alert_description`='Holiday free' WHERE `id`='3';
+UPDATE `status` SET `alert_description`='Doctor Visit' WHERE `id`='5';
+UPDATE `status` SET `alert_description`='special paid free ' WHERE `id`='6';
+UPDATE `status` SET `alert_description`='Overtime' WHERE `id`='7';

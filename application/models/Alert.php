@@ -202,7 +202,7 @@ class Application_Model_Alert extends Application_Model_Abstract
         $dbMail = new Application_Model_Db_User_Mail();
         $mailTo = $dbMail->getMailArray('alerts');
         $alert = $this->_modelDb->getNoSendedAlerts($userId, $groupId, $date);
-        if (!empty($alert)) {
+        if (!empty($alert) && !empty($mailTo)) {
             $mail = new Zend_Mail();
             $mailBody = 'User : ' . $user['full_name']
                 . '. From group : ' . $group['group_name']
