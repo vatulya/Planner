@@ -1,0 +1,75 @@
+<?php
+/*** PREPARE DATA ***/
+$headerWeeks         = '';
+$historyRows         = array();
+$emptyRow            = '';
+foreach ($this->historyDateWeekYear as $week => $year) {
+$headerWeeks         .= '<th>
+    <a href="' . $this->url(array('controller' =>  $this->historyBlockController, 'action' => 'index', 'year' => $year, 'week' => $week), 'planner', true). '" class="get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $week . '">
+        Week ' . $week . '
+    </a>
+</th>';
+}
+?>
+
+<?php
+$nextWeekYear = $this->nextWeekYear;
+$prevWeekYear = $this->prevWeekYear;
+$currentWeekYear = $this->currentWeekYear;
+?>
+    <div class="user_row_container">
+        <span class="span4 block-history">
+            <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $prevWeekYear['year'], 'week' => $prevWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $prevWeekYear['year'] . ' week:' . $prevWeekYear['week']; ?>">
+                < Prev Week
+            </a>
+            <?php if ($currentWeekYear['week'] != $this->week): ?>
+            <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $currentWeekYear['year'], 'week' => $currentWeekYear['week']), 'planner', true); ?>" class="show-more-history"  title="<?php echo 'Year:' . $currentWeekYear['year'] . ' week:' . $currentWeekYear['week']; ?>">
+                | Actual Week |
+            </a>
+            <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
+                Next Week >
+            </a>
+            <?php endif; ?>
+
+        </span>
+
+    </div>
+
+    <table class="history table table-bordered table-condensed table-striped" style=" float: left;">
+        <thead>
+        <tr class="week-table-header">
+            <th>Group</th>
+            <?php echo $headerWeeks; ?>
+        </tr>
+        </thead>
+
+        <tbody>
+            <?php foreach ($this->groupsAlertsSumm as $group): ?>
+                <tr  style="background-color: #<?php echo $group['color'];?>" >
+                    <td>
+                        <?php echo $group['group_name']; ?>
+
+                    </td>
+                    <?php if (!empty($group['history']) && $group['history'] ) : ?>
+                        <?php foreach($group['history'] as $week => $numIncidents): ?>
+                        <td><div class="show-tooltip"  title="<?php  echo  'Summ All users incidents for group'; ?>" >
+                            <?php
+                            if (empty($numIncidents)) {
+                                echo "0";
+                            } else {
+                                echo $numIncidents;
+                            }
+                            ?>
+                        </div></td>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    <?php endif; ?>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+

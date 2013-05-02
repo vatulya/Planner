@@ -39,6 +39,8 @@ class Application_Model_Overview extends Application_Model_Abstract
         return $groups;
     }
 
+
+
     protected function _getUserData($user, $groupId, $year, $week)
     {
         $user['history'] = $this->_getHistory($user['id'], $groupId, $year, $week);

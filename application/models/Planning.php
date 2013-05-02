@@ -145,10 +145,12 @@ class Application_Model_Planning extends Application_Model_Abstract
         $auth = new Application_Model_Auth();
         $user = $auth->getCurrentUser();
         $meId = $user['id'];
-        $userGroup = new Application_Model_Db_User_Groups();
-        $groupsAdmin = $userGroup->getUserGroupsAdmin($meId);
-        if ($meId == $userId || (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) || in_array($groupId, $groupsAdmin)) {
-            return true;
+        if (!empty($meId)) {
+            $userGroup = new Application_Model_Db_User_Groups();
+            $groupsAdmin = $userGroup->getUserGroupsAdmin($meId);
+            if ($meId == $userId || (Application_Model_Auth::getRole() >= Application_Model_Auth::ROLE_ADMIN) || in_array($groupId, $groupsAdmin)) {
+                return true;
+            }
         }
         return false;
     }

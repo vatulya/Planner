@@ -1,0 +1,120 @@
+<div class="group-history-block pull-left">
+    <div class="div-row">&nbsp;</div>
+    <div class="group-free-days-table">
+        <table class="history table table-bordered table-condensed table-striped">
+            <thead>
+            <tr class="week-table-header" >
+                <th>&nbsp;</th>
+            </tr>
+            <tr  class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
+                <th>
+                    Prev Year
+                    <a href="#" class="show-tooltip no-action" data-original-title="All incident type total at the previous year"><i class="icon-info-sign"></i></a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php if (empty($this->users)): ?>
+            <tr><td >&nbsp;  </td></tr>
+                <?php else: ?>
+                <?php foreach ($this->users as $user): ?>
+                    <?php $this->user = $user; ?>
+                <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
+                    <td>
+                        <div class="">
+                            <span>
+                                <?php if (empty($this->previousYearUsersAlerts[$this->group['id']][$user['user_id']]['num_incident'])) {
+                                    echo 0;
+                                } else {
+                                    echo $this->previousYearUsersAlerts[$this->group['id']][$user['user_id']]['num_incident'];
+                                }
+                                ?>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="group-overview-block pull-left">
+    <div class="div-row">&nbsp;</div>
+    <table class="history table table-bordered table-condensed table-striped">
+
+        <thead>
+        <tr class="week-table-header" >
+            <th  colspan="1"   >
+                <?php if (empty($this->week)): ?>
+                <a href="<?php echo $this->url(
+                    array(
+                        'controller' => 'overview',
+                        'action' => 'get-year-totals',
+                        'year' => $this->prevYear
+                    ), 'planner', true); ?>"
+                   class="show-tooltip no-action year-total"
+                   data-original-title="Show totals <?php echo $this->prevYear; ?> year">
+                    <span>< Previous Year</span>
+                </a>
+                <?php endif; ?>
+            </th>
+            <!--th  style="background-color: #<?php echo $this->group['color'];?>" -->
+            <th>
+                <?php if (!empty($this->week)): ?>
+                <a href="#" class="bootstrab-tooltip no-action get-week-details" >
+                    Week <?php echo $this->week; ?>
+                </a>
+                <?php else: ?>
+                <span class="pull-righ"><?php echo $this->year; ?> year</span>
+                <?php endif; ?>
+            </th>
+        </tr>
+        <tr class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
+            <th class="group-user-name" ><?php echo $this->group['group_name']; ?></th>
+            <th class="group-user-used-free-days">Incident Reason</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if (empty($this->users)): ?>
+        <td colspan="3" class="user-not-found">
+            No users in this group
+        </td>
+            <?php else: ?>
+            <?php foreach ($this->users as $user): ?>
+                <?php $this->user = $user; ?>
+                <?php //echo $this->render('planning/_blocks/week_user_plan.phtml'); ?>
+            <tr class="user-row add-user-row" data-user-id="<?php echo $user['user_id']; ?>">
+                <td class="user-title" >
+                    <div><?php echo "<nobr>" . $user['full_name'] . "</nobr>"; ?> </div>
+                </td>
+                <td>
+                    <span>
+                        <?php if (empty($user['weekHours']['num_incident'])) : ?>
+                        0
+                        <?php else :?>
+                        <a href="<?php echo $this->url(array(
+                            'controller' => 'alerts',
+                            'action' => 'get-user-alerts',
+                            'year' => $this->year,
+                            'week' => $this->week,
+                            'group_id' => $this->group['id'],
+                            'user_id' => $user['user_id']
+                            ),
+                            'planner', true); ?>" class="show-tooltip no-action user-alerts" >
+                            <?php echo $user['weekHours']['num_incident'] . ' ... '  ?>
+                        <?php endif; ?>
+                        </a>
+                    </span>
+                </td>
+
+
+
+            </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>

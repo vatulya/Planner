@@ -54,6 +54,8 @@
             <?php
                 if (empty($workTime['total'])) {
                     echo "-";
+                } elseif ($this->historyBlockController == 'alerts') {
+                    echo $workTime['num_incident'];
                 } else {
                     echo $workTime['total'];
                 }

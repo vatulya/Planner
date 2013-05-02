@@ -22,6 +22,15 @@ class Application_Model_Db_User_Checks extends Application_Model_Db_Abstract
         return $lastCheck;
     }
 
+    public function checkUserIn($userId)
+    {
+        $lastCheckIn = $this->getUserLastCheck($userId);
+        if (!empty($lastCheckIn['check_in']) && empty($lastCheckIn['check_out'])) {
+            return true;
+        }
+        return false;
+    }
+
     public function userCheckIn($userId)
     {
         $date = new My_DateTime();

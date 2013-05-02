@@ -180,4 +180,10 @@ class Application_Model_History extends Application_Model_Abstract
         }
         return true;
     }
+
+    public function getAlertSummaryGroupWeekData($groupId, $week, $year)
+    {
+        $groupAlert = $this->_modelHistory->getIncidentGroupWeekData($groupId, $week, $year);
+        return $groupAlert;
+    }
 }

@@ -248,3 +248,23 @@ ALTER TABLE `status` ADD COLUMN `long_description` VARCHAR(512) NULL AFTER `is_h
 
 ALTER TABLE `user_missing`     CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,    ADD PRIMARY KEY(`id`);
 ALTER TABLE `user_history`     CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT,    ADD PRIMARY KEY(`id`);
+
+
+-- Alert page alters
+
+CREATE TABLE `user_alerts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` date NOT NULL,
+  `type` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `notice_mailed` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `alertKey` (`date`,`type`,`user_id`,`group_id`),
+  KEY `FK_user_alerts` (`type`),
+  CONSTRAINT `FK_user_alerts` FOREIGN KEY (`type`) REFERENCES `status` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8
+
+ALTER TABLE `user_history`     ADD COLUMN `num_incident` INT(11) DEFAULT '0' NOT NULL AFTER `year`;
+ALTER TABLE `status` ADD COLUMN  `alert_description` varchar(1024) NULL AFTER `long_description`;
+ALTER TABLE `user_mail` ADD COLUMN `type` enum('overview','alerts') DEFAULT 'overview' NOT NULL after `email`;

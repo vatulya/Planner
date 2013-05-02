@@ -65,8 +65,8 @@ class Planner_OverviewController extends My_Controller_Action
         $historyDateWeekYear = My_DateTime::getNumHistoryWeeks($year, $week);
         $groupsUserData = $this->_modelOverview->getAllGroupAndUserWeekSummary($week, $year);
         $subscribedEmail = new Application_Model_Db_User_Mail();
-
-        $this->view->emails              = $subscribedEmail->getListMail();
+        $controller = $this->_request->getParam('controller');
+        $this->view->emails              = $subscribedEmail->getListMail($controller);
         $this->view->week                = $week;
         $this->view->year                = $year;
         $this->view->historyDateWeekYear = $historyDateWeekYear;
@@ -161,7 +161,7 @@ class Planner_OverviewController extends My_Controller_Action
         //TODO maybe need add check for email format
         if (!empty($newEmail)) {
             $userMail = new Application_Model_Db_User_Mail();
-            $status = $userMail->saveEmail($newEmail);
+            $status = $userMail->saveEmail($newEmail, $this->_request->getParam('controller'));
         }
         if ($status) {
             $this->_response(1, '', array());

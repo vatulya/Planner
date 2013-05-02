@@ -1,216 +1,313 @@
 <?php $this->headScript()->appendFile('/js/alerts.js'); ?>
 
-<div class="span12 alerts-container">
-    <div class="alert-1-header">
-        <span class="alert-name">Alert 1 : no checkin without reason</span>
+<div class="span12 group-overview-container">
+    <?php if(!empty($this->countNoCheckInUsers)): ?>
+    <div class="row user_row width-full">
+        <h4>
+            <span class="span12 block-history">
+                Alert 1 : <?php echo $this->countNoCheckInUsers; ?> no check in users without reason.
+            </span>
+        </h4>
     </div>
-
-    <div class="alert-1-block pull-left">
-        <div class="div-row">
-            <a href="#" class="no-action">
-                More history
-            </a>
-        </div>
-        <div class="alert-1-history-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #F5F5DC;">
-                    <th>Week 26</th>
-                    <th>Week 27</th>
-                    <th>Week 28</th>
-                    <th>Week 29</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="alert-1-block pull-left">
-        <div class="div-row">
-            <div class="underflow-container">
-                <div class="underflow">
-                    Previous years history total
+    <?php endif; ?>
+    <?php foreach ($this->groups as $group): ?>
+    <?php $this->group = $group; ?>
+    <div
+        class="row user_row width-full"
+        id="<?php echo $this->group['id']; ?>"
+        data-user-id="<?php echo $this->group['id']; ?>"
+        >
+        <?php
+        $this->users = $this->group['users'];
+        $nextWeekYear = $this->nextWeekYear;
+        $prevWeekYear = $this->prevWeekYear;
+        $currentWeekYear = $this->currentWeekYear;
+        ?>
+        <div class="user_row_container">
+            <span class="span4 block-history">
+                <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $prevWeekYear['year'], 'week' => $prevWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $prevWeekYear['year'] . ' week:' . $prevWeekYear['week']; ?>">
+                    < Prev Week
+                </a>
+                <?php if ($currentWeekYear['week'] != $this->week): ?>
+                <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $currentWeekYear['year'], 'week' => $currentWeekYear['week']), 'planner', true); ?>" class="show-more-history"  title="<?php echo 'Year:' . $currentWeekYear['year'] . ' week:' . $currentWeekYear['week']; ?>">
+                    | Actual Week |
+                </a>
+                <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
+                    Next Week >
+                </a>
+                <?php endif; ?>
+                <div class="history-container-scrollable">
+                    <div class="history-container">
+                        <?php
+                        $this->historyBlockController = 'alerts';
+                        echo $this->render('_blocks/history.phtml'); ?>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="alert-1-year-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #F5F5DC;">
-                    <th>
-                        Year total
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <span>2</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span>1</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span>3</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            </span>
+
+
+            <span
+                class="span10 block-week-details week-details main-data-container user-id-<?php echo $this->group['id']; ?> year-<?php echo $this->weekTasks['year']; ?> week-<?php echo $this->weekTasks['week']; ?>"
+                data-year="<?php echo $this->weekTasks['year']; ?>"
+                data-week="<?php echo $this->weekTasks['week']; ?>"
+                data-userId="<?php echo $this->group['id']; ?>"
+                >
+                    <?php echo $this->render('alerts/_blocks/alerts-user-row.phtml'); ?>
+            </span>
         </div>
     </div>
-    <div class="alert-1-block pull-left">
-        <div class="div-row pull-right">&nbsp;</div>
-        <div class="alert-1-group-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #F5F5DC;">
-                    <th class="alert-1-user-name">Groep Customer Service</th>
-                    <th class="alert-1-user-worked">Not there</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>Suzanne de Goede</td>
-                    <td>
-                        <span>0</span>
-                        <a href="#" class="no-action pull-right show-tooltip" data-original-title="Edit into reason"><i class="icon-edit"></i></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Harmen van der Meulen</td>
-                    <td>
-                        <span>1</span>
-                        <a href="#" class="no-action pull-right show-tooltip" data-original-title="Edit into reason"><i class="icon-edit"></i></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Erik de Wit</td>
-                    <td>
-                        <span>0</span>
-                        <a href="#" class="no-action pull-right show-tooltip" data-original-title="Edit into reason"><i class="icon-edit"></i></a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+    <?php endforeach; ?>
+
+
+</div>
+
+<!-- GROUP SUMMARY BLOCK -->
+
+<div class="span12 group-overview-container">
+    <?php if(!empty($this->countToManyPeopleOff)): ?>
+    <div class="row user_row width-full">
+        <h4>
+            <span class="span12 block-history">
+                Alert 2 : to many people off : <?php echo $this->countToManyPeopleOff; ?> people
+            </span>
+        </h4>
+    </div>
+    <?php endif;?>
+    <div  class="row user_row width-full">
+        <?php
+        /*** PREPARE DATA ***/
+        $headerWeeks         = '';
+        $historyRows         = array();
+        $emptyRow            = '';
+        foreach ($this->historyDateWeekYear as $week => $year) {
+            $headerWeeks         .= '<th>
+            <a href="' . $this->url(array('controller' =>  $this->historyBlockController, 'action' => 'index', 'year' => $year, 'week' => $week), 'planner', true). '" class="get-week-details" data-year="' . $year . '" data-week="' . $week . '" title="' . $week . '">
+                Week ' . $week . '
+            </a>
+         </th>';
+        }
+        ?>
+
+        <?php
+        $nextWeekYear = $this->nextWeekYear;
+        $prevWeekYear = $this->prevWeekYear;
+        $currentWeekYear = $this->currentWeekYear;
+        ?>
+        <div class=" user_row_container">
+            <span class="span6 block-history">
+                <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $prevWeekYear['year'], 'week' => $prevWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $prevWeekYear['year'] . ' week:' . $prevWeekYear['week']; ?>">
+                    < Prev Week
+                </a>
+                <?php if ($currentWeekYear['week'] != $this->week): ?>
+                <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $currentWeekYear['year'], 'week' => $currentWeekYear['week']), 'planner', true); ?>" class="show-more-history"  title="<?php echo 'Year:' . $currentWeekYear['year'] . ' week:' . $currentWeekYear['week']; ?>">
+                    | Actual Week |
+                </a>
+                <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
+                    Next Week >
+                </a>
+                <?php endif; ?>
+
+                <table class="history table table-bordered table-condensed table-striped">
+                    <thead>
+                    <tr class="week-table-header">
+                        <th>Group</th>
+                        <?php echo $headerWeeks; ?>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <?php foreach ($this->groupsAlertsSumm as $group): ?>
+                    <tr  style="background-color: #<?php echo $group['color'];?>" >
+                        <td>
+                            <?php echo $group['group_name']; ?>
+                        </td>
+                        <?php if (!empty($group['history']) && $group['history'] ) : ?>
+                        <?php foreach($group['history'] as $week => $numIncidents): ?>
+                        <td>
+                            <div class="show-tooltip"  title="<?php  echo  'Summ All users incidents for group'; ?>" >
+                            <?php
+                            if (empty($numIncidents)) {
+                                echo "0";
+                            } else {
+                                echo $numIncidents;
+                            }
+                            ?>
+                            </div>
+                        </td>
+                        <?php endforeach; ?>
+                        <?php else: ?>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <?php endif; ?>
+                    </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </span>
+
+            <span class="span2 block-week-details week-details main-data-container ">
+                <div class="group-history-block pull-left">
+                    <div class="div-row">&nbsp;</div>
+                    <div class="group-free-days-table">
+                        <table class="history table table-bordered table-condensed table-striped">
+                            <thead>
+                            <tr  class="week-table-header">
+                                <th>
+                                    Prev Year
+                                    <a href="#" class="show-tooltip no-action" data-original-title="No checkin without reason total at the previous year"><i class="icon-info-sign"></i></a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php if (empty($this->users)): ?>
+                            <tr><td >&nbsp;  </td></tr>
+                                <?php else: ?>
+                                <?php foreach ($this->groupsAlertsSumm as $group): ?>
+                                <tr class="user-row add-user-row">
+                                    <td>
+                                        <div class="">
+                                            <span>
+                                                <?php if (empty($this->previousYearGroupAlerts[$group['id']]['num_incident'])) {
+                                                    echo 0;
+                                                } else {
+                                                    echo $this->previousYearGroupAlerts[$group['id']]['num_incident'];
+                                                }
+                                                ?>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </span>
+            <span class="span2 block-week-details week-details main-data-container ">
+                <div class="group-history-block pull-left">
+                    <div class="div-row">&nbsp;</div>
+                    <div class="group-free-days-table">
+                        <table class="history table table-bordered table-condensed table-striped">
+                            <thead>
+                            <tr  class="week-table-header">
+                                <th>
+                                    <?php if (!empty($this->week)): ?>
+                                    <a href="#" class="bootstrab-tooltip no-action get-week-details" >
+                                        Week <?php echo $this->week; ?>
+                                    </a>
+                                    <?php endif; ?>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php if (empty($this->users)): ?>
+                            <tr><td >&nbsp;  </td></tr>
+                                <?php else: ?>
+                                <?php foreach ($this->groupsAlertsSumm as $group): ?>
+                                <tr class="user-row add-user-row">
+                                    <td>
+                                        <div class="">
+                                            <span>
+                                                <?php if (empty($group['week_group_alerts'])) {
+                                                    echo 0;
+                                                } else {
+                                                    echo $group['week_group_alerts'];
+                                                }
+                                                ?>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+
+                            </tbody>
+                        </table>
+                    </div>
+            </span>
         </div>
     </div>
+</div>
+
+<div class="span12 regular-holidays">
+    <table class="">
+        <tbody>
+        <tr>
+            <td>
+                <button class="btn btn-mini btn-success add-email">
+                    <i class="icon-plus-sign icon-white"></i>
+                </button>
+                Auto alerts email list
+                <a href="#" class="show-tooltip no-action" data-original-title="Subscribe email to alert reports" ><i class="icon-info-sign"></i></a>:
+            </td>
+            <td style="width: 600px;">
+                <?php foreach ($this->emails as $email): ?>
+                <span class="label label-info">
+                        <?php echo $email['email']; ?>
+                    <a href="#" class="show-tooltip no-action remove-email" data-original-title="Remove" data-email-id="<?php echo $email['id']; ?>" data-email="<?php echo $email['email']; ?>">
+                        <i class="icon-remove icon-white"></i>
+                    </a>
+                    </span>
+                <?php endforeach; ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="div-row">&nbsp;</div>
+<div class="div-row">&nbsp;</div>
+<div class="div-row">&nbsp;</div>
+<div class="div-row">&nbsp;</div>
+
+</div>
+
+<div class="modal hide fade modal-user-alerts">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+    </div>
+    <div class="modal-body">
+
+    </div>
+</div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class="alert-1-block pull-left">
-        <div class="alert-1-history-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #F5F5DC;">
-                    <th>Week 26</th>
-                    <th>Week 27</th>
-                    <th>Week 28</th>
-                    <th>Week 29</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                </tbody>
-            </table>
+<!-- Add automail popup -->
+<div class="modal hide popup" id="add-email-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3>Add new email to Automail list</h3>
+    </div>
+    <div class="modal-body">
+        <div class="pull-left">
+            New email: <input type="text" name="email" value="" class="new_email">
         </div>
     </div>
-    <div class="alert-1-block pull-left">
-        <div class="alert-1-year-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #F5F5DC;">
-                    <th>
-                        Year total
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <span>2</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span>1</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+    <div class="modal-footer">
+        <button class="btn btn-success" id='submit-add-email'>Save</button>
+    </div>
+</div>
+
+<!-- DEFAULT EDIT POPOVER -->
+<div id="popover-edit-field-html" style="display: none;">
+    <div class="popover-container" data-user="" data-group="" data-week="" data-year="" >
+        <div class="input-append">
+            <input type="text" name="" value="" class="input-edit-field for-focus">
+            <button class="btn btn-success submit-popover-edit-field" type="button">Save</button>
         </div>
     </div>
-    <div class="alert-1-block pull-left">
-        <div class="alert-1-group-table">
-            <table class="table table-bordered table-small-td">
-                <thead>
-                <tr style="background-color: #F5F5DC;">
-                    <th class="alert-1-user-name">Groep Customer Service</th>
-                    <th class="alert-1-user-worked">Not there</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>Jantje Helder</td>
-                    <td>
-                        <span>0</span>
-                        <a href="#" class="no-action pull-right show-tooltip" data-original-title="Edit into reason"><i class="icon-edit"></i></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Erik Schmit</td>
-                    <td>
-                        <span>1</span>
-                        <a href="#" class="no-action pull-right show-tooltip" data-original-title="Edit into reason"><i class="icon-edit"></i></a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+</div>
+
+<!-- Summarize year data popup -->
+<div class="modal hide fade modal-year-total">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3 class="header-year-total">Year Totals : <span class="tmpl-group-name"></span></h3>
+    </div>
+    <div class="modal-body-year-total">
+
     </div>
 </div>

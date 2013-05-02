@@ -1,0 +1,24 @@
+<?php $alerts = $this->weekGroupAlerts ?>
+<div><h3>Week User Alerts in Group <?php echo $this->group['group_name']; ?></h3></div>
+
+<table class="table table-bordered table-condensed table-striped form-edit-day"
+       data-user-id="<?php echo $this->userId;  ?>" data-date="<?php echo $this->date;  ?>" data-group-id="<?php echo $this->groupId;  ?>">
+    <thead>
+    <tr>
+        <th>Alert Date</th><th>Alert Reason</th>
+    </tr>
+    </thead>
+
+    <?php foreach($alerts as  $alert): ?>
+        <tr  class="work-time" data-status-id="<?php echo $alert['id'];  ?>">
+            <td>
+                <?php echo $alert['date']  ?>
+            </td>
+            <td >
+                <div  class="text-center text-info">
+                    <?php echo $alert['alert_description']  ?>
+                </div>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</table>

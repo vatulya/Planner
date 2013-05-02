@@ -25,6 +25,34 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
         }
         return $result;
     }
+    public function getIncidentGroupWeekData($groupId, $week, $year)
+    {
+        $select = $this->_db->select()
+            ->from(array('uh' => self::TABLE_NAME),
+                array(
+                    'summ_incidents' => 'SUM(num_incident)',
+                )
+            )
+            ->where('uh.group_id = ?', $groupId)
+            ->where('uh.year = ?', $year)
+            ->where('uh.week = ?', $week)
+            ->group('uh.group_id');
+        $result = $this->_db->fetchOne($select);
+        return $result;
+    }
+
+    public function getGroupAlertsByWeek($week, $year)
+    {
+        $select = $this->_db->select()
+            ->from(array('uh' => self::TABLE_NAME),
+                array('*', 'summ_incidents' => 'SUM(num_incident)',)
+            )
+            ->where('uh.year = ?', $year)
+            ->where('uh.week = ?', $week)
+            ->group('uh.group_id');
+            $result = $this->_db->fetchAll($select);
+        return $result;
+    }
 
     public function getUserHistoryDataByYear($userId, $year)
     {
@@ -42,6 +70,31 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
             ->where('uh.year = ?', $year)
             ->group('uh.user_id');
         $result = $this->_db->fetchRow($select);
+        return $result;
+    }
+
+    public function getUserAlertsByGroupYear($groupId, $year)
+    {
+        $select = $this->_db->select()
+            ->from(array('uh' => self::TABLE_NAME),
+                array('*', 'num_incident' => 'SUM(num_incident)',)
+            )
+            ->where('uh.group_id = ?', $groupId)
+            ->where('uh.year = ?', $year)
+            ->group('uh.user_id');
+        $result = $this->_db->fetchAll($select);
+        return $result;
+    }
+
+    public function getGroupAlertsByYear($year)
+    {
+        $select = $this->_db->select()
+            ->from(array('uh' => self::TABLE_NAME),
+                array('*', 'num_incident' => 'SUM(num_incident)',)
+            )
+            ->where('uh.year = ?', $year)
+            ->group('uh.group_id');
+        $result = $this->_db->fetchAll($select);
         return $result;
     }
 
@@ -99,5 +152,26 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
             'user_id = ?' => $userId,
             'week = ?' => $week,
             'year = ?' => $year));
+    }
+
+    public function updateNumIncidentInHistory($userId, $groupId, $year, $week)
+    {
+        $userAlerts = new Application_Model_Db_User_Alerts();
+        $date = My_DateTime::getDateIntervalByWeekYear($year, $week);
+        $alerts = $userAlerts->getUserAlertsByDateInterval($userId, $groupId, $date['start'], $date['end']);
+        if (is_array($alerts)) {
+            $alerts = count($alerts);
+        } else {
+            $alerts = 0;
+        }
+        $this->_db->query(
+            "UPDATE " . self::TABLE_NAME
+            . " SET num_incident = " . (int)$alerts . "
+                WHERE
+                    user_id      = " . (int)$userId . "
+                    AND group_id = " . (int)$groupId . "
+                    AND week     = " . (int)$week . "
+                    AND year     = " . (int)$year
+        );
     }
 }

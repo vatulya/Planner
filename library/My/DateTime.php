@@ -144,6 +144,18 @@ class My_DateTime extends DateTime
         return $weekYear;
     }
 
+    static public function getWeekYearByDate($dateformat)
+    {
+        $timestamp = '';
+        try {
+            $date = My_DateTime::factory($dateformat);
+            $date->getTimestamp();
+        } catch (Exception $e) {
+            //nothing will return current week year
+        }
+        return self::getWeekYear($timestamp);
+    }
+
     static public function getTimestampByYearWeek($year, $week)
     {
         try {
@@ -223,6 +235,11 @@ class My_DateTime extends DateTime
             $historyDate->modify('-' . $i . ' week');
             $year = strftime('%G', $historyDate->getTimestamp());
             $week = strftime('%V', $historyDate->getTimestamp());
+            //For start on win envs
+            if (empty($year) || empty($week)) {
+                $week = date('W',$historyDate->getTimestamp());
+                $year = date('o',$historyDate->getTimestamp());
+            }
             $historyWeeks[$week] = $year;
         }
         //$historyWeeks = array_reverse($historyWeeks, true);
@@ -260,6 +277,20 @@ class My_DateTime extends DateTime
             return true;
         }
         return false;
+    }
+
+    public static function getWeekDateStart($year, $week)
+    {
+
+    }
+
+    public static function getDateIntervalByWeekYear($year, $week)
+    {
+        $date = new DateTime($year . 'W' . sprintf("%02d", $week));
+        $dateInterval['start'] =  $date->format('Y-m-d');
+        $date->modify('+1 week');
+        $dateInterval['end'] =  $date->format('Y-m-d');
+        return $dateInterval;
     }
 
 }
