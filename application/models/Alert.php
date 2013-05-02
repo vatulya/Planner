@@ -110,12 +110,12 @@ class Application_Model_Alert extends Application_Model_Abstract
         $planning = new Application_Model_Planning();
         $userGroupStatuses = $planning->getUserDayStatuses($userId, $groupId, $date);
 
+        $userCheck = new Application_Model_Db_User_Checks();
+        $userCheckIn = $userCheck->checkUserIn($userId);
         foreach($userGroupStatuses as $status) {
             $alertExist = false;
             switch ($status['id']) {
                 case Application_Model_Planning::STATUS_DAY_GREEN:
-                    $userCheck = new Application_Model_Db_User_Checks();
-                    $userCheckIn = $userCheck->checkUserIn($userId);
                     if (isset($status['time_start']) && $status['time_end']
                         && My_DateTime::compare(new My_DateTime(), $status['time_start']) === 1
                         && My_DateTime::compare($status['time_end'], new My_DateTime()) === 1
@@ -182,6 +182,17 @@ class Application_Model_Alert extends Application_Model_Abstract
                         ) {
                             $alertExist = 1;
                         }
+                    //check in not in work time only after planning work
+                    }
+                    $userDay = Application_Model_Day::factory($date, $userId);
+                    $userWorkTime = $userDay->getWorkPlanning();
+                    if ($userCheckIn
+                        && (
+                            empty($userWorkTime['time_end'])
+                            || My_DateTime::compare(new My_DateTime(), $userWorkTime['time_end']) === 1
+                        )
+                    ) {
+                        $alertExist = 1;
                     }
                     break;
 
