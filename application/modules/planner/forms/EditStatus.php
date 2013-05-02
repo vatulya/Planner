@@ -9,10 +9,11 @@ class Planner_Form_EditStatus extends Sch_Form
         $statusDescription = new Zend_Form_Element_Text('description');
         $statusDescription->setRequired(true);
         $statusDescriptionLong = new Zend_Form_Element_Textarea('long_description');
+        $statusDescriptionAlert = new Zend_Form_Element_Textarea('alert_description');
         $holiday = new Zend_Form_Element_Checkbox('is_holiday');
         $color = new Zend_Form_Element_Hidden('color');
 
-        $this->addElements(array($id, $statusDescription, $statusDescriptionLong, $color, $holiday));
+        $this->addElements(array($id, $statusDescription, $statusDescriptionLong, $statusDescriptionAlert, $color, $holiday));
     }
 
     public function prepareDecorators()

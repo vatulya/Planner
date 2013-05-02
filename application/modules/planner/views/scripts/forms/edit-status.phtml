@@ -12,6 +12,11 @@
     <?php //echo $this->element->long_description; ?>
 </div>
 <div class="control-status">
+    <label class="control-label" for="alert_description">Status Alert Description</label>
+    <?php echo $this->element->alert_description->setAttrib('rows', '3') ?>
+    <?php //echo $this->element->long_description; ?>
+</div>
+<div class="control-status">
     <label class="is-holiday" for="is_holiday">Status is holiday
     <?php
         $statusId = $this->element->id->getAttrib('_value');

@@ -34,6 +34,7 @@ class Application_Model_Status extends Application_Model_Abstract
             'description'      => $statusData['description'],
             'long_description' => $statusData['long_description'],
             'is_holiday'       => $statusData['is_holiday'],
+            'alert_description'=> $statusData['alert_description'],
         );
         $result = $this->_modelDb->saveStatus($statusDataForSave);
         return $result;
