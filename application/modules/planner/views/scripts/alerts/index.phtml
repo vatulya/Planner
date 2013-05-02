@@ -30,10 +30,7 @@
                 </a>
                 <?php if ($currentWeekYear['week'] != $this->week): ?>
                 <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $currentWeekYear['year'], 'week' => $currentWeekYear['week']), 'planner', true); ?>" class="show-more-history"  title="<?php echo 'Year:' . $currentWeekYear['year'] . ' week:' . $currentWeekYear['week']; ?>">
-                    | Actual Week |
-                </a>
-                <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
-                    Next Week >
+                    | Actual Week
                 </a>
                 <?php endif; ?>
                 <div class="history-container-scrollable">
@@ -100,10 +97,7 @@
                 </a>
                 <?php if ($currentWeekYear['week'] != $this->week): ?>
                 <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $currentWeekYear['year'], 'week' => $currentWeekYear['week']), 'planner', true); ?>" class="show-more-history"  title="<?php echo 'Year:' . $currentWeekYear['year'] . ' week:' . $currentWeekYear['week']; ?>">
-                    | Actual Week |
-                </a>
-                <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
-                    Next Week >
+                    | Actual Week
                 </a>
                 <?php endif; ?>
 
@@ -149,13 +143,17 @@
 
             <span class="span2 block-week-details week-details main-data-container ">
                 <div class="group-history-block pull-left">
-                    <div class="div-row">&nbsp;</div>
+                    <span class="span2 block-history">
+                        <a href="<?php echo $this->url(array('controller' => 'alerts', 'action' => 'index', 'year' => $this->year - 1, 'week' => 1), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year: ' . ($this->year - 2)  ; ?>">
+                            < Prev Year
+                        </a>
+                    </span>
                     <div class="group-free-days-table">
                         <table class="history table table-bordered table-condensed table-striped">
                             <thead>
                             <tr  class="week-table-header">
                                 <th>
-                                    Prev Year
+                                    Year <?php echo ($this->year - 1); ?>
                                     <a href="#" class="show-tooltip no-action" data-original-title="No checkin without reason total at the previous year"><i class="icon-info-sign"></i></a>
                                 </th>
                             </tr>
