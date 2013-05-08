@@ -123,6 +123,20 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
                         AND year     = " . $dayHistoryData['year']
              );
         }
+        //This insert for create empty record for next week for save alerts
+        $checkExistWeekData = $this->getUserWeekDataByWeekYear(
+            $dayHistoryData['user_id'],
+            $dayHistoryData['group_id'],
+            $dayHistoryData['week'] + 1, $dayHistoryData['year']
+        );
+        if (empty($checkExistWeekData)) {
+            $dayHistoryData['work_time'] = 0;
+            $dayHistoryData['overtime_time'] = 0;
+            $dayHistoryData['vacation_time'] = 0;
+            $dayHistoryData['missing_time'] = 0;
+            $dayHistoryData['week'] += 1;
+            $this->_db->insert(self::TABLE_NAME,$dayHistoryData);
+        }
     }
 
     public function updateHistoryWeekHour($userId, $groupId, $field, $value, $year, $week)
