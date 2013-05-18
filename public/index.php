@@ -29,3 +29,8 @@ $application = new Zend_Application(
 );
 $application->bootstrap()
             ->run();
+
+if ($application->getBootstrap()->hasResource('Log')) {
+    $log = $application->getBootstrap()->getResource('Log');
+    $log->log('Script End ', Zend_Log::INFO);
+}
