@@ -2,6 +2,8 @@
 
 class Application_Model_History extends Application_Model_Abstract
 {
+    const SCRIPT_LOG_FILE_NAME = '../logs/dayHistory.log';
+
     protected $_modelDb;
 
     public function __construct()
@@ -67,6 +69,17 @@ class Application_Model_History extends Application_Model_Abstract
             $userHistoryData['overtime_time'] =  $overtime['total_time'];
         }
         $this->_modelHistory->addUserWeekData($userHistoryData);
+        $userLogString =
+            ' UserId: ' . $userHistoryData['user_id']
+            . ' GroupId: ' . $userHistoryData['group_id']
+            . ' Week: ' . $userHistoryData['week']
+            . ' Year: ' . $userHistoryData['year']
+            . ' Work_time: ' . $userHistoryData['work_time']
+            . ' Overtime: ' . $userHistoryData['overtime_time']
+            . ' Vacation_time: ' . $userHistoryData['vacation_time']
+            . ' Missing_time: ' . $userHistoryData['missing_time'];
+        $logger = new Zend_Log(new Zend_Log_Writer_Stream(APPLICATION_PATH . self::SCRIPT_LOG_FILE_NAME));
+        $logger->log($userLogString, Zend_Log::INFO);
     }
 
     public function getUserWeekDataByWeekYear($userId, $groupId, $week, $year)
