@@ -1,0 +1,53 @@
+<?php $openRequests = $this->openRequests ?>
+<?php $rejectedRequests = $this->rejectedRequests ?>
+
+<table class="table table-bordered table-condensed table-striped">
+    <thead>
+        <tr class="week-table-header" >
+            <th>Date</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach($openRequests as $request) : ?>
+        <tr>
+        <td><?php echo $request['request_date'] ?></td>
+        <td><?php echo $request['status'] ?></td>
+        <td>
+            <button class="btn btn-success button-approve extremely-approve-request"
+                    data-status='approved'
+                    data-id=<?php echo $request['id'] ?>
+                    data-user-id=<?php echo $this->userId ?>
+                    data-request-date=<?php echo $request['request_date'] ?>
+            >Approve</button>
+        </td>
+        </tr>
+    <?php endforeach; ?>
+    <?php foreach($rejectedRequests as $request) : ?>
+        <tr>
+            <td><?php echo $request['request_date'] ?></td>
+            <td><?php echo $request['status'] ?></td>
+            <td>
+                <button class="btn btn-success button-approve extremely-approve-request"
+                        data-status='approved'
+                        data-id=<?php echo $request['id'] ?>
+                        data-user-id=<?php echo $this->userId ?>
+                        data-request-date=<?php echo $request['request_date'] ?>
+                        >Approve</button>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    <tr>
+        <td><input name='date' class="input-small" placeholder="yyyy-mm-dd" id='new-extremely-request-date'></td>
+        <td></td>
+        <td>
+            <button class="btn btn-success button-approve extremely-approve-request"
+                    data-status='approved'
+                    data-new-date='true'
+                    data-user-id=<?php echo $this->userId ?>
+            >Approve</button>
+        </td>
+    </tr>
+    </tbody>
+</table>

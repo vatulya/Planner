@@ -22,6 +22,12 @@ $application = new Zend_Application(
 
 $application->bootstrap();
 
+$bootstrap = $application->getBootstrap();
+if ($bootstrap->hasResource('Log')) {
+    $log = $bootstrap->getResource('Log');
+    Zend_Registry::set('Zend_Log', $log);
+}
+
 $modelPlanning = new Application_Model_Planning();
 if (empty($argv[1])) {
     $currentDate = new My_DateTime();

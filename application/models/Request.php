@@ -20,7 +20,7 @@ class Application_Model_Request extends Application_Model_Abstract
         return $requests;
     }
 
-    public function saveRequest($userId, array $requestedDates)
+    public function saveRequest($userId, array $requestedDates, $checkAllowedFreeTime = true)
     {
         $result = false;
 
@@ -46,24 +46,24 @@ class Application_Model_Request extends Application_Model_Abstract
             $result = true;
             return $result;
         }
-
-        $checkAllowedFreeTime = 0;
-        foreach ($requestedDates as $date) {
-            $day = Application_Model_Day::factory($date, $user);
-            $checkAllowedFreeTime += (int)$day->getWorkTime();
-        }
-        if ($checkAllowedFreeTime > 0) {
-            $modelDbUserParameters = new Application_Model_Db_User_Parameters();
-            $parameters            = $modelDbUserParameters->getParametersByUserId($userId);
-            $checkAllowedFreeTime  = $parameters['total_free_time'] - $checkAllowedFreeTime;
-            if ($checkAllowedFreeTime < 0) {
-                throw new Exception('Error! This user don\'t have so much free time.');
-                // Error. Too much free days
-                $result = false;
-                return $result;
+        if ($checkAllowedFreeTime) {
+            $checkAllowedFreeTime = 0;
+            foreach ($requestedDates as $date) {
+                $day = Application_Model_Day::factory($date, $user);
+                $checkAllowedFreeTime += (int)$day->getWorkTime();
+            }
+            if ($checkAllowedFreeTime > 0) {
+                $modelDbUserParameters = new Application_Model_Db_User_Parameters();
+                $parameters            = $modelDbUserParameters->getParametersByUserId($userId);
+                $checkAllowedFreeTime  = $parameters['total_free_time'] - $checkAllowedFreeTime;
+                if ($checkAllowedFreeTime < 0) {
+                    throw new Exception('Error! This user don\'t have so much free time.');
+                    // Error. Too much free days
+                    $result = false;
+                    return $result;
+                }
             }
         }
-
         // TODO: here need add check correct requested dates
         $result = $this->_modelDb->insert($user['id'], $requestedDates);
 
@@ -105,6 +105,15 @@ class Application_Model_Request extends Application_Model_Abstract
             }
         }
         return $result;
+    }
+
+    public function createExtremelyRequest($userId, $date, $adminId)
+    {
+        if ($this->saveRequest($userId, array($date), false)) {
+            $request = $this->_modelDb->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN, $date);
+            return $this->setStatusById($request['id'], Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, 'Extremely approve holiday', $adminId);
+        }
+        return false;
     }
 
     protected function groupRequestsByStatus(array $requests)

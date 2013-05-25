@@ -63,10 +63,12 @@ $dateNow = date('Y-m-d');
                             data-old-selected-dates="<?php echo implode(',', $approvedRequestDates); ?>"
                             data-selected-dates="<?php echo implode(',', $rejectedRequestDates); ?>"
                             data-show-date="<?php echo $dateNow; ?>"
-                        >Bekijk history</button>
+                        >View history</button>
                     </td>
                     <td class="span2 open-request-user-action">
-                        <button class="btn btn-small">Voeg toe</button>
+                        <button class="btn btn-small open-request-extremely"
+                                data-user-id="<?php echo $user['id']; ?>"
+                        >Extremely Holiday</button>
                     </td>
                 </tr>
 
@@ -107,5 +109,17 @@ $dateNow = date('Y-m-d');
     <div class="modal-footer">
         <button class="btn btn-danger button-reject change-open-request-status" data-status='rejected'>Reject</button>
         <button class="btn btn-success button-approve change-open-request-status" data-status='approved'>Approve</button>
+    </div>
+</div>
+
+<div class="modal hide span12 popup" id="additional-request-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body">
+
+    </div>
+    <div class="modal-footer">
     </div>
 </div>

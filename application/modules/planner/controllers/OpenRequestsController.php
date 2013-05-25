@@ -6,6 +6,7 @@ class Planner_OpenRequestsController extends My_Controller_Action
     public $ajaxable = array(
         'index' => array('html'),
         'set-status' => array('json'),
+        'get-user-requests' => array('html'),
     );
 
     /**
@@ -80,7 +81,12 @@ class Planner_OpenRequestsController extends My_Controller_Action
             $requestStatus = $this->_getParam('status');
             $comment = $this->_getParam('comment');
             if ($allowed) {
-                $status = $modelRequest->setStatusById($this->_getParam('id'), $requestStatus, $comment, $this->_me['id']);
+                $id = $this->_getParam('id');
+                if (empty($id) && $this->_getParam('type') == 'extremely_approve') {
+                    $status = $modelRequest->createExtremelyRequest($this->_getParam('user_id'), $this->_getParam('request_date'), $this->_me['id']);
+                } else {
+                    $status = $modelRequest->setStatusById($this->_getParam('id'), $requestStatus, $comment, $this->_me['id']);
+                }
             } else {
                 $message = 'Error! Sorry. You don\'t have permissions.';
             }
@@ -94,4 +100,15 @@ class Planner_OpenRequestsController extends My_Controller_Action
         }
     }
 
+    public function getUserRequestsAction()
+    {
+        $userId = $this->_getParam('user_id');
+        $modelRequest = new Application_Model_Request();
+        $openRequests = $modelRequest->getRequestsByUserId($userId,Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN);
+        $rejectedRequests = $modelRequest->getRequestsByUserId($userId,Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED);
+        $this->view->openRequests = $openRequests;
+        $this->view->rejectedRequests = $rejectedRequests;
+        $this->view->userId = $userId;
+        $this->_helper->layout->disableLayout();
+    }
 }
