@@ -275,3 +275,8 @@ UPDATE `status` SET `alert_description`='Holiday free' WHERE `id`='3';
 UPDATE `status` SET `alert_description`='Doctor Visit' WHERE `id`='5';
 UPDATE `status` SET `alert_description`='special paid free ' WHERE `id`='6';
 UPDATE `status` SET `alert_description`='Overtime' WHERE `id`='7';
+
+
+
+ALTER TABLE `user_requests`
+CHANGE `status` `status` ENUM('open','approved','rejected','refunded') DEFAULT 'open' NOT NULL;
