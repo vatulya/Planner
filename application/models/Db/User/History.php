@@ -188,4 +188,17 @@ class Application_Model_Db_User_History extends Application_Model_Db_Abstract
                     AND year     = " . (int)$year
         );
     }
+
+    public function getUsedFreeTimeByUserYear($year, $userId)
+    {
+        $select = $this->_db->select()
+            ->from(array('uh' => self::TABLE_NAME),
+            array('*', 'year_vacation_time' => 'SUM(vacation_time)',)
+        )
+            ->where('uh.year = ?', $year)
+            ->where('uh.user_id = ?', $userId)
+            ->group('uh.year');
+        $result = $this->_db->fetchRow($select);
+        return $result;
+    }
 }

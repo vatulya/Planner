@@ -80,6 +80,7 @@ class Application_Model_History extends Application_Model_Abstract
             . ' Missing_time: ' . $userHistoryData['missing_time'];
         $logger = new Zend_Log(new Zend_Log_Writer_Stream(APPLICATION_PATH . self::SCRIPT_LOG_FILE_NAME));
         $logger->log($userLogString, Zend_Log::INFO);
+        $this->_modelUser->recalculateFreeHours($userId, $userHistoryData['year']);
     }
 
     public function getUserWeekDataByWeekYear($userId, $groupId, $week, $year)

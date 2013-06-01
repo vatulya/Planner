@@ -461,4 +461,12 @@ class Application_Model_User extends Application_Model_Abstract
         return $data;
     }
 
+    public function recalculateFreeHours($userId, $year)
+    {
+        $userHistory = new Application_Model_Db_User_History();
+        $freeTime = $userHistory->getUsedFreeTimeByUserYear($year, $userId);
+        $userParameter = new Application_Model_Db_User_Parameters();
+        return $userParameter->setUsedFreeTime($userId, $freeTime['year_vacation_time']);
+    }
+
 }
