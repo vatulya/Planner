@@ -173,6 +173,49 @@
                     }
                 });
             }
+        },
+        rejectRequest: function(el) {
+            var data;
+            var selectedDates = $(el).data('request-date');
+            data = {
+                request_date: selectedDates,
+                user_id: $(el).data('user-id'),
+                format: 'json',
+                date: selectedDates,
+                status: 'refunded'
+            };
+            if (selectedDates.length) {
+                $.ajax({
+                    url: '/open-requests/set-status/',
+                    data: data,
+                    success: function(response) {
+                        response = response.response;
+                        if (response) {
+                            $.ajax({
+                                url: '/overview/recalculate-history-week-for-user-by-date',
+                                data: data,
+                                success: function(response) {
+                                    response = response.response;
+                                    if (response.status) {
+                                        alert('Request Sended.');
+                                        window.location.reload();
+                                    } else {
+                                        modalBody.html('Error! Recalculate history error. Try again later.');
+                                    }
+                                },
+                                error: function(response) {
+                                    modalBody.html('Error! Something wrong.');
+                                }
+                            });
+                        } else {
+                            alert('Error! Something wrong.');
+                        }
+                    },
+                    error: function(response) {
+                        alert('Error! Something wrong.');
+                    }
+                });
+            }
         }
     };
 
@@ -197,6 +240,9 @@
         });
         $(document.body).on('click', '.sendRequest', function(e) {
             DaySettings.saveRequest(e.currentTarget);
+        });
+        $(document.body).on('click', '.sendRefund', function(e) {
+            DaySettings.rejectRequest(e.currentTarget);
         });
     });
 

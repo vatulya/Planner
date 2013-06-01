@@ -9,13 +9,13 @@ class Application_Model_Request extends Application_Model_Abstract
         $this->_modelDb = new Application_Model_Db_User_Requests();
     }
 
-    public function getRequestsByUserId($userId, $status = '')
+    public function getRequestsByUserId($userId, $status = '', $date = '')
     {
         if (empty($status)) {
             $requests = $this->_modelDb->getAllByUserId($userId);
             $requests = $this->groupRequestsByStatus($requests);
         } else {
-            $requests = $this->_modelDb->getAllByUserId($userId, $status);
+            $requests = $this->_modelDb->getAllByUserId($userId, $status, $date);
         }
         return $requests;
     }
@@ -55,7 +55,7 @@ class Application_Model_Request extends Application_Model_Abstract
             if ($checkAllowedFreeTime > 0) {
                 $modelDbUserParameters = new Application_Model_Db_User_Parameters();
                 $parameters            = $modelDbUserParameters->getParametersByUserId($userId);
-                $checkAllowedFreeTime  = $parameters['total_free_time'] - $checkAllowedFreeTime;
+                $checkAllowedFreeTime  = $parameters['total_free_time'] + $parameters['additional_free_time'] - $checkAllowedFreeTime;
                 if ($checkAllowedFreeTime < 0) {
                     throw new Exception('Error! This user don\'t have so much free time.');
                     // Error. Too much free days
@@ -78,6 +78,7 @@ class Application_Model_Request extends Application_Model_Abstract
             Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN,
             Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED,
             Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REJECTED,
+            Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REFUNDED,
         );
         $comment = trim(strip_tags($comment));
         if (in_array($requestStatus, $allowedStatuses)) {
@@ -92,13 +93,19 @@ class Application_Model_Request extends Application_Model_Abstract
         if ($checked) {
             $result = $this->_modelDb->setStatusById($requestId, $requestStatus, $comment, $adminId);
             if ($result) {
-                if ($requestStatus === Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED) {
+                if ($requestStatus === Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED
+                    || $requestStatus === Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REFUNDED
+                ) {
                     $request = $this->_modelDb->getById($requestId);
                     $modelUser = new Application_Model_User();
                     $userParameters = $modelUser->getParametersByUserId($request['user_id']);
                     $day = Application_Model_Day::factory($request['request_date'], $request['user_id']);
                     $workTime = $day->getWorkTime();
-                    $newUserAllowedFreeTime = $userParameters['used_free_time'] + $workTime;
+                    if ($requestStatus === Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED) {
+                        $newUserAllowedFreeTime = $userParameters['used_free_time'] + $workTime;
+                    } else {
+                        $newUserAllowedFreeTime = $userParameters['used_free_time'] - $workTime;
+                    }
                     $modelDbUserParameters = new Application_Model_Db_User_Parameters();
                     $modelDbUserParameters->setUsedFreeTime($request['user_id'], $newUserAllowedFreeTime);
                 }
@@ -110,7 +117,7 @@ class Application_Model_Request extends Application_Model_Abstract
     public function createExtremelyRequest($userId, $date, $adminId)
     {
         if ($this->saveRequest($userId, array($date), false)) {
-            $request = $this->_modelDb->getAllByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_OPEN, $date);
+            $request = $this->_modelDb->getAllByUserId($userId, '', $date);
             return $this->setStatusById($request['id'], Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, 'Extremely approve holiday', $adminId);
         }
         return false;

@@ -68,6 +68,7 @@ class Planner_OpenRequestsController extends My_Controller_Action
         $allowed = false;
         $status = false;
         try {
+            $requestStatus = $this->_getParam('status');
             if ($this->_me['role'] >= Application_Model_Auth::ROLE_ADMIN) {
                 $allowed = true;
             } else { // group Admin
@@ -78,11 +79,18 @@ class Planner_OpenRequestsController extends My_Controller_Action
                     }
                 }
             }
-            $requestStatus = $this->_getParam('status');
+            $requestId = $this->_getParam('id');
+            if (empty($requestId) && $requestStatus == Application_Model_Db_User_Requests::USER_REQUEST_STATUS_REFUNDED) {
+                $requestDate = $this->_getParam('request_date');
+                $request = $modelRequest->getRequestsByUserId($userId, Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED, $requestDate);
+                $this->_setParam('id', $request['id']);
+                if ($request['user_id'] == $this->_me['id'] && My_DateTime::compare($requestDate, new My_DateTime()) >= 0 ) {
+                    $allowed = true;
+                }
+            }
             $comment = $this->_getParam('comment');
             if ($allowed) {
-                $id = $this->_getParam('id');
-                if (empty($id) && $this->_getParam('type') == 'extremely_approve') {
+                if (empty($requestId) && $this->_getParam('type') == 'extremely_approve' && $requestStatus == Application_Model_Db_User_Requests::USER_REQUEST_STATUS_APPROVED ) {
                     $status = $modelRequest->createExtremelyRequest($this->_getParam('user_id'), $this->_getParam('request_date'), $this->_me['id']);
                 } else {
                     $status = $modelRequest->setStatusById($this->_getParam('id'), $requestStatus, $comment, $this->_me['id']);

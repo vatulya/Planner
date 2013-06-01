@@ -7,6 +7,7 @@ class Application_Model_Db_User_Requests extends Application_Model_Db_Abstract
     const USER_REQUEST_STATUS_OPEN = 'open';
     const USER_REQUEST_STATUS_APPROVED = 'approved';
     const USER_REQUEST_STATUS_REJECTED = 'rejected';
+    const USER_REQUEST_STATUS_REFUNDED = 'refunded';
 
     public function getAllByUserId($userId, $status = '', $date = '')
     {

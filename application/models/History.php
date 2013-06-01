@@ -2,7 +2,7 @@
 
 class Application_Model_History extends Application_Model_Abstract
 {
-    const SCRIPT_LOG_FILE_NAME = '../logs/dayHistory.log';
+    const SCRIPT_LOG_FILE_NAME = '/../logs/dayHistory.log';
 
     protected $_modelDb;
 
