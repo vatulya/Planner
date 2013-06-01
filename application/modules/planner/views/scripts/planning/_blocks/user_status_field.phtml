@@ -2,11 +2,13 @@
     $dayGreen  = $day[Application_Model_Planning::STATUS_DAY_GREEN];
     $dayWhite  = $day[Application_Model_Planning::STATUS_DAY_WHITE];
     $dayYellow = $day[Application_Model_Planning::STATUS_DAY_YELLOW];
+    $dayOvertime = $day[Application_Model_Planning::STATUS_DAY_OVERTIME];
     //Default settings for day
     $title = $dayWhite['date'] . '</br>';
     $title .= $dayWhite['description'];
     $dayMainColorHex = $dayWhite['color_hex'];
     $dayMainTime = '';
+    $titleAdditionalStatuses = '';
 
     if (!empty($dayGreen['time_start']) && !empty($dayGreen['time_end'])) {
         $title = $dayWhite['date'] . '</br>';
@@ -33,7 +35,14 @@
 
             }
         }
-
+    } else {
+        if (!empty($dayOvertime['time_start']) && !empty($dayOvertime['time_end'])) {
+            $dayAdditionalColorHex = $dayOvertime['color_hex'];
+            $titleAdditionalStatuses .= '</br>' . $dayOvertime['description'] . " : " . $dayOvertime['format_time_start'] . "-" . $dayOvertime['format_time_end'];
+        } elseif (!empty($dayOvertime['work_hours_overtime'])) {
+            $dayAdditionalColorHex = $dayOvertime['color_hex'];
+            $titleAdditionalStatuses .= '</br>' . $dayOvertime['description'];
+        }
     }
 
 
@@ -62,7 +71,7 @@
         'user_id' => $dayWhite['user_id'],
         'group_id' => $dayWhite['group_id']
     ), 'planner', true); ?>"
-   class="no-action  <?php if ($dayWhite['editable']) {echo " edit-day";} ?>">
+   class="no-action  <?php if ($dayWhite['editable']) {echo " edit-day";} ?>" data-user-id="<?php echo $dayWhite['user_id']; ?>" data-date="<?php echo $dayWhite['date'] ?>">
 
 
    <?php if ( empty($titleAdditionalStatuses)): ?>

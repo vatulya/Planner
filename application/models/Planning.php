@@ -17,6 +17,7 @@ class Application_Model_Planning extends Application_Model_Abstract
         $this->_modelDb = new Application_Model_Db_User_Planning();
         $this->_modelMissing  = new Application_Model_Missing();
         $this->_modelOvertime = new Application_Model_Db_User_Overtime();
+        $this->_modelUser     = new Application_Model_User();
     }
 
     public function getUserWeekPlanByGroup($userId, $groupId,  $year, $week)
@@ -375,12 +376,16 @@ class Application_Model_Planning extends Application_Model_Abstract
                     $status = array_merge($this->_getMissingData($userId, $date, self::STATUS_DAY_BLUE), $status);
                     break;
                 case self::STATUS_DAY_OVERTIME:
+                    //Add overtime from manual entry data
                     $userOvertime = new Application_Model_Overtime();
                     $overtime = $userOvertime->getUserDayOvertimeByDate($userId, $groupId, $date);
                     if (!empty($overtime['time_start']) && !empty($overtime['time_end'])) {
                         $overtime    = array_merge($overtime, $this->_splitStartEndTimeString($overtime['time_start'], $overtime['time_end']));
                         $status = array_merge($overtime, $status);
                     }
+                    //Add overtime from checkin
+                    $workUserData = $this->_modelUser->getUserWorkData($userId, $date);
+                    $status = array_merge(array('work_hours_overtime' => $workUserData['work_hours_overtime']), $status);
                     break;
             }
         }

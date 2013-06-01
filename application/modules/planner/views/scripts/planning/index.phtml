@@ -26,8 +26,18 @@
     </div>
     <div class="modal-body">
 
+
     </div>
+
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary button-submit" id="form-edit-day" data-form="form-edit-day">Save</button>
+        <div class="user-checking-container"></div>
+        <div class="pull-left">
+            Work hours plan: <span class="work-hours-plan"><?php echo $this->workHoursPlan; ?></span><br />
+            Work hours done: <span class="work-hours-done"><?php echo $this->workHoursDone; ?></span><br />
+            Work hours overtime: <span class="work-hours-overtime"><?php echo $this->workHoursOvertime; ?></span><br />
+        </div>
+        <div class="pull-right save-checkin-data-button">
+            <button type="button" class="btn btn-primary button-submit" id="form-edit-day" data-form="form-edit-day">Save</button>
+        </div>
     </div>
 </div>
