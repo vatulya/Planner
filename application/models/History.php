@@ -37,21 +37,21 @@ class Application_Model_History extends Application_Model_Abstract
         $userHistoryData['vacation_time']  = 0;
         $userHistoryData['missing_time']   = 0;
         $workData = $this->_modelUser->getUserWorkData($userId, $date);
-        if ($dayPlan['status1'] === Application_Model_Planning::STATUS_DAY_GREEN && !empty($dayPlan['total_time']) && empty($approveUserDayRequest)) {
-            if (!empty($missingUserDay) && is_array($missingUserDay)) {
-                foreach($missingUserDay as $missing) {
-                    $status = $this->_modelStatus->getDataById($missing['status']);
-                    $missingTotalSeconds = Application_Model_Day::getWorkHoursByMarkers($missing['time_start'], $missing['time_end']);
-                    if ($status['is_holiday']) {
-                        $userHistoryData['vacation_time'] += $missingTotalSeconds;
-                    } else {
-                        $userHistoryData['missing_time'] += $missingTotalSeconds;
-                    }
-                }
-            }
+        if ($dayPlan['status1'] === Application_Model_Planning::STATUS_DAY_GREEN && !empty($dayPlan['total_time'])) {
             if (!empty($approveUserDayRequest)) {
                 $userHistoryData['vacation_time'] = $dayPlan['total_time'];
             } else {
+                if (!empty($missingUserDay) && is_array($missingUserDay)) {
+                    foreach($missingUserDay as $missing) {
+                        $status = $this->_modelStatus->getDataById($missing['status']);
+                        $missingTotalSeconds = Application_Model_Day::getWorkHoursByMarkers($missing['time_start'], $missing['time_end']);
+                        if ($status['is_holiday']) {
+                            $userHistoryData['vacation_time'] += $missingTotalSeconds;
+                        } else {
+                            $userHistoryData['missing_time'] += $missingTotalSeconds;
+                        }
+                    }
+                }
                 $userHistoryData['work_time'] = $workData['work_hours_done'];
                 if ($userHistoryData['work_time'] < 0) {
                     $userHistoryData['work_time'] = 0;
