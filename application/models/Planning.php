@@ -385,7 +385,7 @@ class Application_Model_Planning extends Application_Model_Abstract
                     }
                     //Add overtime from checkin
                     $workUserData = $this->_modelUser->getUserWorkData($userId, $date);
-                    $status = array_merge(array('work_hours_overtime' => $workUserData['work_hours_overtime']), $status);
+                    $status = array_merge(array('work_hours_overtime' => $workUserData['work_hours_overtime'] , 'work_time_overtime' => My_DateTime::TimeToDecimal($workUserData['work_hours_overtime'])), $status);
                     break;
             }
         }

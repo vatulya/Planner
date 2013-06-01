@@ -25,7 +25,7 @@
             //If day green check additional statuses for color traingler
             $titleAdditionalStatuses = '';
             foreach ($day as $statuses) {
-                if ($statuses['id'] == 1 || $statuses['id'] == 2 || $statuses['id'] == 3) {
+                if ($statuses['id'] == 1 || $statuses['id'] == 2 || $statuses['id'] == 3 || $statuses['id'] == 7) {
                     continue;
                 }
                 if (!empty($statuses['time_start']) && !empty($statuses['time_end'])) {
@@ -35,14 +35,13 @@
 
             }
         }
-    } else {
-        if (!empty($dayOvertime['time_start']) && !empty($dayOvertime['time_end'])) {
-            $dayAdditionalColorHex = $dayOvertime['color_hex'];
-            $titleAdditionalStatuses .= '</br>' . $dayOvertime['description'] . " : " . $dayOvertime['format_time_start'] . "-" . $dayOvertime['format_time_end'];
-        } elseif (!empty($dayOvertime['work_hours_overtime'])) {
-            $dayAdditionalColorHex = $dayOvertime['color_hex'];
-            $titleAdditionalStatuses .= '</br>' . $dayOvertime['description'];
-        }
+    }
+    if (!empty($dayOvertime['time_start']) && !empty($dayOvertime['time_end'])) {
+        $dayAdditionalColorHex = $dayOvertime['color_hex'];
+        $titleAdditionalStatuses .= '</br>' . $dayOvertime['description'] . " : " . $dayOvertime['format_time_start'] . "-" . $dayOvertime['format_time_end'];
+    } elseif (!empty($dayOvertime['work_hours_overtime'])) {
+        $dayAdditionalColorHex = $dayOvertime['color_hex'];
+        $titleAdditionalStatuses .= '</br>' . $dayOvertime['description'] . " : " . $dayOvertime['work_time_overtime'];
     }
 
 
