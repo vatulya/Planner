@@ -39,10 +39,8 @@ $filename = $overview->getHistoryDataFile($week, $year);
 $fullPath = EXPORT_PATH_DIR . '/' . $filename;
 
 $subscribedEmail = new Application_Model_Db_User_Mail();
-$emails = $subscribedEmail->getListMail();
+$emails = $subscribedEmail->getListMail('overview');
 
-$transport = new Zend_Mail_Transport_Sendmail('planner@futurumshop.com');
-Zend_Mail::setDefaultTransport($transport);
 $mail = new Zend_Mail();
 foreach ($emails as $email) {
     $mail->addTo($email['email']);
