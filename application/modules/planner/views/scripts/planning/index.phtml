@@ -6,12 +6,51 @@
 <h2>No groups and users</h2>
 <?php else: ?>
 
+<div
+        class="row user_row width-full"
+        id="<?php echo $this->group['id']; ?>"
+        data-user-id="<?php echo $this->group['id']; ?>"
+        >
+    <?php
+    $nextWeekYear = $this->nextWeekYear;
+    $prevWeekYear = $this->prevWeekYear;
+    $currentWeekYear = $this->currentWeekYear;
+    ?>
+    <div class="user_row_container">
+        <span
+                class="span12"
+                data-year="<?php echo $this->weekTasks['year']; ?>"
+                data-week="<?php echo $this->weekTasks['week']; ?>"
+                data-userId="<?php echo $this->group['id']; ?>"
+                >
+        <div class="week-details-container">
+            </br>
+            <table class="table table-bordered table-condensed table-striped week-table">
 
-<?php foreach ($this->groups as $group): ?>
-    <?php $this->group = $group; ?>
-    <?php echo $this->render('planning/_blocks/group_row.phtml'); ?>
-    <?php endforeach; ?>
+                <thead>
+                <tr class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
+                    <th class="group-user-name" ></th>
+                    <?php foreach ($this->datesInterval as $dateInterval): ?>
+                    <th class="week-table-header-day"
+                        title="'<?php echo $dateInterval['day'] ?>'"
+                        style="background-color: #<?php if($dateInterval['isWeekend']) {echo'ff48b5';} else {echo'9f60ff';} ?>"
+                        ><?php echo $dateInterval['date'] ?>
+                    </th>
+                    <?php endforeach; ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($this->groups as $group): ?>
+                    <?php $this->group = $group; ?>
+                    <?php echo $this->render('planning/_blocks/group_row.phtml'); ?>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
 
+    </span>
+    </div>
+</div>
 <?php endif; ?>
 <div class="div-row">&nbsp;</div>
 <div class="div-row">&nbsp;</div>

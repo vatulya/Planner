@@ -133,6 +133,8 @@ class My_DateTime extends DateTime
             $weekYear['week'] = strftime('%V', $timestamp);
             $weekYear['year'] = strftime('%G', $timestamp);
             $weekYear['day'] = strftime('%u', $timestamp);
+            $weekYear['month'] = strftime('%m', $timestamp);
+            $weekYear['monthDay'] = strftime('%e', $timestamp);
             if (empty( $weekYear['week']) || empty( $weekYear['year']) || empty($weekYear['day'])) {
                 $weekYear['week'] = date('W',$timestamp);
                 $weekYear['year'] = date('o',$timestamp);
@@ -293,4 +295,32 @@ class My_DateTime extends DateTime
         return $dateInterval;
     }
 
+    public static function getArrayOfDatesInterval($countOfInterval, $week, $year, $date = '')
+    {
+        $datesInterval = array();
+        if (empty($timestamp)) {
+            $timestamp = time ();
+        }
+
+        try {
+            $weekInterval = self::getWeekHistoryDateInterval($year, $week);
+            $date = new DateTime($weekInterval['start']);
+            for ($i = 0; $i < $countOfInterval; $i++) {
+                $isWeekend = false;
+                $weekDay = strftime('%u', $date->getTimestamp());
+                if ($weekDay == 6 || $weekDay == 7) {
+                    $isWeekend = true;
+                }
+                $datesInterval[]= array(
+                    'day' => strftime('%A', $date->getTimestamp()),
+                    'date' => $date->format('Y-m-d'),
+                    'isWeekend' => $isWeekend
+                );
+                $date->modify('+1 day');
+            }
+        } catch (Exception $e) {
+            //TODO
+        }
+        return $datesInterval;
+    }
 }

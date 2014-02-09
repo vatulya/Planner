@@ -1,92 +1,19 @@
-<div
-        class="row user_row width-full"
-        id="<?php echo $this->group['id']; ?>"
-        data-user-id="<?php echo $this->group['id']; ?>"
-        >
-    <?php
-        $this->users = $this->group['users'];
-        $nextWeekYear = $this->nextWeekYear;
-        $prevWeekYear = $this->prevWeekYear;
-        $currentWeekYear = $this->currentWeekYear;
-    ?>
-    <div class="user_row_container">
-        <span class="span4 block-history">
-            <a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $prevWeekYear['year'], 'week' => $prevWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $prevWeekYear['year'] . ' week:' . $prevWeekYear['week']; ?>">
-                < Prev Week
-            </a>
-            <a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $currentWeekYear['year'], 'week' => $currentWeekYear['week']), 'planner', true); ?>" class="show-more-history"  title="<?php echo 'Year:' . $currentWeekYear['year'] . ' week:' . $currentWeekYear['week']; ?>">
-                <?php if ($currentWeekYear['week'] != $this->week): ?>
-                | Actual Week |
-                <?php else : ?>
-                &nbsp;
-                <?php endif; ?>
-            </a>
-            <a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
-                 Next Week >
-            </a>
-                <div class="history-container-scrollable">
-                    <div class="history-container">
-                        <?php
-                        $this->historyBlockController = 'planning';
-                        echo $this->render('_blocks/history.phtml'); ?>
-                    </div>
-                </div>
-        </span>
+<?php
+$this->users = $this->group['users'];
+?>
+<?php if (empty($this->users)): ?>
+<td colspan="7" class="user-not-found">
+    No users in this group
+</td>
+    <?php else: ?>
+    <tr>
+    <td  class="group-user-name" style="background-color: #<?php echo $this->group['color'];?>"><b><?php echo $this->group['group_name']; ?></b></td>
+    <td colspan="7" style="background-color:#f9f9f9">
 
-
-        <span
-                    class="span10 block-week-details week-details main-data-container user-id-<?php echo $this->group['id']; ?> year-<?php echo $this->weekTasks['year']; ?> week-<?php echo $this->weekTasks['week']; ?>"
-                    data-year="<?php echo $this->weekTasks['year']; ?>"
-                    data-week="<?php echo $this->weekTasks['week']; ?>"
-                    data-userId="<?php echo $this->group['id']; ?>"
-                    >
-
-
-        <div class="week-details-container">
-            </br>
-            <table class="table table-bordered table-condensed table-striped week-table">
-
-                <thead>
-                <tr  >
-                    <th  colspan="6"  ></th>
-                    <th  style="background-color: #<?php echo $this->group['color'];?>" >
-                        <a href="#" class="bootstrab-tooltip no-action get-week-details" >
-                            Week <?php echo $this->week; ?>
-                        </a>
-                    </th>
-                    <th  style="background-color: #<?php echo $this->group['color'];?>" >
-                        <a href="<?php echo $this->url(array('controller' => 'planning', 'action' => 'index', 'year' => $nextWeekYear['year'], 'week' => $nextWeekYear['week']), 'planner', true); ?>" rel="tooltip" class="bootstrab-tooltip get-week-details" title="<?php echo 'Year:' . $nextWeekYear['year'] . ' week:' . $nextWeekYear['week']; ?>">
-                            <nobr>Next Week</nobr>
-                        </a>
-                    </th>
-                </tr>
-
-                <tr class="week-table-header" style="background-color: #<?php echo $this->group['color'];?>">
-                    <th class="group-user-name" ><?php echo $this->group['group_name']; ?></th>
-                    <th class="week-table-header-monday week-table-header-day">Monday</th>
-                    <th class="week-table-header-tuesday week-table-header-day">Tuesday</th>
-                    <th class="week-table-header-wednesday week-table-header-day">Wednesday</th>
-                    <th class="week-table-header-thursday week-table-header-day">Thursday</th>
-                    <th class="week-table-header-friday week-table-header-day">Friday</th>
-                    <th class="week-table-header-saturday week-table-header-day">Saturday</th>
-                    <th class="week-table-header-saturday week-table-header-day">Sunday</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php if (empty($this->users)): ?>
-                <td colspan="7" class="user-not-found">
-                    No users in this group
-                </td>
-                    <?php else: ?>
-                    <?php foreach ($this->users as $user): ?>
-                        <?php $this->user = $user; ?>
-                        <?php echo $this->render('planning/_blocks/week_user_plan.phtml'); ?>
-                    <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
-    </span>
-    </div>
-</div>
+    </td>
+    </tr>
+    <?php foreach ($this->users as $user): ?>
+        <?php $this->user = $user; ?>
+        <?php echo $this->render('planning/_blocks/week_user_plan.phtml'); ?>
+    <?php endforeach; ?>
+    <?php endif; ?>

@@ -3,6 +3,7 @@
 class Planner_PlanningController extends My_Controller_Action
 {
     const HISTORY_WEEK_NUM = 4;
+    const NUM_OF_WORK_DAYS_ON_PAGE = 7;
     public $ajaxable = array(
         'index'             => array('html'),
         'get-week-details'  => array('json'),
@@ -33,10 +34,10 @@ class Planner_PlanningController extends My_Controller_Action
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $week = $request->getParam('week');
         $year = $request->getParam('year');
-        if (empty($week) || empty($year))  {
+        if (empty($week) || empty($year)) {
             $weekYear = My_DateTime::getWeekYear();
-            $year = $weekYear['year'];
-            $week = $weekYear['week'];
+            $year  = $weekYear['year'];
+            $week  = $weekYear['week'];
         }
         $this->view->nextWeekYear = My_DateTime::getNextYearWeek($year,$week);
         $this->view->prevWeekYear = My_DateTime::getPrevYearWeek($year,$week);
@@ -56,8 +57,10 @@ class Planner_PlanningController extends My_Controller_Action
                 }
             }
         }
-        $this->view->week                = $week;
-        $this->view->year                = $year;
+        $this->view->datesInterval = My_DateTime::getArrayOfDatesInterval(self::NUM_OF_WORK_DAYS_ON_PAGE, $week, $year);
+        $this->view->week = $week;
+        $this->view->year = $year;
+        $this->view->numWorkDays = self::NUM_OF_WORK_DAYS_ON_PAGE;
         $this->view->historyDateWeekYear = $historyDateWeekYear;
         $this->view->groups              = $groups;
     }

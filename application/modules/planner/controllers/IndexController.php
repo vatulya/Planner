@@ -27,7 +27,7 @@ class Planner_IndexController extends My_Controller_Action
 
     public function indexAction()
     {
-        $this->_forward('index', 'checking', null, array('controller' => 'checking'));
+        $this->_forward('index', 'planning', null, array('controller' => 'planning'));
     }
 
 }

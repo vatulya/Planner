@@ -26,11 +26,11 @@
             <a class="brand" href="<?php echo $this->url(array(), null, true) ?>">Futurumshop: Planner</a>
             <?php if ($this->me['role'] >= Application_Model_Auth::ROLE_USER): ?>
             <ul class="nav">
-                <li <?php if ($this->activeMenu == 'checking'): ?>class="active"<?php endif; ?>>
+                <!--li <?php if ($this->activeMenu == 'checking'): ?>class="active"<?php endif; ?>>
                     <a href="<?php echo $this->url(array('controller' => 'checking'), null, true) ?>">
                         Check IN/OUT
                     </a>
-                </li>
+                </li-->
                 <li <?php if ($this->activeMenu == 'planning'): ?>class="active"<?php endif; ?>>
                     <a href="<?php echo $this->url(array('controller' => 'planning'), 'planner', true) ?>">
                         Planning
