@@ -1,0 +1,13 @@
+<?php
+$colors = Application_Model_Group::getAllowedColors();
+$selectedColor = $this->element->color_hex->getValue();
+if ( ! $selectedColor) {
+    $selectedColor = 'FFFFFF';
+}
+?>
+<label class="control-label" for="color">Interval color:</label>
+<div class="group-color-selector">
+    <?php foreach ($colors as $color): ?>
+        <div class="group-color-variation <?php if ($selectedColor == $color): ?>active<?php endif; ?>" style="background-color: #<?php echo $color; ?>;" data-color="<?php echo $color; ?>">#<?php echo $color; ?></div>
+    <?php endforeach; ?>
+</div>

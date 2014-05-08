@@ -13,6 +13,12 @@
         modalBodyStatus = modalStatus.find('.modal-body')
         ;
 
+    var modalInterval = $('.modal-edit-interval'),
+        modalCreateH3Interval = modalInterval.find('.header-create-interval'),
+        modalEditH3Interval = modalInterval.find('.header-edit-interval'),
+        modalBodyInterval = modalInterval.find('.modal-body')
+        ;
+
     var groupPlanning = $('.group-work-days-planning'),
         groupPlanningSelect = $('#group-planning'),
         groupPlanningBody = groupPlanning.find('.planning-body');
@@ -93,6 +99,46 @@
                 },
                 error: function(response) {
                     modalBodyStatus.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        editInterval: function(el) {
+            el = $(el);
+            modalBodyInterval.html('Loading...');
+            modalCreateH3Interval.hide();
+            modalEditH3Interval.show();
+            modalInterval.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    interval_id: el.data('interval-id')
+                },
+                success: function(response) {
+                    modalBodyInterval.html(response);
+                    // GroupSettings.initEditStatusAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyInterval.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        createInterval: function(el) {
+            el = $(el);
+            modalBodyInterval.html('Loading...');
+            modalCreateH3Interval.show();
+            modalEditH3Interval.hide();
+            modalInterval.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {},
+                success: function(response) {
+                    modalBodyInterval.html(response);
+                    // GroupSettings.initEditStatusAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyInterval.html('Error! Something wrong.');
                 }
             });
         },
@@ -549,6 +595,12 @@
         });
         $(document.body).on('click', '.edit-status', function(e) {
             GroupSettings.editStatus(e.currentTarget);
+        });
+        $(document.body).on('click', '.edit-interval', function(e) {
+            GroupSettings.editInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.create-interval', function(e) {
+            GroupSettings.createInterval(e.currentTarget);
         });
         $(document.body).on('click', '.create-group', function(e) {
             GroupSettings.createGroup(e.currentTarget);

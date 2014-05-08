@@ -7,6 +7,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'index'                              => array('html'),
         'get-edit-group-form'                => array('html'),
         'get-edit-status-form'               => array('html'),
+        'get-edit-interval-form'             => array('html'),
         'get-group-planning'                 => array('html'),
         'save-group-form'                    => array('json'),
         'save-status-form'                   => array('json'),
@@ -25,6 +26,10 @@ class Planner_GroupSettingsController extends My_Controller_Action
      * @var Application_Model_Group
      */
     protected $_modelGroup;
+
+    protected $_modelStatus;
+
+    protected $_modelIntervals;
 
     public function init()
     {
@@ -51,11 +56,14 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $generalHolidays      = $this->_modelGroup->getGeneralHolidays();
         $modelParameters      = new Application_Model_Parameter();
         $defaultTotalFreeHours = $modelParameters->getDefaultTotalFreeHours();
+        $modelWorkIntervals = new Application_Model_WorkIntervals();
+        $workIntervals = $modelWorkIntervals->getWorkIntervals();
         $assign = array(
             'generalGroup'          => $generalGroup,
             'groups'                => $groups,
             'generalHolidays'       => $generalHolidays,
             'defaultTotalFreeHours' => $defaultTotalFreeHours,
+            'workIntervals'         => $workIntervals,
         );
         $this->view->statuses = $this->_modelStatus->getAllstatus();
         $this->view->assign($assign);
@@ -101,6 +109,29 @@ class Planner_GroupSettingsController extends My_Controller_Action
                 return false;
             }
             $this->view->status = $status;
+        }
+        $this->_helper->layout->disableLayout();
+        $this->view->editForm = $editForm->prepareDecorators();
+    }
+
+    public function getEditIntervalFormAction()
+    {
+        $intervalId = $this->_getParam('interval_id');
+        $editForm = new Planner_Form_EditInterval(array(
+            'class' => 'edit-interval-form',
+            'action' => $this->_helper->url->url(array('controller' => 'group-settings', 'action' => 'save-interval-form'), 'planner', true),
+            'id' => 'form-interval-status',
+        ));
+        if ($intervalId) {
+            $modelWorkIntervals = new Application_Model_WorkIntervals();
+            $workInterval = $modelWorkIntervals->getWorkInterval($intervalId);
+            var_dump($workInterval);
+            if ($workInterval) {
+                $editForm->populate($workInterval);
+            } else {
+                return false;
+            }
+            $this->view->interval = $workInterval;
         }
         $this->_helper->layout->disableLayout();
         $this->view->editForm = $editForm->prepareDecorators();

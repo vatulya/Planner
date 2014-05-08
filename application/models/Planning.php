@@ -406,7 +406,7 @@ class Application_Model_Planning extends Application_Model_Abstract
         return array();
     }
 
-    private function _splitStartEndTimeString($timeStart, $timeEnd)
+    public function _splitStartEndTimeString($timeStart, $timeEnd)
     {
         return array(
             'split_time_start' =>  My_DateTime::splitTimeString($timeStart),

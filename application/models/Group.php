@@ -371,6 +371,7 @@ class Application_Model_Group extends Application_Model_Abstract
             'FAEBD7','FFE4C4','FFDEAD','FFC0CB','FFE4E1','E6E6FA',
             'D8BFD8','B0C4DE','ADD8E6','B0E0E6','AFEEEE','E0FFFF',
             'F0F8FF','F0FFFF','F0FFF0','90EE90','3CB371','DA70D6',
+            '32CD32','E9967A','00FFFF','FFFF00','0000FF',
         );
         return $colors;
     }

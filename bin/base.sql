@@ -280,3 +280,22 @@ UPDATE `status` SET `alert_description`='Overtime' WHERE `id`='7';
 
 ALTER TABLE `user_requests`
 CHANGE `status` `status` ENUM('open','approved','rejected','refunded') DEFAULT 'open' NOT NULL;
+
+CREATE TABLE `intervals_work` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `time_start` time DEFAULT NULL,
+  `time_end` time DEFAULT NULL,
+  `color_hex` varchar(10) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `intervals_pause` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `time_start` time DEFAULT NULL,
+  `time_end` time DEFAULT NULL,
+  `time_interval_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_time_intervals` (`time_interval_id`),
+  CONSTRAINT `FK_time_intervals` FOREIGN KEY (`time_interval_id`) REFERENCES `intervals_pause` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

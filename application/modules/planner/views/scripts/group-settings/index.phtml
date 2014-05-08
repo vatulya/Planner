@@ -162,6 +162,51 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
     </table>
 </div>
 
+<div class="span8">
+    <table class="table table-bordered statuses-table">
+        <thead>
+        <tr>
+            <th class="span2">
+                <a class="btn btn-mini btn-success create-interval no-action" href="<?php echo $this->url(array('controller' => 'group-settings', 'action' => 'get-edit-interval-form'), 'planner', true); ?>">
+                    <i class="icon-plus-sign icon-white"></i>
+                </a>
+                Time start
+            </th>
+            <th class="span2">
+                Time end
+            </th>
+            <th class="span1">
+                Color
+            </th>
+            <th class="span2">
+                Pause
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php foreach( $this->workIntervals as $workInterval ) : ?>
+            <tr>
+                <td>
+                    <a href="<?php echo $this->url(
+                        array('controller' => 'group-settings',
+                            'action' => 'get-edit-interval-form'),
+                            'planner', true);
+                    ?>" class="no-action edit-interval btn btn-mini"
+                       data-interval-id="<?php echo $workInterval['id']; ?>"
+                       data-interval-color="<?php echo $workInterval['color_hex'];; ?>">
+                        <i class="icon-cog"></i>
+                    </a>
+                    <?php echo $workInterval['format_time_start'] ?></td>
+                <td><?php echo $workInterval['format_time_end']?></td>
+                <td style="background-color: #<?php echo $workInterval['color_hex'] ?>;"><a href="#" class="editable-status"><div style="width: 100px;"></div></a></td>
+                <td><?php if(empty($status['is_holiday'])) { echo "No"; } else { echo "Yes"; } ?></td>
+            </tr>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+</div>
+
 <div class="span12 normal-user-holidays">
     <div class="input-prepend input-append">
         <span class="add-on">Number of holiday hours based on 100% (40 hours) working week:</span>
@@ -242,6 +287,20 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
         <h3 class="header-edit-group">Edit status: <span class="tmpl-status-name"></span></h3>
+    </div>
+    <div class="modal-body">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary button-submit" data-form="form-edit-status">Save</button>
+    </div>
+</div>
+
+<div class="modal hide fade modal-edit-interval">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3 class="header-create-interval">Add work interval:</h3>
+        <h3 class="header-edit-interval">Edit work interval:</h3>
     </div>
     <div class="modal-body">
 
