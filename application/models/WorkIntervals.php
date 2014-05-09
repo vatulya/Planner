@@ -32,8 +32,8 @@ class Application_Model_WorkIntervals extends Application_Model_Abstract
     {
         $workInterval = $this->_modelDbWork->getWorkIntervals($id);
         if (!empty($workInterval['time_start']) && !empty($workInterval['time_end'])) {
-            $planning = new Application_Model_Planning();
-            $workInterval    = array_merge($workInterval, $planning->_splitStartEndTimeString($workInterval['time_start'], $workInterval['time_end']));
+
+            $workInterval    = array_merge($workInterval, $this->splitStartEndTimeString($workInterval['time_start'], $workInterval['time_end']));
 //            if (!empty($day['pause_start']) && !empty($day['pause_end'])) {
 //                $day['format_pause_start'] =  My_DateTime::formatTime($day['pause_start']);
 //                $day['format_pause_end']   =  My_DateTime::formatTime($day['pause_end']);
@@ -43,9 +43,11 @@ class Application_Model_WorkIntervals extends Application_Model_Abstract
         return $workInterval;
     }
 
-    public function setWorkIntervals($timeStart,$timeEnd,$colorHex,$description,$id = null)
+    public function saveWorkInterval($data)
     {
-        return $this->_modelDbWork->setWorkIntervals($timeStart,$timeEnd,$colorHex,$description,$id);
+        $timeStart = $this->getConcatTimeString($data['time_start_hour'],$data['time_start_min']);
+        $timeEnd = $this->getConcatTimeString($data['time_end_hour'],$data['time_end_min']);
+        return $this->_modelDbWork->setWorkInterval($timeStart,$timeEnd,$data['color_hex'],$data['description'],@$data['id']);
     }
 
     public function deleteWorkInterval($id)
@@ -69,5 +71,19 @@ class Application_Model_WorkIntervals extends Application_Model_Abstract
     }
 
 
+    public function splitStartEndTimeString($timeStart, $timeEnd)
+    {
+        $planning = new Application_Model_Planning();
+        $intervals = $planning->_splitStartEndTimeString($timeStart, $timeEnd);
+        $intervals['time_start_hour'] = $intervals['split_time_start']['hour'];
+        $intervals['time_start_min'] = $intervals['split_time_start']['min'];
+        $intervals['time_end_hour'] = $intervals['split_time_end']['hour'];
+        $intervals['time_end_min'] = $intervals['split_time_end']['min'];
+        return $intervals;
+    }
 
+    private function getConcatTimeString($start, $end)
+    {
+        return $start . ':' . $end;
+    }
 }

@@ -5,11 +5,15 @@ class Planner_Form_EditInterval extends Sch_Form
 
     public function init()
     {
-        $id = new Zend_Form_Element_Hidden('id');
-        $statusDescription = new Zend_Form_Element_Text('description');
-        $color = new Zend_Form_Element_Hidden('color_hex');
-
-        $this->addElements(array($id, $statusDescription, $color));
+        $this->addElements(array(
+            new Zend_Form_Element_Hidden('id'),
+            new Zend_Form_Element_Text('description'),
+            new Zend_Form_Element_Text('time_start_hour'),
+            new Zend_Form_Element_Text('time_start_min'),
+            new Zend_Form_Element_Text('time_end_hour'),
+            new Zend_Form_Element_Text('time_end_min'),
+            new Zend_Form_Element_Hidden('color_hex')
+        ));
     }
 
     public function prepareDecorators()

@@ -13,16 +13,16 @@
         <tr  class="work-time">
             <td>
                 <div class="input-time">
-                    <input type="text" value="<?php echo @$statusData['split_time_start']['hour']; ?>" class="set-time-hour-status start-hour set-time-hour-field"  name="start_hour" class="set-time-hour-status start-hour set-time-hour-field">:
-                    <input type="text" value="<?php echo @$statusData['split_time_start']['min']; ?>" class="set-time-hour-status start-hour set-time-hour-field" name="start_min" class="set-time-min-status start-min set-time-mins-field">
+                    <?php echo $this->element->time_start_hour->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                    <?php echo $this->element->time_start_min->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
                 </div>
             </td>
             <td>
             </td>
             <td>
                 <div class="input-time">
-                    <input type="text" value="<?php echo @$statusData['split_time_end']['hour']; ?>" class="set-time-hour-status start-hour set-time-hour-field"  name="end_hour" class="set-time-hour-status end-hour set-time-hour-field">:
-                    <input type="text" value="<?php echo @$statusData['split_time_end']['min']; ?>" class="set-time-hour-status start-hour set-time-hour-field"  name="end_min" class="set-time-min-status end-min set-time-mins-field">
+                    <?php echo $this->element->time_end_hour->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                    <?php echo $this->element->time_end_min->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
                 </div>
             </td>
         </tr>

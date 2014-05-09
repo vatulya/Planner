@@ -11,6 +11,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'get-group-planning'                 => array('html'),
         'save-group-form'                    => array('json'),
         'save-status-form'                   => array('json'),
+        'save-interval-form'                 => array('json'),
         'delete-group'                       => array('json'),
         'save-group-planning'                => array('json'),
         'save-user-planning'                 => array('json'),
@@ -125,7 +126,6 @@ class Planner_GroupSettingsController extends My_Controller_Action
         if ($intervalId) {
             $modelWorkIntervals = new Application_Model_WorkIntervals();
             $workInterval = $modelWorkIntervals->getWorkInterval($intervalId);
-            var_dump($workInterval);
             if ($workInterval) {
                 $editForm->populate($workInterval);
             } else {
@@ -147,6 +147,30 @@ class Planner_GroupSettingsController extends My_Controller_Action
         if ($request->isPost()) {
             if ($editForm->isValid($request->getPost())) {
                 $data = $this->_modelStatus->saveStatus($editForm->getValues());
+                $status = true;
+            } else {
+                $data = $editForm->getErrors();
+            }
+        }
+        if ($status) {
+            $this->_response(1, '', $data);
+        } else {
+            $this->_response(0, 'Error!', $data);
+        }
+    }
+
+
+    public function saveIntervalFormAction()
+    {
+        $editForm = new Planner_Form_EditInterval();
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        $data = array();
+        $status = false;
+        if ($request->isPost()) {
+            if ($editForm->isValid($request->getPost())) {
+                $modelWorkIntervals = new Application_Model_WorkIntervals();
+                $data = $modelWorkIntervals->saveWorkInterval($editForm->getValues());
                 $status = true;
             } else {
                 $data = $editForm->getErrors();

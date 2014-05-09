@@ -116,7 +116,7 @@
                 },
                 success: function(response) {
                     modalBodyInterval.html(response);
-                    // GroupSettings.initEditStatusAjaxForm();
+                    GroupSettings.initEditIntervalAjaxForm();
                 },
                 error: function(response) {
                     modalBodyInterval.html('Error! Something wrong.');
@@ -135,7 +135,7 @@
                 data: {},
                 success: function(response) {
                     modalBodyInterval.html(response);
-                    // GroupSettings.initEditStatusAjaxForm();
+                    GroupSettings.initEditIntervalAjaxForm();
                 },
                 error: function(response) {
                     modalBodyInterval.html('Error! Something wrong.');
@@ -227,6 +227,25 @@
             });
         },
 
+        initEditIntervalAjaxForm: function() {
+            var formEl = $('#form-interval-status');
+            $('#form-interval-status').ajaxForm({
+                data: {format: 'json'},
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.Form.showSuccess(formEl);
+                        window.location.reload();
+                    } else {
+                        window.Form.showErrors(formEl);
+                    }
+                },
+                error: function() {
+                    window.Form.showErrors(formEl);
+                }
+            });
+        },
+
         changeSelectedColor: function(el) {
             el = $(el);
             $('.group-color-variation').removeClass('active');
@@ -234,6 +253,10 @@
             var color = $('#form-edit-group').find('#color');
             if (color) {
                 color.val(el.data('color'));
+            }
+            var color_hex = $('#form-interval-status').find('#color_hex');
+            if (color_hex) {
+                color_hex.val(el.data('color'));
             }
             var colorStatus = $('#form-edit-status').find('#color');
             if (colorStatus) {
