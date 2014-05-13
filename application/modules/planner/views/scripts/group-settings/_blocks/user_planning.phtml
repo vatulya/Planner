@@ -34,7 +34,7 @@
         <!-- START ODD WEEK -->
         <tr class="odd-week-row">
             <?php foreach ($this->weekDays['odd'] as $key => $day): ?>
-            <td class="week-day">
+            <td class="week-day" style="background-color: #<?php echo $userPlanning[$key]['color_hex'] ?>;">
                 <form class="form-inline form-user-planning-day" data-week-type="odd" data-day-number="<?php echo $day['day_number']; ?>">
                     <?php
                     if ( ! empty($userPlanning[$key])) {
@@ -105,8 +105,8 @@
         <!-- STERT EVEN WEEK -->
         <tr class="even-week-row">
             <?php foreach ($this->weekDays['even'] as $key => $day): ?>
-            <td class="week-day">
-                <form class="form-inline form-user-planning-day" data-week-type="even" data-day-number="<?php echo $day['day_number']; ?>">
+            <td class="week-day" style="background-color: #<?php echo $userPlanning[$key]['color_hex'] ?>;">
+                <form class="form-inline form-user-planning-day"  data-week-type="even" data-day-number="<?php echo $day['day_number']; ?>">
                     <?php
                     if ( ! empty($userPlanning[$key])) {
                         $data = $userPlanning[$key];
@@ -177,8 +177,8 @@
     </table>
 
     <div class="week-types">
-        <span class="week-type label label-week-type-odd">Odd week</span>
-        <span class="week-type label label-inverse label-week-type-even">Even week</span>
+        <span class="week-type label label-week-type-odd">Top - Odd week</span>
+        <span class="week-type label label-inverse label-week-type-even">Bottom - Even week</span>
     </div>
 
     <div class="form-actions">

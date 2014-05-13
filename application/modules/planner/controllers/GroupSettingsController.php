@@ -220,13 +220,13 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $groupId = $this->_getParam('group');
         if ($groupId && ($group = $this->_modelGroup->getGroupById($groupId))) {
             $groupId = $group['id'];
-            $planning = $this->_modelGroup->getGroupPlanning($groupId);
-            $planningTmp = array();
-            foreach ($planning as $row) {
-                $key = $row['week_type'] . '-' . $row['day_number'];
-                $planningTmp[$key] = $row;
-            }
-            $planning = $planningTmp;
+//            $planning = $this->_modelGroup->getGroupPlanning($groupId);
+//            $planningTmp = array();
+//            foreach ($planning as $row) {
+//                $key = $row['week_type'] . '-' . $row['day_number'];
+//                $planningTmp[$key] = $row;
+//            }
+//            $planning = $planningTmp;
 
             $modelUser = new Application_Model_User();
             $usersPlanning = array();
@@ -246,7 +246,7 @@ class Planner_GroupSettingsController extends My_Controller_Action
                 'group'         => $group,
                 'users'         => $users,
                 'usersPlanning' => $usersPlanning,
-                'groupPlanning' => $planning,
+                //'groupPlanning' => $planning,
                 'groupSettings' => $this->_modelGroup->getGroupSettings($groupId),
             );
             $this->view->assign($assign);

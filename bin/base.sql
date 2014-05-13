@@ -281,6 +281,8 @@ UPDATE `status` SET `alert_description`='Overtime' WHERE `id`='7';
 ALTER TABLE `user_requests`
 CHANGE `status` `status` ENUM('open','approved','rejected','refunded') DEFAULT 'open' NOT NULL;
 
+-- New wishes
+
 CREATE TABLE `intervals_work` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `time_start` time DEFAULT NULL,
@@ -299,3 +301,13 @@ CREATE TABLE `intervals_pause` (
   KEY `FK_time_intervals` (`time_interval_id`),
   CONSTRAINT `FK_time_intervals` FOREIGN KEY (`time_interval_id`) REFERENCES `intervals_pause` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `group_plannings` ADD COLUMN `interval_id` INT(11) DEFAULT '0' NOT NULL;
+ALTER TABLE `group_plannings` DROP COLUMN `time_start`;
+ALTER TABLE `group_plannings` DROP COLUMN `time_end`;
+ALTER TABLE `group_plannings` DROP COLUMN `pause_start`;
+ALTER TABLE `group_plannings` DROP COLUMN `pause_end`;
+DELETE FROM `group_plannings`;
+ALTER TABLE `group_plannings` ADD KEY `FK_interval_id` (`interval_id`);
+ALTER TABLE `group_plannings` ADD CONSTRAINT `FK_interval_id` FOREIGN KEY (`interval_id`)
+REFERENCES `intervals_work` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;

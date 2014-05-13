@@ -116,7 +116,18 @@ class Application_Model_Group extends Application_Model_Abstract
         public function getSpecialUserPlanning($groupId, $userId, $weekType = null, $day = null)
     {
         $groupPlannings = new Application_Model_Db_Group_Plannings();
+        $intervals = new Application_Model_WorkIntervals();
         $planning = $groupPlannings->getGroupPlanning($groupId, $userId, $weekType, $day);
+        foreach ($planning as &$dayPlan) {
+            $interval = $intervals->getWorkInterval($dayPlan['interval_id']);
+            unset($interval['id']);
+            $dayPlan = array_merge($dayPlan, $interval);
+//            $dayInterval = $intervals->getWorkInterval($dayPlan['interval_id']);
+//            $dayPlan['time_start'] = $dayInterval['time_start'];
+//            $dayPlan['time_end'] = $dayInterval['time_end'];
+            $dayPlan['pause_start'] = '';
+            $dayPlan['pause_end'] = '';
+        }
         return $planning;
     }
 
