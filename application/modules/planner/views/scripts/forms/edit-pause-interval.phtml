@@ -1,0 +1,29 @@
+<div class="alert alert-error" style="display: none;"></div>
+<div class="alert alert-success" style="display: none;"></div>
+<?php echo $this->element->id; ?>
+<div class="control-status">
+
+    <table class="table-bordered table-condensed table-striped form-edit-pause-interval">
+        <thead>
+        <tr>
+            <th>Time start</th><th ></th><th>Time end</th>
+        </tr>
+        </thead>
+        <tr  class="work-time">
+            <td>
+                <div class="input-time">
+                    <?php echo $this->element->time_start_hour->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                    <?php echo $this->element->time_start_min->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                </div>
+            </td>
+            <td>
+            </td>
+            <td>
+                <div class="input-time">
+                    <?php echo $this->element->time_end_hour->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                    <?php echo $this->element->time_end_min->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

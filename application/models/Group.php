@@ -113,7 +113,7 @@ class Application_Model_Group extends Application_Model_Abstract
         return $planning;
     }
 
-        public function getSpecialUserPlanning($groupId, $userId, $weekType = null, $day = null)
+    public function getSpecialUserPlanning($groupId, $userId, $weekType = null, $day = null)
     {
         $groupPlannings = new Application_Model_Db_Group_Plannings();
         $intervals = new Application_Model_WorkIntervals();

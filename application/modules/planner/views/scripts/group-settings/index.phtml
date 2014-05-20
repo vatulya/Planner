@@ -209,12 +209,10 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
         </tbody>
     </table>
 </div>
-
-<div class="span9 group-work-days-planning width-full">
-    <div class="span9 header">
+    <div class="span8 header width-full">
         <strong>Work time-color intervals</strong>
     </div>
-    <div class="span9">
+    <div class="span8">
         <table class="table table-bordered statuses-table">
             <thead>
             <tr>
@@ -232,9 +230,6 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
                 </th>
                 <th class="span3">
                     Description
-                </th>
-                <th class="span2">
-                    Pause
                 </th>
             </tr>
             </thead>
@@ -256,13 +251,45 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
                     <td><?php echo $workInterval['format_time_end']?></td>
                     <td style="background-color: #<?php echo $workInterval['color_hex'] ?>;"><a href="#" class="editable-status"><div style="width: 100px;"></div></a></td>
                     <td><?php echo $workInterval['description']; ?></td>
-                    <td><?php if(empty($status['is_holiday'])) { echo "No"; } else { echo "Yes"; } ?></td>
                 </tr>
             <?php endforeach ?>
             </tbody>
         </table>
     </div>
-</div>
+<div class="span5">
+    <table class="table table-bordered statuses-table">
+        <thead>
+        <tr>
+            <th class="span2">
+                <a class="btn btn-mini btn-success create-pause-interval no-action" href="<?php echo $this->url(array('controller' => 'group-settings', 'action' => 'get-edit-pause-interval-form'), 'planner', true); ?>">
+                    <i class="icon-plus-sign icon-white"></i>
+                </a>
+                Pause start
+            </th>
+            <th class="span2">
+                Pause end
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach( $this->pauseIntervals as $pauseInterval ) : ?>
+            <tr>
+                <td>
+                    <a href="<?php echo $this->url(
+                        array('controller' => 'group-settings',
+                            'action' => 'get-edit-pause-interval-form'),
+                        'planner', true);
+                    ?>" class="no-action edit-pause-interval btn btn-mini"
+                       data-pause-interval-id="<?php echo $pauseInterval['id']; ?>">
+                        <i class="icon-cog"></i>
+                    </a>
+                    <?php echo $pauseInterval['format_time_start'] ?></td>
+                <td><?php echo $pauseInterval['format_time_end']?></td>
+            </tr>
+        <?php endforeach ?>
+        </tbody>
+        </table>
+    </div>
 
 <div class="span12 group-work-days-planning width-full">
     <div class="header">
@@ -316,6 +343,20 @@ $maxFreePeopleAction = $this->url(array('controller' => 'group-settings', 'actio
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-primary button-submit" data-form="form-interval-status">Save</button>
+    </div>
+</div>
+
+<div class="modal hide fade modal-edit-pause-interval">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+        <h3 class="header-create-pause-interval">Add Pause interval:</h3>
+        <h3 class="header-edit-pause-interval">Edit Pause interval:</h3>
+    </div>
+    <div class="modal-pause-body">
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary button-submit" data-form="form-pause-interval-status">Save</button>
     </div>
 </div>
 

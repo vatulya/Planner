@@ -18,11 +18,6 @@ class Application_Model_WorkIntervals extends Application_Model_Abstract
         foreach ($workIntervals as &$workInterval) {
             if (!empty($workInterval['time_start']) && !empty($workInterval['time_end'])) {
                 $workInterval    = array_merge($workInterval, $planning->_splitStartEndTimeString($workInterval['time_start'], $workInterval['time_end']));
-    //            if (!empty($day['pause_start']) && !empty($day['pause_end'])) {
-    //                $day['format_pause_start'] =  My_DateTime::formatTime($day['pause_start']);
-    //                $day['format_pause_end']   =  My_DateTime::formatTime($day['pause_end']);
-    //            }
-    //            $status = array_merge($day, $status);
             }
         }
         return $workIntervals;
@@ -32,13 +27,7 @@ class Application_Model_WorkIntervals extends Application_Model_Abstract
     {
         $workInterval = $this->_modelDbWork->getWorkIntervals($id);
         if (!empty($workInterval['time_start']) && !empty($workInterval['time_end'])) {
-
-            $workInterval    = array_merge($workInterval, $this->splitStartEndTimeString($workInterval['time_start'], $workInterval['time_end']));
-//            if (!empty($day['pause_start']) && !empty($day['pause_end'])) {
-//                $day['format_pause_start'] =  My_DateTime::formatTime($day['pause_start']);
-//                $day['format_pause_end']   =  My_DateTime::formatTime($day['pause_end']);
-//            }
-//            $status = array_merge($day, $status);
+            $workInterval = array_merge($workInterval, $this->splitStartEndTimeString($workInterval['time_start'], $workInterval['time_end']));
         }
         return $workInterval;
     }
@@ -55,14 +44,32 @@ class Application_Model_WorkIntervals extends Application_Model_Abstract
         return $this->_modelDbWork->deleteWorkInterval($id);
     }
 
-    public function getPauseIntervals($id = null)
+    public function getPauseIntervals()
     {
-        return $this->_modelDbPause->getPauseIntervals($id);
+        $planning = new Application_Model_Planning();
+        $workIntervals = $this->_modelDbPause->getPauseIntervals();
+        foreach ($workIntervals as &$workInterval) {
+            if (!empty($workInterval['time_start']) && !empty($workInterval['time_end'])) {
+                $workInterval    = array_merge($workInterval, $planning->_splitStartEndTimeString($workInterval['time_start'], $workInterval['time_end']));
+            }
+        }
+        return $workIntervals;
     }
 
-    public function setPauseIntervals($timeStart,$timeEnd,$timeIntervalId,$id = null)
+    public function getPauseInterval($id = null)
     {
-        return $this->_modelDbPause->setPauseIntervals($timeStart,$timeEnd,$timeIntervalId,$id);
+        $workInterval = $this->_modelDbPause->getPauseIntervals($id);
+        if (!empty($workInterval['time_start']) && !empty($workInterval['time_end'])) {
+            $workInterval = array_merge($workInterval, $this->splitStartEndTimeString($workInterval['time_start'], $workInterval['time_end']));
+        }
+        return $workInterval;
+    }
+
+    public function savePauseInterval($data)
+    {
+        $timeStart = $this->getConcatTimeString($data['time_start_hour'],$data['time_start_min']);
+        $timeEnd = $this->getConcatTimeString($data['time_end_hour'],$data['time_end_min']);
+        return $this->_modelDbPause->savePauseInterval($timeStart,$timeEnd,$data['id']);
     }
 
     public function deletePauseInterval($id)

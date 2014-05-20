@@ -32,10 +32,10 @@
         </thead>
         <tbody>
         <!-- START ODD WEEK -->
-        <tr class="odd-week-row">
-            <?php foreach ($this->weekDays['odd'] as $key => $day): ?>
-            <td class="week-day" style="background-color: #<?php echo $userPlanning[$key]['color_hex'] ?>;">
-                <form class="form-inline form-user-planning-day" data-week-type="odd" data-day-number="<?php echo $day['day_number']; ?>">
+    <?php foreach ($this->weekDays as $weekType => $dayData): ?>
+        <tr style="background-color: #<?php echo $this->statusFreeDay['color_hex'] ?>;">
+            <?php foreach ($this->weekDays[$weekType] as $key => $day): ?>
+                <td class="week-day" style="background-color: #<?php echo @$userPlanning[$key]['color_hex'] ?>;">
                     <?php
                     if ( ! empty($userPlanning[$key])) {
                         $data = $userPlanning[$key];
@@ -57,6 +57,7 @@
                         $pauseEndHourValue = $pauseEndTime->format('H');
                         $pauseEndMinValue  = $pauseEndTime->format('i');
                     } else {
+                        $data = '';
                         $checked = '';
                         $startHourValue = '';
                         $startMinValue  = '';
@@ -68,111 +69,97 @@
                         $pauseEndMinValue  = '';
                     }
                     ?>
-                    <div class="work-time">
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
-                        </div>
-                        <div class="separator">Work</div>
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
-                        </div>
-                    </div>
-                    <div class="enable-flag-container">
-                        <input type="checkbox" name="enable_day" value="1" class="enable-day" <?php echo $checked; ?>>
-                    </div>
-                    <div class="pause-time">
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $pauseStartHourValue; ?>" class="pause-hour set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $pauseStartMinValue; ?>" class="pause-min set-time-min start-min">
-                        </div>
-                        <div class="separator">Pause</div>
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $pauseEndHourValue; ?>" class="pause-hour set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $pauseEndMinValue; ?>" class="pause-min set-time-min end-min">
-                        </div>
-                    </div>
-                </form>
-            </td>
+                    <table class="table" style="margin-top: 5px; margin-bottom: 3px">
+                        <tr>
+                            <td width="20px">
+                                <div class="" align="left">
+                                    <div class="btn-group">
+                                        <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <i class="icon-cog"></i>
+
+                                        </button>
+                                        <ul class="dropdown-menu" align="left">
+                                            <li <?php if (empty($userPlanning[$key])) echo 'class="disabled"';?>>
+                                                <a tabindex="-1" <?php if (!empty($userPlanning[$key])) echo 'href="#"';?>>
+                                                    <span class="user-planning-color" style="background-color: #<?php echo $this->statusFreeDay['color_hex'] ?>;"></span>
+                                                    <?php echo $this->statusFreeDay['description'] ?>
+                                                </a>
+                                            </li>
+                                            <?php foreach( $this->workIntervals as $workInterval ) : ?>
+                                                <li <?php if (isset($data['interval_id']) && $data['interval_id'] == $workInterval['id']) echo 'class="disabled"';?>>
+                                                    <a tabindex="-1" <?php if (isset($data['interval_id']) && $data['interval_id'] != $workInterval['id']) echo 'href="#"' ?>>
+                                                        <span class="user-planning-color" style="background-color: #<?php echo $workInterval['color_hex'] ?>;"></span>
+                                                        <?php echo $workInterval['format_time_start'] ?> <span>-</span>
+                                                        <?php echo $workInterval['format_time_end']?>
+                                                        <?php echo $workInterval['description']; ?>
+                                                    </a>
+                                                </li>
+                                            <?php endforeach ?>
+                                        </ul>
+
+                                    </div>
+
+
+                                </div>
+                            </td>
+                            <td text-align="left">Work <?php echo $startHourValue; ?>:<?php echo $startMinValue; ?>-
+                                    <?php echo $endHourValue; ?>:<?php echo $endMinValue; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="" align="left">
+                                    <div class="btn-group">
+                                        <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <i class="icon-cog"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" align="left">
+                                        <?php foreach( $this->pauseIntervals as $pauseInterval ) : ?>
+                                            <li style="background-color:#d9d9d9" >
+                                                <a tabindex="-1" href="#">
+                                                    <b>-</b>
+                                                    <?php echo $pauseInterval['format_time_start'] ?>-
+                                                    <?php echo $pauseInterval['format_time_end']?>
+                                                </a>
+                                            </li>
+                                        <?php endforeach ?>
+                                        </ul>
+
+                                    </div>
+
+
+                                </div>
+                            </td>
+                            <td>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                        Pause </td><td><?php echo $startHourValue; ?>:<?php echo $startMinValue; ?>-
+                                    <?php echo $endHourValue; ?>:<?php echo $endMinValue; ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                         </td><td><?php echo $startHourValue; ?>:<?php echo $startMinValue; ?>-
+                                    <?php echo $endHourValue; ?>:<?php echo $endMinValue; ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                         </td><td><?php echo $startHourValue; ?>:<?php echo $startMinValue; ?>-
+                                    <?php echo $endHourValue; ?>:<?php echo $endMinValue; ?>
+                                            </td>
+                                        </tr>
+                                    </table
+
+                            </td>
+                        </tr>
+                    </table>
+                </td>
             <?php endforeach; ?>
         </tr>
+    <?php endforeach; ?>
         <!-- END ODD WEEK -->
-        <!-- STERT EVEN WEEK -->
-        <tr class="even-week-row">
-            <?php foreach ($this->weekDays['even'] as $key => $day): ?>
-            <td class="week-day" style="background-color: #<?php echo $userPlanning[$key]['color_hex'] ?>;">
-                <form class="form-inline form-user-planning-day"  data-week-type="even" data-day-number="<?php echo $day['day_number']; ?>">
-                    <?php
-                    if ( ! empty($userPlanning[$key])) {
-                        $data = $userPlanning[$key];
-                        $checked = ((bool)$data['enabled']) ? 'checked="checked"' : '';
-
-                        $startTime = new DateTime($data['time_start']);
-                        $startHourValue = $startTime->format('H');
-                        $startMinValue  = $startTime->format('i');
-
-                        $endTime = new DateTime($data['time_end']);
-                        $endHourValue = $endTime->format('H');
-                        $endMinValue  = $endTime->format('i');
-
-                        $pauseStartTime = new DateTime($data['pause_start']);
-                        $pauseStartHourValue = $pauseStartTime->format('H');
-                        $pauseStartMinValue  = $pauseStartTime->format('i');
-
-                        $pauseEndTime = new DateTime($data['pause_end']);
-                        $pauseEndHourValue = $pauseEndTime->format('H');
-                        $pauseEndMinValue  = $pauseEndTime->format('i');
-                    } else {
-                        $checked = '';
-                        $startHourValue = '';
-                        $startMinValue  = '';
-                        $endHourValue = '';
-                        $endMinValue  = '';
-                        $pauseStartHourValue = '';
-                        $pauseStartMinValue  = '';
-                        $pauseEndHourValue = '';
-                        $pauseEndMinValue  = '';
-                    }
-                    ?>
-                    <div class="work-time">
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
-                        </div>
-                        <div class="separator">Work</div>
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
-                        </div>
-                    </div>
-                    <div class="enable-flag-container">
-                        <input type="checkbox" name="enable_day" value="1" class="enable-day" <?php echo $checked; ?>>
-                    </div>
-                    <div class="pause-time">
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $pauseStartHourValue; ?>" class="pause-hour set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $pauseStartMinValue; ?>" class="pause-min set-time-min start-min">
-                        </div>
-                        <div class="separator">Pause</div>
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $pauseEndHourValue; ?>" class="pause-hour set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $pauseEndMinValue; ?>" class="pause-min set-time-min end-min">
-                        </div>
-                    </div>
-                </form>
-            </td>
-            <?php endforeach; ?>
-        </tr>
-        <!-- END EVEN WEEK -->
         </tbody>
     </table>
 

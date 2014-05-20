@@ -19,6 +19,12 @@
         modalBodyInterval = modalInterval.find('.modal-body')
         ;
 
+    var modalPauseInterval = $('.modal-edit-pause-interval'),
+        modalCreateH3PauseInterval = modalPauseInterval.find('.header-create-pause-interval'),
+        modalEditH3PauseInterval = modalPauseInterval.find('.header-edit-pause-interval'),
+        modalBodyPauseInterval = modalPauseInterval.find('.modal-pause-body')
+        ;
+
     var groupPlanning = $('.group-work-days-planning'),
         groupPlanningSelect = $('#group-planning'),
         groupPlanningBody = groupPlanning.find('.planning-body');
@@ -143,6 +149,46 @@
             });
         },
 
+        editPauseInterval: function(el) {
+            el = $(el);
+            modalBodyPauseInterval.html('Loading...');
+            modalCreateH3PauseInterval.hide();
+            modalEditH3PauseInterval.show();
+            modalPauseInterval.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    interval_id: el.data('pause-interval-id')
+                },
+                success: function(response) {
+                    modalBodyPauseInterval.html(response);
+                    GroupSettings.initEditPauseIntervalAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyPauseInterval.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        createPauseInterval: function(el) {
+            el = $(el);
+            modalBodyPauseInterval.html('Loading...');
+            modalCreateH3PauseInterval.show();
+            modalEditH3PauseInterval.hide();
+            modalPauseInterval.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {},
+                success: function(response) {
+                    modalBodyPauseInterval.html(response);
+                    GroupSettings.initEditPauseIntervalAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyPauseInterval.html('Error! Something wrong.');
+                }
+            });
+        },
+
         createGroup: function(el) {
             el = $(el);
             modalCreateH3.show();
@@ -230,6 +276,25 @@
         initEditIntervalAjaxForm: function() {
             var formEl = $('#form-interval-status');
             $('#form-interval-status').ajaxForm({
+                data: {format: 'json'},
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.Form.showSuccess(formEl);
+                        window.location.reload();
+                    } else {
+                        window.Form.showErrors(formEl);
+                    }
+                },
+                error: function() {
+                    window.Form.showErrors(formEl);
+                }
+            });
+        },
+
+        initEditPauseIntervalAjaxForm: function() {
+            var formEl = $('#form-pause-interval-status');
+            $('#form-pause-interval-status').ajaxForm({
                 data: {format: 'json'},
                 success: function(response) {
                     response = response.response;
@@ -624,6 +689,12 @@
         });
         $(document.body).on('click', '.create-interval', function(e) {
             GroupSettings.createInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.edit-pause-interval', function(e) {
+            GroupSettings.editPauseInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.create-pause-interval', function(e) {
+            GroupSettings.createPauseInterval(e.currentTarget);
         });
         $(document.body).on('click', '.create-group', function(e) {
             GroupSettings.createGroup(e.currentTarget);
