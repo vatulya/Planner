@@ -140,7 +140,8 @@
                     day_number: el.data('day-number'),
                     week_type: el.data('week-type'),
                     group_id: el.data('group-id'),
-                    user_id: el.data('user-id')
+                    user_id: el.data('user-id'),
+                    format: 'json'
                 },
                 success: function(response) {
                     GroupSettings.selectGroupPlanning();
@@ -160,7 +161,8 @@
                 data: {
                     planning_id: el.data('planning-id'),
                     pause_id: el.data('pause-id'),
-                    pause_delete: el.data('pause-delete')
+                    pause_delete: el.data('pause-delete'),
+                    format: 'json'
                 },
                 success: function(response) {
                     GroupSettings.selectGroupPlanning();

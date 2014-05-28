@@ -356,6 +356,7 @@ class Application_Model_Planning extends Application_Model_Abstract
                             $day['format_pause_start'] =  My_DateTime::formatTime($day['pause_start']);
                             $day['format_pause_end']   =  My_DateTime::formatTime($day['pause_end']);
                         }
+                        unset($status['color_hex']);
                         $status = array_merge($day, $status);
                     }
                     break;
