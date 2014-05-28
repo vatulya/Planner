@@ -122,13 +122,53 @@ class Application_Model_Group extends Application_Model_Abstract
             $interval = $intervals->getWorkInterval($dayPlan['interval_id']);
             unset($interval['id']);
             $dayPlan = array_merge($dayPlan, $interval);
-//            $dayInterval = $intervals->getWorkInterval($dayPlan['interval_id']);
-//            $dayPlan['time_start'] = $dayInterval['time_start'];
-//            $dayPlan['time_end'] = $dayInterval['time_end'];
-            $dayPlan['pause_start'] = '';
-            $dayPlan['pause_end'] = '';
+            list($dayPlan['pause'], $dayPlan['pause_id']) = $this->getGroupPlanningPauseIntervals($dayPlan['id']);
         }
         return $planning;
+    }
+
+    public function getGroupPlanningPauseIntervals($dayId)
+    {
+        $id = array();
+        $pauseIntervals = array();
+        $intervals = new Application_Model_WorkIntervals();
+        $groupPausePlannings = new Application_Model_Db_Group_Pause();
+        $planningPauseIntervals = $groupPausePlannings->getPauseIntervals($dayId);
+        foreach ($planningPauseIntervals as $interval) {
+            $id[$interval['pause_id']] = $interval['pause_id'];
+        }
+        if (!empty($id)) {
+            $pauseIntervals = $intervals->getPauseIntervals($id);
+        }
+        return array($pauseIntervals, $id);
+    }
+
+    public function setPausePlanInterval($data)
+    {
+        $groupPausePlannings = new Application_Model_Db_Group_Pause();
+        return $groupPausePlannings->savePauseInterval($data);
+    }
+
+    public function setWorkPlanInterval($data)
+    {
+        $groupWorkPlannings = new Application_Model_Db_Group_Plannings();
+        $intervals = new Application_Model_WorkIntervals();
+        if (empty($data['interval_id']) && !empty($data['current_interval_id'])) {
+            $groupWorkPlannings->deleteGroupPlanning($data['current_interval_id']);
+        } else {
+            unset($data['current_interval_id']);
+            $interval = $intervals->getWorkInterval($data['interval_id']);
+            $data['time_start'] = $interval['time_start'];
+            $data['time_end'] = $interval['time_end'];
+            $data['color_hex'] = $interval['color_hex'];
+            $groupWorkPlannings->saveGroupPlanning($data);
+        }
+    }
+
+    public function deletePausePlanInterval($data)
+    {
+        $groupPausePlannings = new Application_Model_Db_Group_Pause();
+        $groupPausePlannings->deletePauseInterval($data);
     }
 
     public function getGroupPlanningByDate($groupId, $userId, $date)

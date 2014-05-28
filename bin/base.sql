@@ -300,6 +300,7 @@ CREATE TABLE `intervals_pause` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `group_plannings` ADD COLUMN `interval_id` INT(11) DEFAULT '0' NOT NULL;
+ALTER TABLE `group_plannings` ADD COLUMN `color_hex` varchar(10) NOT NULL;
 DELETE FROM `group_plannings`;
 ALTER TABLE `group_plannings` ADD KEY `FK_interval_id` (`interval_id`);
 ALTER TABLE `group_plannings` ADD CONSTRAINT `FK_interval_id` FOREIGN KEY (`interval_id`)
@@ -310,13 +311,12 @@ ALTER TABLE `intervals_pause` ADD UNIQUE KEY `theSameInterval` (`time_start`,`ti
 
 CREATE TABLE `group_pause` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` INT NOT NULL DEFAULT 0,
-  `group_id` INT NOT NULL,
   `pause_id` int(11) NOT NULL,
-  `week_type` ENUM('odd', 'even') NOT NULL,
-  `day_number` INT NOT NULL,
+  `planning_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_pause_id` (`pause_id`),
   CONSTRAINT `FK_pause_id` FOREIGN KEY (`pause_id`) REFERENCES `intervals_pause` (`id`)
+  ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_planning_id` FOREIGN KEY (`planning_id`) REFERENCES `group_plannings` (`id`)
   ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

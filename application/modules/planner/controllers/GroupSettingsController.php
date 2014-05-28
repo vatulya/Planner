@@ -11,6 +11,9 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'get-edit-pause-interval-form'       => array('html'),
         'get-group-planning'                 => array('html'),
         'save-group-form'                    => array('json'),
+        'set-pause-plan-interval'            => array('json'),
+        'set-work-plan-interval'             => array('json'),
+        'delete-pause-plan-interval'         => array('json'),
         'save-status-form'                   => array('json'),
         'save-interval-form'                 => array('json'),
         'save-pause-interval-form'           => array('json'),
@@ -263,6 +266,47 @@ class Planner_GroupSettingsController extends My_Controller_Action
         } else {
             $this->_response(0, 'Error! You don\'t have permissions.', array());
         }
+    }
+
+    public function setPausePlanIntervalAction()
+    {
+        $data['pause_id'] = $this->_getParam('pause_id');
+        $data['planning_id'] = $this->_getParam('planning_id');
+        $deletePause = $this->_getParam('pause_delete');
+        if(!empty($deletePause)) {
+            $status = $this->_modelGroup->deletePausePlanInterval($data);
+        } else {
+            $status = $this->_modelGroup->setPausePlanInterval($data);
+        }
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error! You don\'t have permissions.', array());
+        }
+
+    }
+
+    public function setWorkPlanIntervalAction()
+    {
+        $data['interval_id'] = $this->_getParam('interval_id');
+        $data['current_interval_id'] = $this->_getParam('current_interval_id');
+        $data['day_number'] = $this->_getParam('day_number');
+        $data['week_type'] = $this->_getParam('week_type');
+        $data['group_id'] = $this->_getParam('group_id');
+        $data['user_id'] = $this->_getParam('user_id');
+        $status = $this->_modelGroup->setWorkPlanInterval($data);
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error! You don\'t have permissions.', array());
+        }
+
+    }
+
+    public function deletePausePlanIntervalAction()
+    {
+        $this->_modelGroup->deletePausePlanInterval($this->_getParam('id'));
+        $this->_response(1, '', array());
     }
 
     public function getGroupPlanningAction()

@@ -44,10 +44,10 @@ class Application_Model_WorkIntervals extends Application_Model_Abstract
         return $this->_modelDbWork->deleteWorkInterval($id);
     }
 
-    public function getPauseIntervals()
+    public function getPauseIntervals($id = null)
     {
         $planning = new Application_Model_Planning();
-        $workIntervals = $this->_modelDbPause->getPauseIntervals();
+        $workIntervals = $this->_modelDbPause->getPauseIntervals($id);
         foreach ($workIntervals as &$workInterval) {
             if (!empty($workInterval['time_start']) && !empty($workInterval['time_end'])) {
                 $workInterval    = array_merge($workInterval, $planning->_splitStartEndTimeString($workInterval['time_start'], $workInterval['time_end']));

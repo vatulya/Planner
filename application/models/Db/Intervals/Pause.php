@@ -14,11 +14,10 @@ class Application_Model_Db_Intervals_Pause extends Application_Model_Db_Abstract
         $select = $this->_db->select()->from(array('ip' => self::TABLE_NAME), array('*'))
             ->order(array('ip.time_start ASC', 'ip.time_end ASC'));
         if (!empty($id)) {
-            $select->where('ip.id = ?', $id);
-            $result = $this->_db->fetchRow($select);
-        } else {
-            $result = $this->_db->fetchAll($select);
+            $id = (array)$id;
+            $select->where('ip.id IN (?)', $id);
         }
+        $result = $this->_db->fetchAll($select);
         return $result;
     }
 

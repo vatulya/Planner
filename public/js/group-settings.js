@@ -130,6 +130,46 @@
             });
         },
 
+        setWorkPlanInterval: function(el) {
+            el = $(el);
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    current_interval_id: el.data('current-interval-id'),
+                    interval_id: el.data('interval-id'),
+                    day_number: el.data('day-number'),
+                    week_type: el.data('week-type'),
+                    group_id: el.data('group-id'),
+                    user_id: el.data('user-id')
+                },
+                success: function(response) {
+                    GroupSettings.selectGroupPlanning();
+                    //modalBodyInterval.html(response);
+                    //GroupSettings.initEditIntervalAjaxForm();
+                },
+                error: function(response) {
+                    //modalBodyInterval.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        setPausePlanInterval: function(el) {
+            el = $(el);
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    planning_id: el.data('planning-id'),
+                    pause_id: el.data('pause-id'),
+                    pause_delete: el.data('pause-delete')
+                },
+                success: function(response) {
+                    GroupSettings.selectGroupPlanning();
+                },
+                error: function(response) {
+                }
+            });
+        },
+
         createInterval: function(el) {
             el = $(el);
             modalBodyInterval.html('Loading...');
@@ -331,13 +371,13 @@
 
         selectGroupPlanning: function() {
             groupPlanningSelect.css('background-color', '#FFFFFF');
-            groupPlanningBody.html('');
+            //groupPlanningBody.html('');
             var option = $('option:selected', groupPlanningSelect);
             if (option.val() < 1) {
                 return false;
             }
             groupPlanningSelect.css('background-color', '#' + option.data('group-color'));
-            groupPlanningBody.html('Loading...');
+            //groupPlanningBody.html('Loading...');
             $.ajax({
                 url: '/group-settings/get-group-planning',
                 data: {
@@ -686,6 +726,12 @@
         });
         $(document.body).on('click', '.edit-interval', function(e) {
             GroupSettings.editInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.set-work-plan-interval', function(e) {
+            GroupSettings.setWorkPlanInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.set-pause-plan-interval', function(e) {
+            GroupSettings.setPausePlanInterval(e.currentTarget);
         });
         $(document.body).on('click', '.create-interval', function(e) {
             GroupSettings.createInterval(e.currentTarget);
