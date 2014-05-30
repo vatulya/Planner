@@ -20,39 +20,14 @@ class Application_Model_Planning extends Application_Model_Abstract
         $this->_modelUser     = new Application_Model_User();
     }
 
-    public function getUserWeekPlanByGroup($userId, $groupId,  $year, $week)
+    public function getUserWeekPlanByGroup($userId, $groupId, $overviewDatesInterval)
     {
         $weekPlan = array();
-        $weekDays = My_DateTime::getWeekDays();
-        $dateWeekStart = new My_DateTime($year . 'W' . sprintf("%02d", $week));
-
-        foreach ($weekDays as $numDay=>$nameDay) {
-            $date = clone $dateWeekStart;
-            $date->modify('+' . $numDay . 'day');
-            $dateFormat = $date->format('Y-m-d');
-            $weekPlan[$nameDay] = $this->getUserDayStatuses($userId, $groupId, $dateFormat) ;
+        foreach ($overviewDatesInterval as $dateFormat) {
+            $weekPlan[$dateFormat['date']] = $this->getUserDayStatuses($userId, $groupId, $dateFormat['date']) ;
         }
         return $weekPlan;
     }
-
-/*    public function getDayGroupUserPlanByDate($userId, $groupId, $dateFormat)
-    {
-        $currentDate = new My_DateTime();
-        $currentDate = $currentDate->getTimestamp();
-        $date = new My_DateTime($dateFormat);
-        //Get from history or future(group plan) day plan
-        if ($date->getTimestamp() >= $currentDate) {
-            $dayPlan = $this->_getUserDayPlanFromGroupPlan($userId, $groupId, $dateFormat);
-            return $this->_setStatusByRules($dayPlan);
-        }  else {
-            $dayPlan = $this->getUserDayPlanFromPlanning($userId, $groupId, $dateFormat);
-            if (empty($dayPlan)) {
-                return $this->_setDefaultStatusForEmptyPlan($userId, $groupId, $dateFormat);
-            } else {
-                return $this->_setStatusByRules($dayPlan);
-            }
-        }
-    }*/
 
     private function _setDefaultStatusForEmptyPlan($userId, $groupId, $dateFormat) {
         $status = new Application_Model_Status();
