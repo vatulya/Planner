@@ -27,31 +27,15 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
         return $result;
     }
 
-    public function saveGroupPlanning($groupId, $userId = 0, array $planning)
+    public function saveGroupPlanning($data)
     {
-        $result = false;
-        $this->_db->delete(self::TABLE_NAME, array('group_id = ?' => $groupId, 'user_id = ?' => $userId));
-        if (empty($planning)) {
-            $result = true;
-        }
-        foreach ($planning as $day) {
-            $day['enabled'] = $day['enabled'] ? 1 : 0;
-            $data = array(
-                'group_id'    => $groupId,
-                'user_id'     => $userId,
-                'week_type'   => $day['week_type'],
-                'day_number'  => $day['day_number'],
-                'time_start'  => $day['time_start'],
-                'time_end'    => $day['time_end'],
-                'pause_start' => $day['pause_start'],
-                'pause_end'   => $day['pause_end'],
-                'enabled'     => $day['enabled'],
-            );
-            $result = $this->_db->insert(self::TABLE_NAME, $data);
-            if ( ! $result) {
-                throw new Exception('Error! Database error.');
-            }
-        }
+        $this->_db->delete(self::TABLE_NAME, array(
+            'group_id = ?' => $data['group_id'],
+            'user_id = ?' => $data['user_id'],
+            'week_type = ?' => $data['week_type'],
+            'day_number = ?' => $data['day_number'],)
+        );
+        $result = $this->_db->insert(self::TABLE_NAME, $data);
         return $result;
     }
 
@@ -65,6 +49,11 @@ class Application_Model_Db_Group_Plannings extends Application_Model_Db_Abstract
             ->where('gp.day_number = ?', (int)$day);
         $result = $this->_db->fetchAll($select);
         return $result;
+    }
+
+    public function deleteGroupPlanning($id)
+    {
+        $this->_db->delete(self::TABLE_NAME, array('id = ?' => $id));
     }
 
 }

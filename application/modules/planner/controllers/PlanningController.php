@@ -3,7 +3,7 @@
 class Planner_PlanningController extends My_Controller_Action
 {
     const HISTORY_WEEK_NUM = 4;
-    const NUM_OF_WORK_DAYS_ON_PAGE = 7;
+    private $numDaysForOverView = 90;
     public $ajaxable = array(
         'index'             => array('html'),
         'get-week-details'  => array('json'),
@@ -34,10 +34,14 @@ class Planner_PlanningController extends My_Controller_Action
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $week = $request->getParam('week');
         $year = $request->getParam('year');
+        $interval = $request->getParam('interval');
         if (empty($week) || empty($year)) {
             $weekYear = My_DateTime::getWeekYear();
             $year  = $weekYear['year'];
             $week  = $weekYear['week'];
+        }
+        if (empty($interval)) {
+            $interval = $this->numDaysForOverView;
         }
         $this->view->nextWeekYear = My_DateTime::getNextYearWeek($year,$week);
         $this->view->prevWeekYear = My_DateTime::getPrevYearWeek($year,$week);
@@ -45,30 +49,30 @@ class Planner_PlanningController extends My_Controller_Action
         $historyDateWeekYear = My_DateTime::getNumHistoryWeeks($year, $week);
         $groups = $this->_modelGroup->getAllGroupsFromHistory($year, $week);
         //$groups = $this->_modelGroup->getAllGroups();
-
+        $overviewDatesInterval = My_DateTime::getArrayOfDatesInterval($interval, $week, $year);
         foreach ($groups as $key => $group) {
             $groupId = $group['id'];
             $groups[$key] = $group;
             $groups[$key]['users'] = $this->_modelUser->getAllUsersFromHistory($groupId, $year, $week);
             if (!empty($groups[$key]['users'])) {
                 foreach ($groups[$key]['users'] as $keyUser => $user) {
-                    $user = $this->_getUserData($user, $groupId, $year, $week);
+                    $user = $this->_getUserData($user, $groupId, $overviewDatesInterval);
                     $groups[$key]['users'][$keyUser] = $user;
                 }
             }
         }
-        $this->view->datesInterval = My_DateTime::getArrayOfDatesInterval(self::NUM_OF_WORK_DAYS_ON_PAGE, $week, $year);
+        $this->view->datesInterval = $overviewDatesInterval;
         $this->view->week = $week;
         $this->view->year = $year;
-        $this->view->numWorkDays = self::NUM_OF_WORK_DAYS_ON_PAGE;
+        $this->view->numWorkDays = $interval ;
         $this->view->historyDateWeekYear = $historyDateWeekYear;
         $this->view->groups              = $groups;
     }
 
-    protected function _getUserData($user, $groupId, $year, $week)
+    protected function _getUserData($user, $groupId, $overviewDatesInterval)
     {
-        $user['history'] = $this->_getHistory($user['id'], $groupId, $year, $week);
-        $user['weekPlan'] = $this->_modelPlanning->getUserWeekPlanByGroup($user['id'], $groupId,  $year, $week, $this->_me['id']);
+        #$user['history'] = $this->_getHistory($user['id'], $groupId, $year, $week);
+        $user['weekPlan'] = $this->_modelPlanning->getUserWeekPlanByGroup($user['id'], $groupId,  $overviewDatesInterval);
         return $user;
     }
 

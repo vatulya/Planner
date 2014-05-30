@@ -278,9 +278,9 @@
     };
 
     $(function() {
-        $(document.body).on('click', '.edit-day', function(e) {
-            DaySettings.editDay(e.currentTarget);
-        });
+//        $(document.body).on('click', '.edit-day', function(e) {
+//            DaySettings.editDay(e.currentTarget);
+//        });
         $(document.body).on('click', '#apply-time-full-day', function(e) {
             DaySettings.applyTimeFullDay(e.currentTarget);
         });

@@ -35,6 +35,9 @@ input[type="checkbox"] {
     border-bottom: 1px dashed #808080;
     cursor: pointer;
 }
+.form-edit-pause-interval {
+    padding-left: 20px;
+}
 
 .checking-history-header {
     float: left;
@@ -155,13 +158,16 @@ form.form-mini {
     border: 3px solid #cd5c5c;
 }
 .even-week-row {
-    background-color: #333;
+    background-color: #BA3018;
 }
 .odd-week-row {
-    background-color: #999;
+    background-color: #BA3018;
+}
+.week-day .dropdown-toggle {
+    padding: 4px 4px;
 }
 .even-week-row .separator, .odd-week-row .separator {
-    color: #fff;
+    color: #BA3018;
 }
 .separator, .input-time {
     float: left;
@@ -188,10 +194,41 @@ form.form-mini {
 .group-planning-weeks tbody form, .user-planning-weeks tbody form {
     margin: 0px;
 }
-.group-planning-weeks tbody td, .user-planning-weeks tbody td {
+.group-planning-weeks tbody td {
     padding: 2px;
     text-align: center;
 }
+.user-planning-weeks tbody td {
+    padding: 2px;
+    text-align: left;
+}
+.week-day tbody td {
+    border-left: 0px solid;
+    color: azure;
+}
+.user-planning-color {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+.select-menu-item-icon {
+    font: normal normal 16px octicons;
+    text-decoration: none;
+    display: table-cell;
+    color: transparent;
+    vertical-align: top;
+    padding: 8px 0 8px 8px;
+    width: 24px;
+    text-align: center;
+}
+.select-menu-item-icon:before {
+    content: '\f03a';
+}
+
 .user-planning-weeks .week-day .pause-time, .user-planning-weeks .week-day .work-time {
     visibility: hidden;
 }

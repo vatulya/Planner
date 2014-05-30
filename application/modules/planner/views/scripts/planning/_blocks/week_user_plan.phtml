@@ -4,8 +4,8 @@
     <td class="user-title" >
         <div class="group-user-name"><?php echo "<nobr>" . $user['full_name'] . "</nobr>"; ?> </div>
     </td>
-    <?php foreach ($this->weekDays as $weekDay): ?>
-        <?php $this->userDayData = $user['weekPlan'][$weekDay]; ?>
+    <?php foreach ($this->datesInterval as $weekDay): ?>
+        <?php $this->userDayData = $user['weekPlan'][$weekDay['date']]; ?>
         <?php echo $this->render('planning/_blocks/user_status_field.phtml'); ?>
     <?php endforeach; ?>
 </tr>

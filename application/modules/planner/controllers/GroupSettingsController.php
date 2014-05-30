@@ -7,9 +7,16 @@ class Planner_GroupSettingsController extends My_Controller_Action
         'index'                              => array('html'),
         'get-edit-group-form'                => array('html'),
         'get-edit-status-form'               => array('html'),
+        'get-edit-interval-form'             => array('html'),
+        'get-edit-pause-interval-form'       => array('html'),
         'get-group-planning'                 => array('html'),
         'save-group-form'                    => array('json'),
+        'set-pause-plan-interval'            => array('json'),
+        'set-work-plan-interval'             => array('json'),
+        'delete-pause-plan-interval'         => array('json'),
         'save-status-form'                   => array('json'),
+        'save-interval-form'                 => array('json'),
+        'save-pause-interval-form'           => array('json'),
         'delete-group'                       => array('json'),
         'save-group-planning'                => array('json'),
         'save-user-planning'                 => array('json'),
@@ -25,6 +32,10 @@ class Planner_GroupSettingsController extends My_Controller_Action
      * @var Application_Model_Group
      */
     protected $_modelGroup;
+
+    protected $_modelStatus;
+
+    protected $_modelIntervals;
 
     public function init()
     {
@@ -51,11 +62,16 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $generalHolidays      = $this->_modelGroup->getGeneralHolidays();
         $modelParameters      = new Application_Model_Parameter();
         $defaultTotalFreeHours = $modelParameters->getDefaultTotalFreeHours();
+        $modelWorkIntervals = new Application_Model_WorkIntervals();
+        $workIntervals = $modelWorkIntervals->getWorkIntervals();
+        $pauseIntervals = $modelWorkIntervals->getPauseIntervals();
         $assign = array(
             'generalGroup'          => $generalGroup,
             'groups'                => $groups,
             'generalHolidays'       => $generalHolidays,
             'defaultTotalFreeHours' => $defaultTotalFreeHours,
+            'workIntervals'         => $workIntervals,
+            'pauseIntervals'        => $pauseIntervals,
         );
         $this->view->statuses = $this->_modelStatus->getAllstatus();
         $this->view->assign($assign);
@@ -106,6 +122,50 @@ class Planner_GroupSettingsController extends My_Controller_Action
         $this->view->editForm = $editForm->prepareDecorators();
     }
 
+    public function getEditIntervalFormAction()
+    {
+        $intervalId = $this->_getParam('interval_id');
+        $editForm = new Planner_Form_EditInterval(array(
+            'class' => 'edit-interval-form',
+            'action' => $this->_helper->url->url(array('controller' => 'group-settings', 'action' => 'save-interval-form'), 'planner', true),
+            'id' => 'form-interval-status',
+        ));
+        if ($intervalId) {
+            $modelWorkIntervals = new Application_Model_WorkIntervals();
+            $workInterval = $modelWorkIntervals->getWorkInterval($intervalId);
+            if ($workInterval) {
+                $editForm->populate($workInterval);
+            } else {
+                return false;
+            }
+            $this->view->interval = $workInterval;
+        }
+        $this->_helper->layout->disableLayout();
+        $this->view->editForm = $editForm->prepareDecorators();
+    }
+
+    public function getEditPauseIntervalFormAction()
+    {
+        $intervalId = $this->_getParam('interval_id');
+        $editForm = new Planner_Form_EditPauseInterval(array(
+            'class' => 'edit-pause-interval-form',
+            'action' => $this->_helper->url->url(array('controller' => 'group-settings', 'action' => 'save-pause-interval-form'), 'planner', true),
+            'id' => 'form-pause-interval-status',
+        ));
+        if ($intervalId) {
+            $modelWorkIntervals = new Application_Model_WorkIntervals();
+            $workInterval = $modelWorkIntervals->getPauseInterval($intervalId);
+            if ($workInterval) {
+                $editForm->populate($workInterval);
+            } else {
+                return false;
+            }
+            $this->view->interval = $workInterval;
+        }
+        $this->_helper->layout->disableLayout();
+        $this->view->editForm = $editForm->prepareDecorators();
+    }
+
     public function saveStatusFormAction()
     {
         $editForm = new Planner_Form_EditStatus();
@@ -116,6 +176,54 @@ class Planner_GroupSettingsController extends My_Controller_Action
         if ($request->isPost()) {
             if ($editForm->isValid($request->getPost())) {
                 $data = $this->_modelStatus->saveStatus($editForm->getValues());
+                $status = true;
+            } else {
+                $data = $editForm->getErrors();
+            }
+        }
+        if ($status) {
+            $this->_response(1, '', $data);
+        } else {
+            $this->_response(0, 'Error!', $data);
+        }
+    }
+
+
+    public function saveIntervalFormAction()
+    {
+        $editForm = new Planner_Form_EditInterval();
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        $data = array();
+        $status = false;
+        if ($request->isPost()) {
+            if ($editForm->isValid($request->getPost())) {
+                $modelWorkIntervals = new Application_Model_WorkIntervals();
+                $data = $modelWorkIntervals->saveWorkInterval($editForm->getValues());
+                $status = true;
+            } else {
+                $data = $editForm->getErrors();
+            }
+        }
+        if ($status) {
+            $this->_response(1, '', $data);
+        } else {
+            $this->_response(0, 'Error!', $data);
+        }
+    }
+
+
+    public function savePauseIntervalFormAction()
+    {
+        $editForm = new Planner_Form_EditPauseInterval();
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        $data = array();
+        $status = false;
+        if ($request->isPost()) {
+            if ($editForm->isValid($request->getPost())) {
+                $modelWorkIntervals = new Application_Model_WorkIntervals();
+                $data = $modelWorkIntervals->savePauseInterval($editForm->getValues());
                 $status = true;
             } else {
                 $data = $editForm->getErrors();
@@ -160,18 +268,59 @@ class Planner_GroupSettingsController extends My_Controller_Action
         }
     }
 
+    public function setPausePlanIntervalAction()
+    {
+        $data['pause_id'] = $this->_getParam('pause_id');
+        $data['planning_id'] = $this->_getParam('planning_id');
+        $deletePause = $this->_getParam('pause_delete');
+        if(!empty($deletePause)) {
+            $status = $this->_modelGroup->deletePausePlanInterval($data);
+        } else {
+            $status = $this->_modelGroup->setPausePlanInterval($data);
+        }
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error! You don\'t have permissions.', array());
+        }
+
+    }
+
+    public function setWorkPlanIntervalAction()
+    {
+        $data['interval_id'] = $this->_getParam('interval_id');
+        $data['current_interval_id'] = $this->_getParam('current_interval_id');
+        $data['day_number'] = $this->_getParam('day_number');
+        $data['week_type'] = $this->_getParam('week_type');
+        $data['group_id'] = $this->_getParam('group_id');
+        $data['user_id'] = $this->_getParam('user_id');
+        $status = $this->_modelGroup->setWorkPlanInterval($data);
+        if ($status) {
+            $this->_response(1, '', array());
+        } else {
+            $this->_response(0, 'Error! You don\'t have permissions.', array());
+        }
+
+    }
+
+    public function deletePausePlanIntervalAction()
+    {
+        $this->_modelGroup->deletePausePlanInterval($this->_getParam('id'));
+        $this->_response(1, '', array());
+    }
+
     public function getGroupPlanningAction()
     {
         $groupId = $this->_getParam('group');
         if ($groupId && ($group = $this->_modelGroup->getGroupById($groupId))) {
             $groupId = $group['id'];
-            $planning = $this->_modelGroup->getGroupPlanning($groupId);
-            $planningTmp = array();
-            foreach ($planning as $row) {
-                $key = $row['week_type'] . '-' . $row['day_number'];
-                $planningTmp[$key] = $row;
-            }
-            $planning = $planningTmp;
+//            $planning = $this->_modelGroup->getGroupPlanning($groupId);
+//            $planningTmp = array();
+//            foreach ($planning as $row) {
+//                $key = $row['week_type'] . '-' . $row['day_number'];
+//                $planningTmp[$key] = $row;
+//            }
+//            $planning = $planningTmp;
 
             $modelUser = new Application_Model_User();
             $usersPlanning = array();
@@ -185,14 +334,22 @@ class Planner_GroupSettingsController extends My_Controller_Action
                 }
                 $usersPlanning[$user['id']] = $planningTmp;
             }
-
+            $statusModel = new Application_Model_Status();
+            $ff = $statusModel->getDataById(Application_Model_Planning::STATUS_DAY_WHITE);
+            $modelWorkIntervals = new Application_Model_WorkIntervals();
+            $workIntervals = $modelWorkIntervals->getWorkIntervals();
+            $pauseIntervals = $modelWorkIntervals->getPauseIntervals();
             $assign = array(
                 'weekDays'      => self::getWeekDays(),
                 'group'         => $group,
                 'users'         => $users,
                 'usersPlanning' => $usersPlanning,
-                'groupPlanning' => $planning,
+                'workIntervals' => $workIntervals,
+                'pauseIntervals' => $pauseIntervals,
+                //'groupPlanning' => $planning,
                 'groupSettings' => $this->_modelGroup->getGroupSettings($groupId),
+                //Get free day status data
+                'statusFreeDay' => $statusModel->getDataById(Application_Model_Planning::STATUS_DAY_WHITE),
             );
             $this->view->assign($assign);
         }

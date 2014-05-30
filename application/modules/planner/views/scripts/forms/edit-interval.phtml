@@ -1,0 +1,35 @@
+<div class="alert alert-error" style="display: none;"></div>
+<div class="alert alert-success" style="display: none;"></div>
+<?php echo $this->element->id; ?>
+<?php echo $this->element->color_hex; ?>
+<div class="control-status">
+
+    <table class="table-bordered table-condensed table-striped form-edit-day">
+        <thead>
+        <tr>
+            <th >Time start</th><th ></th><th >Time end</th>
+        </tr>
+        </thead>
+        <tr  class="work-time">
+            <td>
+                <div class="input-time">
+                    <?php echo $this->element->time_start_hour->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                    <?php echo $this->element->time_start_min->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                </div>
+            </td>
+            <td>
+            </td>
+            <td>
+                <div class="input-time">
+                    <?php echo $this->element->time_end_hour->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                    <?php echo $this->element->time_end_min->setAttrib('class', 'set-time-hour-status start-hour set-time-hour-field'); ?>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <label class="control-label" for="description">Interval description</label>
+    <?php echo $this->element->description->setAttrib('class', 'input-medium') ?>
+</div>
+<?php  $w =$this->element->id->getAttrib('_value'); ?>
+
+<?php echo $this->render('forms/interval-color.phtml'); ?>

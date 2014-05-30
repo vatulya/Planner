@@ -280,3 +280,43 @@ UPDATE `status` SET `alert_description`='Overtime' WHERE `id`='7';
 
 ALTER TABLE `user_requests`
 CHANGE `status` `status` ENUM('open','approved','rejected','refunded') DEFAULT 'open' NOT NULL;
+
+-- New wishes
+
+CREATE TABLE `intervals_work` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `time_start` time DEFAULT NULL,
+  `time_end` time DEFAULT NULL,
+  `color_hex` varchar(10) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `intervals_pause` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `time_start` time DEFAULT NULL,
+  `time_end` time DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `group_plannings` ADD COLUMN `interval_id` INT(11) DEFAULT '0' NOT NULL;
+ALTER TABLE `group_plannings` ADD COLUMN `color_hex` varchar(10) NOT NULL;
+DELETE FROM `group_plannings`;
+ALTER TABLE `group_plannings` ADD KEY `FK_interval_id` (`interval_id`);
+ALTER TABLE `group_plannings` ADD CONSTRAINT `FK_interval_id` FOREIGN KEY (`interval_id`)
+REFERENCES `intervals_work` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intervals_work` ADD UNIQUE KEY `theSameInterval` (`time_start`,`time_end`);
+ALTER TABLE `intervals_pause` ADD UNIQUE KEY `theSameInterval` (`time_start`,`time_end`);
+
+CREATE TABLE `group_pause` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pause_id` int(11) NOT NULL,
+  `planning_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_pause_id` (`pause_id`),
+  CONSTRAINT `FK_pause_id` FOREIGN KEY (`pause_id`) REFERENCES `intervals_pause` (`id`)
+  ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_planning_id` FOREIGN KEY (`planning_id`) REFERENCES `group_plannings` (`id`)
+  ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

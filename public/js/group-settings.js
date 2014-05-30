@@ -13,6 +13,18 @@
         modalBodyStatus = modalStatus.find('.modal-body')
         ;
 
+    var modalInterval = $('.modal-edit-interval'),
+        modalCreateH3Interval = modalInterval.find('.header-create-interval'),
+        modalEditH3Interval = modalInterval.find('.header-edit-interval'),
+        modalBodyInterval = modalInterval.find('.modal-body')
+        ;
+
+    var modalPauseInterval = $('.modal-edit-pause-interval'),
+        modalCreateH3PauseInterval = modalPauseInterval.find('.header-create-pause-interval'),
+        modalEditH3PauseInterval = modalPauseInterval.find('.header-edit-pause-interval'),
+        modalBodyPauseInterval = modalPauseInterval.find('.modal-pause-body')
+        ;
+
     var groupPlanning = $('.group-work-days-planning'),
         groupPlanningSelect = $('#group-planning'),
         groupPlanningBody = groupPlanning.find('.planning-body');
@@ -93,6 +105,128 @@
                 },
                 error: function(response) {
                     modalBodyStatus.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        editInterval: function(el) {
+            el = $(el);
+            modalBodyInterval.html('Loading...');
+            modalCreateH3Interval.hide();
+            modalEditH3Interval.show();
+            modalInterval.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    interval_id: el.data('interval-id')
+                },
+                success: function(response) {
+                    modalBodyInterval.html(response);
+                    GroupSettings.initEditIntervalAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyInterval.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        setWorkPlanInterval: function(el) {
+            el = $(el);
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    current_interval_id: el.data('current-interval-id'),
+                    interval_id: el.data('interval-id'),
+                    day_number: el.data('day-number'),
+                    week_type: el.data('week-type'),
+                    group_id: el.data('group-id'),
+                    user_id: el.data('user-id'),
+                    format: 'json'
+                },
+                success: function(response) {
+                    GroupSettings.selectGroupPlanning();
+                    //modalBodyInterval.html(response);
+                    //GroupSettings.initEditIntervalAjaxForm();
+                },
+                error: function(response) {
+                    //modalBodyInterval.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        setPausePlanInterval: function(el) {
+            el = $(el);
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    planning_id: el.data('planning-id'),
+                    pause_id: el.data('pause-id'),
+                    pause_delete: el.data('pause-delete'),
+                    format: 'json'
+                },
+                success: function(response) {
+                    GroupSettings.selectGroupPlanning();
+                },
+                error: function(response) {
+                }
+            });
+        },
+
+        createInterval: function(el) {
+            el = $(el);
+            modalBodyInterval.html('Loading...');
+            modalCreateH3Interval.show();
+            modalEditH3Interval.hide();
+            modalInterval.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {},
+                success: function(response) {
+                    modalBodyInterval.html(response);
+                    GroupSettings.initEditIntervalAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyInterval.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        editPauseInterval: function(el) {
+            el = $(el);
+            modalBodyPauseInterval.html('Loading...');
+            modalCreateH3PauseInterval.hide();
+            modalEditH3PauseInterval.show();
+            modalPauseInterval.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {
+                    interval_id: el.data('pause-interval-id')
+                },
+                success: function(response) {
+                    modalBodyPauseInterval.html(response);
+                    GroupSettings.initEditPauseIntervalAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyPauseInterval.html('Error! Something wrong.');
+                }
+            });
+        },
+
+        createPauseInterval: function(el) {
+            el = $(el);
+            modalBodyPauseInterval.html('Loading...');
+            modalCreateH3PauseInterval.show();
+            modalEditH3PauseInterval.hide();
+            modalPauseInterval.modal();
+            $.ajax({
+                url: el.attr('href'),
+                data: {},
+                success: function(response) {
+                    modalBodyPauseInterval.html(response);
+                    GroupSettings.initEditPauseIntervalAjaxForm();
+                },
+                error: function(response) {
+                    modalBodyPauseInterval.html('Error! Something wrong.');
                 }
             });
         },
@@ -181,6 +315,44 @@
             });
         },
 
+        initEditIntervalAjaxForm: function() {
+            var formEl = $('#form-interval-status');
+            $('#form-interval-status').ajaxForm({
+                data: {format: 'json'},
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.Form.showSuccess(formEl);
+                        window.location.reload();
+                    } else {
+                        window.Form.showErrors(formEl);
+                    }
+                },
+                error: function() {
+                    window.Form.showErrors(formEl);
+                }
+            });
+        },
+
+        initEditPauseIntervalAjaxForm: function() {
+            var formEl = $('#form-pause-interval-status');
+            $('#form-pause-interval-status').ajaxForm({
+                data: {format: 'json'},
+                success: function(response) {
+                    response = response.response;
+                    if (response.status) {
+                        window.Form.showSuccess(formEl);
+                        window.location.reload();
+                    } else {
+                        window.Form.showErrors(formEl);
+                    }
+                },
+                error: function() {
+                    window.Form.showErrors(formEl);
+                }
+            });
+        },
+
         changeSelectedColor: function(el) {
             el = $(el);
             $('.group-color-variation').removeClass('active');
@@ -188,6 +360,10 @@
             var color = $('#form-edit-group').find('#color');
             if (color) {
                 color.val(el.data('color'));
+            }
+            var color_hex = $('#form-interval-status').find('#color_hex');
+            if (color_hex) {
+                color_hex.val(el.data('color'));
             }
             var colorStatus = $('#form-edit-status').find('#color');
             if (colorStatus) {
@@ -197,13 +373,13 @@
 
         selectGroupPlanning: function() {
             groupPlanningSelect.css('background-color', '#FFFFFF');
-            groupPlanningBody.html('');
+            //groupPlanningBody.html('');
             var option = $('option:selected', groupPlanningSelect);
             if (option.val() < 1) {
                 return false;
             }
             groupPlanningSelect.css('background-color', '#' + option.data('group-color'));
-            groupPlanningBody.html('Loading...');
+            //groupPlanningBody.html('Loading...');
             $.ajax({
                 url: '/group-settings/get-group-planning',
                 data: {
@@ -549,6 +725,24 @@
         });
         $(document.body).on('click', '.edit-status', function(e) {
             GroupSettings.editStatus(e.currentTarget);
+        });
+        $(document.body).on('click', '.edit-interval', function(e) {
+            GroupSettings.editInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.set-work-plan-interval', function(e) {
+            GroupSettings.setWorkPlanInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.set-pause-plan-interval', function(e) {
+            GroupSettings.setPausePlanInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.create-interval', function(e) {
+            GroupSettings.createInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.edit-pause-interval', function(e) {
+            GroupSettings.editPauseInterval(e.currentTarget);
+        });
+        $(document.body).on('click', '.create-pause-interval', function(e) {
+            GroupSettings.createPauseInterval(e.currentTarget);
         });
         $(document.body).on('click', '.create-group', function(e) {
             GroupSettings.createGroup(e.currentTarget);

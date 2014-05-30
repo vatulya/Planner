@@ -32,158 +32,148 @@
         </thead>
         <tbody>
         <!-- START ODD WEEK -->
-        <tr class="odd-week-row">
-            <?php foreach ($this->weekDays['odd'] as $key => $day): ?>
-            <td class="week-day">
-                <form class="form-inline form-user-planning-day" data-week-type="odd" data-day-number="<?php echo $day['day_number']; ?>">
-                    <?php
-                    if ( ! empty($userPlanning[$key])) {
-                        $data = $userPlanning[$key];
-                        $checked = ((bool)$data['enabled']) ? 'checked="checked"' : '';
+    <?php foreach ($this->weekDays as $weekType => $dayData): ?>
+        <tr style="background-color: #<?php echo $this->statusFreeDay['color_hex'] ?>;">
+            <?php foreach ($this->weekDays[$weekType] as $key => $day): ?>
+            <?php $data = '';
+                if ( ! empty($userPlanning[$key])) {
+                    $data = $userPlanning[$key];
+                }?>
+                <td class="week-day" style="background-color: #<?php echo @$userPlanning[$key]['color_hex'] ?>;">
+                    <table class="table" style="margin-top: 5px; margin-bottom: 3px">
+                        <tr>
+                            <td width="20px">
+                                <div class="" align="left">
+                                    <div class="btn-group">
+                                        <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <i class="icon-cog"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" align="left">
+                                            <li <?php if (empty($userPlanning[$key])) echo 'class="disabled"';?>>
+                                                <a tabindex="-1"
+                                                   href="<?php echo $this->url(array('controller' => 'group-settings', 'action' => 'set-work-plan-interval'), 'planner', true); ?>"
+                                                   data-interval-id=""
+                                                   data-current-interval-id="<?php if (isset($data['id'])) echo $data['id']; ?>"
+                                                   data-user-id="<?php echo $user['id']; ?>"
+                                                   data-group-id="<?php echo $this->group['id']; ?>"
+                                                   data-week-type="<?php echo $weekType; ?>"
+                                                   data-day-number="<?php echo $day['day_number']; ?>"
+                                                   class="set-work-plan-interval no-action">
+                                                    <span class="user-planning-color" style="background-color: #<?php echo $this->statusFreeDay['color_hex'] ?>;"></span>
+                                                    <?php echo $this->statusFreeDay['description'] ?>
+                                                </a>
+                                            </li>
+                                            <?php foreach( $this->workIntervals as $workInterval ) : ?>
+                                                <li <?php if (isset($data['interval_id']) && $data['interval_id'] == $workInterval['id']) echo 'class="disabled"';?>>
+                                                    <a tabindex="-1"
+                                                        href="<?php echo $this->url(array('controller' => 'group-settings', 'action' => 'set-work-plan-interval'), 'planner', true); ?>"
+                                                        data-interval-id="<?php echo $workInterval['id']; ?>"
+                                                        data-user-id="<?php echo $user['id']; ?>"
+                                                        data-group-id="<?php echo $this->group['id']; ?>"
+                                                        data-week-type="<?php echo $weekType; ?>"
+                                                        data-day-number="<?php echo $day['day_number']; ?>"
+                                                        class="set-work-plan-interval no-action">
+                                                        <span class="user-planning-color" style="background-color: #<?php echo $workInterval['color_hex'] ?>;"></span>
+                                                        <?php echo $workInterval['format_time_start'] ?> <span>-</span>
+                                                        <?php echo $workInterval['format_time_end']?>
+                                                        <?php echo $workInterval['description']; ?>
+                                                    </a>
+                                                </li>
+                                            <?php endforeach ?>
+                                        </ul>
 
-                        $startTime = new DateTime($data['time_start']);
-                        $startHourValue = $startTime->format('H');
-                        $startMinValue  = $startTime->format('i');
+                                    </div>
 
-                        $endTime = new DateTime($data['time_end']);
-                        $endHourValue = $endTime->format('H');
-                        $endMinValue  = $endTime->format('i');
 
-                        $pauseStartTime = new DateTime($data['pause_start']);
-                        $pauseStartHourValue = $pauseStartTime->format('H');
-                        $pauseStartMinValue  = $pauseStartTime->format('i');
-
-                        $pauseEndTime = new DateTime($data['pause_end']);
-                        $pauseEndHourValue = $pauseEndTime->format('H');
-                        $pauseEndMinValue  = $pauseEndTime->format('i');
-                    } else {
-                        $checked = '';
-                        $startHourValue = '';
-                        $startMinValue  = '';
-                        $endHourValue = '';
-                        $endMinValue  = '';
-                        $pauseStartHourValue = '';
-                        $pauseStartMinValue  = '';
-                        $pauseEndHourValue = '';
-                        $pauseEndMinValue  = '';
-                    }
-                    ?>
-                    <div class="work-time">
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
-                        </div>
-                        <div class="separator">Work</div>
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
-                        </div>
-                    </div>
-                    <div class="enable-flag-container">
-                        <input type="checkbox" name="enable_day" value="1" class="enable-day" <?php echo $checked; ?>>
-                    </div>
-                    <div class="pause-time">
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $pauseStartHourValue; ?>" class="pause-hour set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $pauseStartMinValue; ?>" class="pause-min set-time-min start-min">
-                        </div>
-                        <div class="separator">Pause</div>
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $pauseEndHourValue; ?>" class="pause-hour set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $pauseEndMinValue; ?>" class="pause-min set-time-min end-min">
-                        </div>
-                    </div>
-                </form>
-            </td>
+                                </div>
+                            </td>
+                            <td text-align="left">Work
+                                <?php if (!empty($userPlanning[$key])) {
+                                    echo $workInterval['format_time_start'] . '-' . $workInterval['format_time_end'];
+                                } ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <?php if (!empty($data)) : ?>
+                                <div class="" align="left">
+                                    <div class="btn-group">
+                                        <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <i class="icon-cog"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" align="left">
+                                        <?php foreach( $this->pauseIntervals as $pauseInterval ) : ?>
+                                            <li <?php
+                                                $userPlannedPause = false;
+                                                if (!empty($data['pause_id'][$pauseInterval['id']])) {
+                                                    echo 'style="background-color:#d9d9d9"';
+                                                    $userPlannedPause= true;
+                                                }?> >
+                                                <a tabindex="-1" href="
+                                                    <?php echo $this->url(
+                                                        array('controller' => 'group-settings',
+                                                            'action' => 'set-pause-plan-interval'),
+                                                        'planner', true);
+                                                    ?>"
+                                                    class="set-pause-plan-interval no-action"
+                                                    data-planning-id="<?php echo $data['id']; ?>"
+                                                    data-pause-id="<?php echo $pauseInterval['id']; ?>"
+                                                    data-pause-delete="<?php echo $userPlannedPause; ?>"
+                                                    >
+                                                    <b> <?php if (!empty($userPlannedPause)) {
+                                                            echo '-';
+                                                        } else {
+                                                            echo '+';
+                                                        }?>
+                                                    </b>
+                                                    <?php echo $pauseInterval['format_time_start'] ?>-
+                                                    <?php echo $pauseInterval['format_time_end']?>
+                                                </a>
+                                            </li>
+                                        <?php endforeach ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <table>
+                                    <?php if (!empty($userPlanning[$key]['pause'])) :?>
+                                    <?php foreach( $userPlanning[$key]['pause'] as $pausePlanInterval ) : ?>
+                                        <tr>
+                                            <td>
+                                        Pause </td>
+                                            <td><?php echo $pausePlanInterval['format_time_start'] . '-' . $pausePlanInterval['format_time_end'] ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php else : ?>
+                                        <tr>
+                                            <td>
+                                                Pause
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </table
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
             <?php endforeach; ?>
         </tr>
+    <?php endforeach; ?>
         <!-- END ODD WEEK -->
-        <!-- STERT EVEN WEEK -->
-        <tr class="even-week-row">
-            <?php foreach ($this->weekDays['even'] as $key => $day): ?>
-            <td class="week-day">
-                <form class="form-inline form-user-planning-day" data-week-type="even" data-day-number="<?php echo $day['day_number']; ?>">
-                    <?php
-                    if ( ! empty($userPlanning[$key])) {
-                        $data = $userPlanning[$key];
-                        $checked = ((bool)$data['enabled']) ? 'checked="checked"' : '';
-
-                        $startTime = new DateTime($data['time_start']);
-                        $startHourValue = $startTime->format('H');
-                        $startMinValue  = $startTime->format('i');
-
-                        $endTime = new DateTime($data['time_end']);
-                        $endHourValue = $endTime->format('H');
-                        $endMinValue  = $endTime->format('i');
-
-                        $pauseStartTime = new DateTime($data['pause_start']);
-                        $pauseStartHourValue = $pauseStartTime->format('H');
-                        $pauseStartMinValue  = $pauseStartTime->format('i');
-
-                        $pauseEndTime = new DateTime($data['pause_end']);
-                        $pauseEndHourValue = $pauseEndTime->format('H');
-                        $pauseEndMinValue  = $pauseEndTime->format('i');
-                    } else {
-                        $checked = '';
-                        $startHourValue = '';
-                        $startMinValue  = '';
-                        $endHourValue = '';
-                        $endMinValue  = '';
-                        $pauseStartHourValue = '';
-                        $pauseStartMinValue  = '';
-                        $pauseEndHourValue = '';
-                        $pauseEndMinValue  = '';
-                    }
-                    ?>
-                    <div class="work-time">
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $startHourValue; ?>" name="start_hour" class="set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $startMinValue; ?>" name="start_min" class="set-time-min start-min">
-                        </div>
-                        <div class="separator">Work</div>
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $endHourValue; ?>" name="end_hour" class="set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $endMinValue; ?>" name="end_min" class="set-time-min end-min">
-                        </div>
-                    </div>
-                    <div class="enable-flag-container">
-                        <input type="checkbox" name="enable_day" value="1" class="enable-day" <?php echo $checked; ?>>
-                    </div>
-                    <div class="pause-time">
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $pauseStartHourValue; ?>" class="pause-hour set-time-hour start-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $pauseStartMinValue; ?>" class="pause-min set-time-min start-min">
-                        </div>
-                        <div class="separator">Pause</div>
-                        <div class="input-time">
-                            <input type="text" value="<?php echo $pauseEndHourValue; ?>" class="pause-hour set-time-hour end-hour"><?php
-                            ?>:<?php
-                            ?><input type="text" value="<?php echo $pauseEndMinValue; ?>" class="pause-min set-time-min end-min">
-                        </div>
-                    </div>
-                </form>
-            </td>
-            <?php endforeach; ?>
-        </tr>
-        <!-- END EVEN WEEK -->
         </tbody>
     </table>
 
     <div class="week-types">
-        <span class="week-type label label-week-type-odd">Odd week</span>
-        <span class="week-type label label-inverse label-week-type-even">Even week</span>
+        <span class="week-type label label-week-type-odd">Top - Odd week</span>
+        <span class="week-type label label-inverse label-week-type-even">Bottom - Even week</span>
     </div>
 
-    <div class="form-actions">
+    <!--div class="form-actions">
         <button type="submit" class="btn btn-success user-planning-save" data-container='user_planning_<?php echo $user['id']; ?>'>Save</button>
         <span class="alert alert-error" style="display: none;">Error!</span>
-    </div>
+    </div-->
 </div>
 <?php endif; ?>
